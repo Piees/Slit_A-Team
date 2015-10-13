@@ -28,6 +28,8 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
  * @author Arild-Bærbar
  */
 public class TabModuloversikt {
+    private final int IS109 = 5;
+    private final int IS110 = 10;
     
     public TabModuloversikt()   {
         
@@ -88,7 +90,7 @@ public class TabModuloversikt {
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
         
-        ArrayList<Modul> modulList = new ArrayList<Modul>(Modul.makeModules());  
+        ArrayList<Modul> modulList = new ArrayList<Modul>(Modul.makeModules(IS109));  
   
      JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();  
      for (Modul modul : modulList)  {

@@ -15,13 +15,15 @@ import org.jdesktop.swingx.JXLabel;
  */
 public class Modul {
     String name;
-    JXLabel modulInnhold;
+    JXLabel modulContent;
     int status;
+    boolean delivered;
     
-    public Modul(String name, JXLabel modulInnhold) {
+    public Modul(String name, JXLabel modulContent) {
         this.name = name;
-        this.modulInnhold = modulInnhold;
-        status = 0;
+        this.modulContent = modulContent;
+        delivered = false;
+               
     }
     
     public String getName() {
@@ -29,29 +31,31 @@ public class Modul {
     }
     
     public JXLabel getInnhold() {
-        return modulInnhold;
+        return modulContent;
     }
     
     public String getStatus()   {
-        if(status == 0) {
+        if(delivered != false)  {
+            if(status == 0)  {
+                return "Ikke vurdert";
+            } else if(status == 1)  {
+                return "Under vurdering";
+            } else if(status == 2)  {
+                return "Godkjent";
+            } else {
+                return "Ikke godkjent";
+            }
+        } else  {
             return "Ikke levert";
-        } else if(status == 1)  {
-            return "Ikke vurdert";
-        } else if(status == 2)  {
-            return "Under vurdering";
-        } else if(status == 3)  {
-            return "Godkjent";
-        } else {
-            return "Ikke godkjent";
         }
         
     }
-    public static List makeModules()   {
+    public static List makeModules(int numberOfModules)   {
         ArrayList<Modul> modules = new ArrayList<Modul>();
         int i = 1;
-        while (i < 6) {
-            JXLabel innhold = new JXLabel("Her er innholdet i modul " + i + "   ");
-            Modul modul = new Modul("Modul " + i + "   ", innhold);
+        while (i <= numberOfModules) {
+            JXLabel content = new JXLabel("Her er innholdet i modul " + i + "   ");
+            Modul modul = new Modul("Modul " + i + "     ", content);
             modules.add(modul);
             i++;
         }
