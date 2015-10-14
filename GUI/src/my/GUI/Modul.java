@@ -6,7 +6,8 @@
 package my.GUI;
 
 import java.util.ArrayList;
-import java.util.List;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import org.jdesktop.swingx.JXLabel;
 
 /**
@@ -15,11 +16,11 @@ import org.jdesktop.swingx.JXLabel;
  */
 public class Modul {
     String name;
-    JXLabel modulContent;
+    JPanel modulContent;
     int status;
     boolean delivered;
     
-    public Modul(String name, JXLabel modulContent) {
+    public Modul(String name, JPanel modulContent) {
         this.name = name;
         this.modulContent = modulContent;
         delivered = false;
@@ -30,7 +31,7 @@ public class Modul {
         return name;
     }
     
-    public JXLabel getInnhold() {
+    public JPanel getInnhold() {
         return modulContent;
     }
     
@@ -50,15 +51,23 @@ public class Modul {
         }
         
     }
-    public static List makeModules(int numberOfModules)   {
+    public static ArrayList makeModules(int numberOfModules)   {
         ArrayList<Modul> modules = new ArrayList<Modul>();
         int i = 1;
         while (i <= numberOfModules) {
-            JXLabel content = new JXLabel("Her er innholdet i modul " + i + "   ");
-            Modul modul = new Modul("Modul " + i + "     ", content);
+            
+            Modul modul = new Modul("Modul " + i + "     ", makeContent(i));
             modules.add(modul);
             i++;
         }
         return modules;
+    }
+    
+    public static JPanel makeContent(int i)    {
+        JPanel content = new JPanel();
+       // JTextField text = getModul(i);
+       // content.add(text);
+        
+        return content;
     }
 }
