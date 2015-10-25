@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import java.sql.Timestamp;
 
 /**
  *
@@ -28,25 +29,14 @@ public class dbConnector implements dbConnectorRemote {
 
     // JDBC driver name and database URL
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
+    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
     private static final String USERNAME = "yngve";
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
     
     @Override
-    public Connection dbConnection() {
-        /*        // Check driver
-        try {
-            Class.forName(JDBC_DRIVER);
-        } catch (ClassNotFoundException e) {
-	System.out.println("Where is your MySQL JDBC Driver?");
-	e.printStackTrace();
-       	//return;
-        }
-        System.out.println("MySQL JDBC Driver Registered!");
-        */
-        
+    public Connection dbConnection() {        
         // Connection
         if (DBConnection == null) {
             try {           
@@ -90,6 +80,9 @@ public class dbConnector implements dbConnectorRemote {
         return queryResult;
     }
     
+    // This method is not sql injection proof.
+    // What if a crooked admin creates a new user where userName is 
+    // is an injection?
     @Override
     public ArrayList<String> multiQuery(String query)   {
         Connection dbConnection = dbConnection();
@@ -210,8 +203,8 @@ public class dbConnector implements dbConnectorRemote {
                     }
                     ps.setBinaryStream(i,(FileInputStream) fileInput);
                 }           
-                else if (values.get(index) instanceof java.sql.Timestamp) {
-                    ps.setTimestamp(i,(java.sql.Timestamp) values.get(index)); 
+                else if (values.get(index) instanceof Timestamp) {
+                    ps.setTimestamp(i,(Timestamp) values.get(index)); 
                 }
                 else {
                     System.out.println("INVALID OBJECT TYPE!");
@@ -298,5 +291,53 @@ public class dbConnector implements dbConnectorRemote {
             System.out.println(e);
         }
         return queryResults;
-    }    
+    } 
+    
+    @Override
+    public ArrayList<ArrayList> getUserNotifications(String query, String userName) {
+        Connection dbConnection = dbConnection();
+        ArrayList<ArrayList> notifications = new ArrayList<>();
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setString(1, userName);
+            ps.setBoolean(2, false);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())   {
+                ArrayList<Object> notification = new ArrayList<>();
+                int idNotification = rs.getInt("idNotification");
+                Timestamp timestamp =  rs.getTimestamp("notificationTime");
+                String notificationText = rs.getString("notificationText");
+                
+                notification.add(idNotification);
+                notification.add(timestamp);
+                notification.add(notificationText);
+                notifications.add(notification);
+                //String notificationTime = timestamp.toString();
+                //notifications.add(notificationTime + ":\n" + notificationText);           
+            }   
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return notifications;
+    }
+    
+    @Override
+    public void markNotificationsAsSeen(ArrayList<Integer> idNotification) {
+        String updateNotification = "UPDATE Notification set seen=? WHERE idNotification=?";
+        Connection dbConnection = dbConnection();
+        PreparedStatement ps;
+        try {
+            for (Integer id : idNotification) {
+                System.out.print(id);
+                ps = dbConnection.prepareStatement(updateNotification);
+                ps.setBoolean(1, true);
+                ps.setInt(2, id);
+                ps.executeUpdate();   
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package slitclient;
+package prototypes;
 
 import db.dbConnectorRemote;
 import java.awt.*;
@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
+import slitclient.EJBConnector;
  
 /**
  *
