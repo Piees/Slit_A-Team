@@ -143,7 +143,7 @@ public class dbConnector implements dbConnectorRemote {
     }
     
     @Override
-    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values) {
+    public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values) {
         //create the beginning of the insert-string
         String insert = "INSERT INTO " + table + "(";
       
@@ -214,10 +214,12 @@ public class dbConnector implements dbConnectorRemote {
             }
             System.out.println(ps);
             ps.executeUpdate();
+            return "Opplasting vellykket!";
         }
         catch (SQLException ex)  {
             System.out.println("CATCH I INSERT-METODE");
             System.out.println(ex);
+            return "Opplasting feilet!";
         }
     }
     public int countRows(String column, String tableName)    {

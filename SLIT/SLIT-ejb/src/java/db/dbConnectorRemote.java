@@ -29,7 +29,7 @@ public interface dbConnectorRemote {
     
     public ArrayList<String> multiQuery(String query);
 
-    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
+    public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
     
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
