@@ -26,7 +26,7 @@ import slitclient.EJBConnector;
  * @author Viktor Setervang
  */
 public class Notification {
-    private String userName = "yngver14";
+    private String userName = "viktos08";
     private JButton seeNotificationButton;   
     private EJBConnector ejbConnector = EJBConnector.getInstance();
     private dbConnectorRemote connector = ejbConnector.getEjbRemote();

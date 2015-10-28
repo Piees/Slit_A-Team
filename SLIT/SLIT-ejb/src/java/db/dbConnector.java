@@ -19,7 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
-
+import java.util.HashMap;
+import slitcommon.DeliveryStatus;
 /**
  *
  * @author piees
@@ -114,10 +115,10 @@ public class dbConnector implements dbConnectorRemote {
      * 
      */
     @Override
-    public ArrayList<String> login(String userName, String pwd) {
+    public HashMap<String, String> login(String userName, String pwd) {
         String loginQuery = "SELECT * FROM User WHERE userName=? and pwd=?";
         Connection dbConnection = dbConnection();
-        ArrayList<String> loginResults = new ArrayList<>();
+        HashMap<String, String> userHashMap = new HashMap<>();
         try {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(loginQuery);
@@ -126,24 +127,24 @@ public class dbConnector implements dbConnectorRemote {
             ResultSet rs = ps.executeQuery();
             // If true then the username + password was a match
             if (rs.next()) {
-                loginResults.add(userName);
-                loginResults.add(rs.getString("userType"));
-                loginResults.add(rs.getString("fname"));
-                loginResults.add(rs.getString("lname"));
+                userHashMap.put("userName", userName);
+                userHashMap.put("userType", rs.getString("userType"));
+                userHashMap.put("fName", rs.getString("fName"));
+                userHashMap.put("lName", rs.getString("lName"));
+                userHashMap.put("mail", rs.getString("mail"));
             } 
             else {
-                loginResults.add("Username Password combination invalid");              
+                userHashMap.put("error1", "Username Password combination invalid");              
             }   
         } 
         catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
-            loginResults.add(ex.getMessage());
         }
-        return loginResults;
+        return userHashMap;
     }
     
     @Override
-    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values) {
+    public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values) {
         //create the beginning of the insert-string
         String insert = "INSERT INTO " + table + "(";
       
@@ -206,6 +207,9 @@ public class dbConnector implements dbConnectorRemote {
                 else if (values.get(index) instanceof Timestamp) {
                     ps.setTimestamp(i,(Timestamp) values.get(index)); 
                 }
+                else if (values.get(index) instanceof DeliveryStatus) {
+                    ps.setString(i, DeliveryStatus.IKKESETT.toString());
+                }
                 else {
                     System.out.println("INVALID OBJECT TYPE!");
                 }
@@ -214,10 +218,12 @@ public class dbConnector implements dbConnectorRemote {
             }
             System.out.println(ps);
             ps.executeUpdate();
+            return "Opplasting vellykket!";
         }
         catch (SQLException ex)  {
             System.out.println("CATCH I INSERT-METODE");
             System.out.println(ex);
+            return "Opplasting feilet!";
         }
     }
     public int countRows(String column, String tableName)    {
