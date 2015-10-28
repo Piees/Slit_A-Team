@@ -25,11 +25,24 @@ import javax.swing.table.DefaultTableModel;
 public class JTableRow {
 
 
-    public static void main(String[] args){
+    public JTableRow(){
 
         JFrame frame = new JFrame();
-        JTable table = new JTable(); 
-
+        
+        frame.setSize(900,400);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        setComponents(frame);
+        
+      
+        
+    }
+    
+    private void setComponents(JFrame FFrame) {
+        FFrame.setLayout(null);
+         JTable table = new JTable(); 
+        
         Object[] columns = {"User","First Name","Last Name"};
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
@@ -41,7 +54,9 @@ public class JTableRow {
         Font font = new Font("",1,22);
         table.setFont(font);
         table.setRowHeight(30);
-
+        JScrollPane pane = new JScrollPane(table);
+        pane.setBounds(0, 0, 880, 200);
+        
         JTextField textId = new JTextField();
         JTextField textFname = new JTextField();
         JTextField textLname = new JTextField();
@@ -58,20 +73,18 @@ public class JTableRow {
         btnUpdate.setBounds(150, 265, 100, 25);
         btnDelete.setBounds(150, 310, 100, 25);
 
-        JScrollPane pane = new JScrollPane(table);
-        pane.setBounds(0, 0, 880, 200);
+        
 
-        frame.setLayout(null);
         
-        frame.add(pane);
+        FFrame.add(pane);
         
-        frame.add(textId);
-        frame.add(textFname);
-        frame.add(textLname);
+        FFrame.add(textId);
+        FFrame.add(textFname);
+        FFrame.add(textLname);
         
-        frame.add(btnAdd);
-        frame.add(btnDelete);
-        frame.add(btnUpdate);
+        FFrame.add(btnAdd);
+        FFrame.add(btnDelete);
+        FFrame.add(btnUpdate);
         
         Object[] row = new Object[4];
         
@@ -137,10 +150,6 @@ int i = table.getSelectedRow();
             }
         });
 
-frame.setSize(900,400);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
         
     }
 }

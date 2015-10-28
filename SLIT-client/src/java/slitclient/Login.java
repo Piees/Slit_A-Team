@@ -21,6 +21,8 @@ import db.dbConnectorRemote;
 import java.util.ArrayList;
 
 import prototypes.CreateUser;
+import prototypes.JTableRow;
+import prototypes.editUser;
 
 /**
  *
@@ -104,9 +106,8 @@ public class Login {
         forgotPwdButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            JButton source = (JButton) e.getSource();
-            JOptionPane.showMessageDialog(source, source.getText()
-                        + " button has been pressed");                
+                new editUser();
+                frame.dispose();        
             }
         });
         
