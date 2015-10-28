@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -32,12 +33,11 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 public class TabModuloversikt {
     private final int IS109 = 5;
     private final int IS110 = 10;
-    private String userType;
-    private String userName = "haakog14";
+    private HashMap<String, String> userInfo;
     private JFrame frame;
     
-    public TabModuloversikt(String userType, JFrame frame)   {
-        this.userType = userType;
+    public TabModuloversikt(HashMap<String, String> userInfo, JFrame frame)   {
+        this.userInfo = userInfo;
         this.frame = frame;
     }
     /**
@@ -48,7 +48,7 @@ public class TabModuloversikt {
     public JPanel makeModuloversiktTab()    {
         JPanel tab2Panel = new JPanel();
         
-        if(userType.equals("teacher"))  {
+        if(userInfo.get("userType").equals("teacher"))  {
             JButton createModulButton = new JButton("Opprett modul");
                 createModulButton.addActionListener(new ActionListener()  {
                     @Override
@@ -94,13 +94,13 @@ public class TabModuloversikt {
             EJBConnector ejbConnector = EJBConnector.getInstance();
             dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
             ArrayList<String> moduls = dbConnector.multiQuery(columns, tables, where);
-            if (userType.equals("student")) {    
+            if (userInfo.get("userType").equals("student")) {    
                 columns.clear();
                 tables.clear();
                 where.clear();
                 columns.add("deliveryStatus");
                 tables.add("Delivery");
-                where.add("idModul = " + i + " AND deliveredBy = '" + userName + "';");
+                where.add("idModul = " + i + " AND deliveredBy = '" + userInfo.get("userName") + "';");
                 ArrayList<String> deliveryStatus = dbConnector.multiQuery(columns, tables, where);
                 if(deliveryStatus.size() > 0)   {
                     modulPane = new JXTaskPane("Modul " + moduls.get(0) + deliveryStatus.get(0));
@@ -133,7 +133,7 @@ public class TabModuloversikt {
             modulPane.add(label);
         }
             // UPLOAD DELIVERY BUTTON
-        if (userType.equals("student")) {
+        if (userInfo.get("userType").equals("student")) {
             JButton uploadDeliveryButton = new JButton("Opplast oppgave");
             modulPane.add(uploadDeliveryButton);
             uploadDeliveryButton.addActionListener(new ActionListener() {
@@ -179,6 +179,7 @@ public class TabModuloversikt {
                     JOptionPane.showMessageDialog(null, deliveryFile.getText()); 
                     }
                 else {
+                    String userName = userInfo.get("userName");
                     JOptionPane.showMessageDialog(null, fileUploader.uploadDelivery(userName, i));            
                 }
             }

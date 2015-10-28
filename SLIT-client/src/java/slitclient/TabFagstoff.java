@@ -8,6 +8,7 @@ package slitclient;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -21,8 +22,11 @@ import javax.swing.JTextField;
  * @author Arild
  */
 public class TabFagstoff {
+    HashMap<String, String> userInfo;
     private JFrame frame;
-    public TabFagstoff(JFrame frame)    {
+    
+    public TabFagstoff(HashMap<String, String> userInfo, JFrame frame)    {
+        this.userInfo = userInfo;
         this.frame = frame;
     }
     /**
@@ -48,7 +52,7 @@ public class TabFagstoff {
     private void addResourceDialog() {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
-        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs", true);
+        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");
         addResourceDialog.setLayout(new GridLayout(0, 1));
         JPanel contentpane = (JPanel) addResourceDialog.getContentPane();
         
@@ -73,7 +77,8 @@ public class TabFagstoff {
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              resourceFile.setText(fileUploader.startFileExplorer(frame));
+                System.out.println("Før start fileexplorer");
+                resourceFile.setText(fileUploader.startFileExplorer(frame));
             }
         });
         
@@ -85,7 +90,7 @@ public class TabFagstoff {
                         JOptionPane.showMessageDialog(null, "Et av ressursfeltene må utfylles"); 
                     }
                     else {
-                        JOptionPane.showMessageDialog(null, fileUploader.uploadResource("viktos08", title.getText(), resourceText.getText(), url.getText()));            
+                        JOptionPane.showMessageDialog(null, fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText()));            
                     }
                 } 
                 else { 
@@ -96,3 +101,4 @@ public class TabFagstoff {
         });
     }
 }
+

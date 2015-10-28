@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,12 +31,11 @@ import javax.swing.JTabbedPane;
  */
 public class StudentGUI {
 
-    JFrame frame;
-    TabForside tabForside;
-    TabModuloversikt tabModuloversikt;
-    TabFagstoff tabFagstoff;
-    String userName;
-    String nameOfUser;
+    private JFrame frame;
+    private TabForside tabForside;
+    private TabModuloversikt tabModuloversikt;
+    private TabFagstoff tabFagstoff;
+    private HashMap<String, String> userInfo;
     private static final String LOGO_PATH = "src/img/slitlogo.png";
     
     public ImageIcon loadLogo() {
@@ -53,27 +53,19 @@ public class StudentGUI {
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public StudentGUI(ArrayList<String> userInfo) {
-        //gets userName in index 0 from ArrayList userInfo
-        userName = userInfo.get(0);
-        //joins fname and lname in index 2 and 3 from ArrayList userInfo
-        nameOfUser = userInfo.get(2) + " " + userInfo.get(3);
+    public StudentGUI(HashMap<String, String> userInfo) {
+        
+        this.userInfo = userInfo;
         tabForside = new TabForside();
         //create the moduloversikt-tab for the given userType
-        tabModuloversikt = new TabModuloversikt(userInfo.get(1), frame);
-        tabFagstoff = new TabFagstoff(frame);
+        tabModuloversikt = new TabModuloversikt(userInfo, frame);
+        tabFagstoff = new TabFagstoff(userInfo, frame);
+        System.out.println(this.userInfo.get("fName"));
         makeFrame();
     }
-    /*
-    public String getNameOfUser(String userName)   {
-        ArrayList<String> queryResults = dbConnector.multiQuery("SELECT fname, ename "
-                                     + "FROM User WHERE userName = " + userName +";");
-        String returnString = null;
-        for(String string : queryResults)   {
-            returnString += string;
-        }
-        return returnString;
-    }*/
+    public String getUserInfo(String key)   {
+        return userInfo.get(key);
+    }
     
     public class MainFrame extends JFrame {
         @Override
@@ -108,8 +100,9 @@ public class StudentGUI {
      * Kaller også makeTabs().
      */
     public void makeFrame() {
-        frame = new MainFrame("SLIT - " + nameOfUser);
-        //frame = new JFrame("SLIT - " + nameOfUser);
+        String fName = getUserInfo("fName");
+        String lName = getUserInfo("lName");
+        frame = new MainFrame("SLIT - " + fName + " " + lName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
@@ -157,7 +150,9 @@ public class StudentGUI {
         JLabel logoLabel = new JLabel(loadLogo());
         content.add(logoLabel, BorderLayout.CENTER);
 
-        JButton nameButton = new JButton(nameOfUser);
+        String fName = getUserInfo("fName");
+        String lName = getUserInfo("lName");
+        JButton nameButton = new JButton(fName + " " + lName);
         //content.add(nameButton, BorderLayout.EAST);
         content.add(nameButton, BorderLayout.LINE_END);
 

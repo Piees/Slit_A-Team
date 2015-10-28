@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import slitcommon.DeliveryStatus;
 /**
  *
@@ -114,10 +115,10 @@ public class dbConnector implements dbConnectorRemote {
      * 
      */
     @Override
-    public ArrayList<String> login(String userName, String pwd) {
+    public HashMap<String, String> login(String userName, String pwd) {
         String loginQuery = "SELECT * FROM User WHERE userName=? and pwd=?";
         Connection dbConnection = dbConnection();
-        ArrayList<String> loginResults = new ArrayList<>();
+        HashMap<String, String> userHashMap = new HashMap<>();
         try {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(loginQuery);
@@ -126,20 +127,20 @@ public class dbConnector implements dbConnectorRemote {
             ResultSet rs = ps.executeQuery();
             // If true then the username + password was a match
             if (rs.next()) {
-                loginResults.add(userName);
-                loginResults.add(rs.getString("userType"));
-                loginResults.add(rs.getString("fname"));
-                loginResults.add(rs.getString("lname"));
+                userHashMap.put("userName", userName);
+                userHashMap.put("userType", rs.getString("userType"));
+                userHashMap.put("fName", rs.getString("fName"));
+                userHashMap.put("lName", rs.getString("lName"));
+                userHashMap.put("mail", rs.getString("mail"));
             } 
             else {
-                loginResults.add("Username Password combination invalid");              
+                userHashMap.put("error1", "Username Password combination invalid");              
             }   
         } 
         catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
-            loginResults.add(ex.getMessage());
         }
-        return loginResults;
+        return userHashMap;
     }
     
     @Override
