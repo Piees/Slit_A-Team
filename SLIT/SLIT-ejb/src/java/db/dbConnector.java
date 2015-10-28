@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
-
+import slitcommon.DeliveryStatus;
 /**
  *
  * @author piees
@@ -205,6 +205,9 @@ public class dbConnector implements dbConnectorRemote {
                 }           
                 else if (values.get(index) instanceof Timestamp) {
                     ps.setTimestamp(i,(Timestamp) values.get(index)); 
+                }
+                else if (values.get(index) instanceof DeliveryStatus) {
+                    ps.setString(i, DeliveryStatus.IKKESETT.toString());
                 }
                 else {
                     System.out.println("INVALID OBJECT TYPE!");

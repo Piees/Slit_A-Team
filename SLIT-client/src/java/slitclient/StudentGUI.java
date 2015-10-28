@@ -61,7 +61,7 @@ public class StudentGUI {
         tabForside = new TabForside();
         //create the moduloversikt-tab for the given userType
         tabModuloversikt = new TabModuloversikt(userInfo.get(1), frame);
-        tabFagstoff = new TabFagstoff();
+        tabFagstoff = new TabFagstoff(frame);
         makeFrame();
     }
     /*

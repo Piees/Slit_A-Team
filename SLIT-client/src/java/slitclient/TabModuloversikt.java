@@ -9,6 +9,7 @@ package slitclient;
 import db.dbConnectorRemote;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.jdesktop.swingx.JXPanel;
@@ -31,7 +33,7 @@ public class TabModuloversikt {
     private final int IS109 = 5;
     private final int IS110 = 10;
     private String userType;
-    private String userName;
+    private String userName = "haakog14";
     private JFrame frame;
     
     public TabModuloversikt(String userType, JFrame frame)   {
@@ -107,7 +109,7 @@ public class TabModuloversikt {
                     modulPane = new JXTaskPane(moduls.get(0) + "    Ikke levert");
                 }
                 modulPane.setCollapsed(true);
-                addContent(moduls, modulPane);
+                addContent(moduls, modulPane, i);
                 modulListContainer.add(modulPane);
                 i++;
                 }
@@ -117,7 +119,7 @@ public class TabModuloversikt {
                 modulPane = new JXTaskPane("Modul " + moduls.get(0) + "         "
                             + numberOfDeliveries + "/" + numberOfStudents + " innleveringer");
                 modulPane.setCollapsed(true);
-                addContent(moduls, modulPane);
+                addContent(moduls, modulPane, i);
                 modulListContainer.add(modulPane);
                 i++;
                 }
@@ -125,12 +127,64 @@ public class TabModuloversikt {
         
         return modulListContainer;
     }
-    public void addContent(ArrayList<String> content, JXTaskPane modulPane)   {
+    public void addContent(ArrayList<String> content, JXTaskPane modulPane, int i)   {
         for(String string : content)    {
             JLabel label = new JLabel(string);
             modulPane.add(label);
         }
+            // UPLOAD DELIVERY BUTTON
+        if (userType.equals("student")) {
+            JButton uploadDeliveryButton = new JButton("Opplast oppgave");
+            modulPane.add(uploadDeliveryButton);
+            uploadDeliveryButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    addDeliveryDialog(i);
+                }
+            });
+        }  
+        
     }
+    
+    private void addDeliveryDialog(int i) {
+        GUIFileUploader fileUploader = new GUIFileUploader();
+        
+        JDialog addDeliveryDialog = new JDialog();
+        addDeliveryDialog.setLayout(new GridLayout(0, 1));
+        JPanel contentpane = (JPanel) addDeliveryDialog.getContentPane();
+        
+        JLabel deliveryFile = new JLabel("Ingen fil valgt");
+        
+        JButton chooseFileButton = new JButton("Velg fil");
+        JButton uploadDeliveryButton = new JButton("Last opp innlevering");
+        
+        contentpane.add(deliveryFile);
+        contentpane.add(chooseFileButton);
+        contentpane.add(uploadDeliveryButton);
+        
+        addDeliveryDialog.pack();
+        addDeliveryDialog.setVisible(true);
+        
+        chooseFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              deliveryFile.setText(fileUploader.startFileExplorer(frame));
+            }
+        });
+        
+        uploadDeliveryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (deliveryFile.getText().equals("Ingen fil valgt")) {
+                    JOptionPane.showMessageDialog(null, deliveryFile.getText()); 
+                    }
+                else {
+                    JOptionPane.showMessageDialog(null, fileUploader.uploadDelivery(userName, i));            
+                }
+            }
+        });
+    }
+    
     
 //    public JLabel testQuery()     {
 //        EJBConnector ejbConnector = new EJBConnector();
@@ -211,5 +265,3 @@ public class TabModuloversikt {
         createModulDialog.setVisible(true);
     }
 }
-        
-        

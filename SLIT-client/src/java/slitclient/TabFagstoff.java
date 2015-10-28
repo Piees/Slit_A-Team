@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,9 +21,9 @@ import javax.swing.JTextField;
  * @author Arild
  */
 public class TabFagstoff {
-    
-    public TabFagstoff()    {
-        
+    private JFrame frame;
+    public TabFagstoff(JFrame frame)    {
+        this.frame = frame;
     }
     /**
      * Dette er taben for fagstoff. Foreløpig er den helt tom.
@@ -47,7 +48,7 @@ public class TabFagstoff {
     private void addResourceDialog() {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
-        JDialog addResourceDialog = new JDialog();
+        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs", true);
         addResourceDialog.setLayout(new GridLayout(0, 1));
         JPanel contentpane = (JPanel) addResourceDialog.getContentPane();
         
@@ -72,7 +73,7 @@ public class TabFagstoff {
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              resourceFile.setText(fileUploader.startFileExplorer());
+              resourceFile.setText(fileUploader.startFileExplorer(frame));
             }
         });
         

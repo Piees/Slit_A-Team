@@ -5,6 +5,7 @@
  */
 package slitclient;
 
+import slitcommon.DeliveryStatus;
 import db.dbConnectorRemote;
 import java.io.File;
 import java.util.ArrayList;
@@ -18,15 +19,13 @@ import slitclient.EJBConnector;
 public class GUIFileUploader {
     private File file;
   
-    public String startFileExplorer() {
-        JFrame frame = new JFrame("Java Swing Examples");
-        frame.setVisible(true);  
-
+    public String startFileExplorer(JFrame frame) {
+        
         final JFileChooser fileDialog = new JFileChooser();
         int returnVal = fileDialog.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = fileDialog.getSelectedFile();
-        return file.getName();   
+        return file.getName();
         }
         else{
             return ("Ingen fil valgt");
@@ -65,10 +64,28 @@ public class GUIFileUploader {
         return uploader.insertIntoDB("Resources", columns, values);
 
     }
-    /*
-     * Se metoden over + "TabFagtstoff.addResourceButton" for tips til implementasjon
-    public String uploadDelivery(parametere) {
-        return uploader.insertIntoDB("Delivery", columns, values);
+    public String uploadDelivery(String userName, int idModul) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote uploader = ejbConnector.getEjbRemote();
+        String table = "Delivery";
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<Object> values = new ArrayList<>();
+        columns.add("deliveryFile");
+        values.add(file);
+        columns.add("deliveredBy");
+        values.add(userName);
+        columns.add("idModul");
+        values.add(idModul);
+        columns.add("deliveryStatus");
+        values.add(DeliveryStatus.IKKESETT);
+        if(0 < uploader.countRows("*", "Delivery WHERE idModul = " + idModul + " AND deliveredBy = '" + userName +"';"))   {
+            return "Du har allerede levert inn.";
+        }
+        else    {
+            return uploader.insertIntoDB(table, columns, values);
+        }
     }
-    */        
+
+  
+       
 }
