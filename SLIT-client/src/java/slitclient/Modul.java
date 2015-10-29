@@ -15,10 +15,10 @@ import org.jdesktop.swingx.JXLabel;
  * @author Arild
  */
 public class Modul {
-    String name;
-    JPanel modulContent;
-    int status;
-    boolean delivered;
+    private String name;
+    private JPanel modulContent;
+    private int status;
+    private boolean delivered;
     
     public Modul(String name, JPanel modulContent) {
         this.name = name;

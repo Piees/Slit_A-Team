@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -39,32 +40,26 @@ import javax.swing.JTabbedPane;
  */
 public class TeacherGUI {
 
-    JFrame frame;
-    TabForside tabForside;
-    TabModuloversikt tabModuloversikt;
-    TabFagstoff tabFagstoff;
-    String userName;
-    String nameOfUser;
+    private JFrame frame;
+    private TabForside tabForside;
+    private TabModuloversikt tabModuloversikt;
+    private TabFagstoff tabFagstoff;
+    private HashMap<String, String> userInfo;
 
     /**
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public TeacherGUI(ArrayList<String> userInfo) {
-        //gets userName from index 0 in ArrayList userInfo
-        userName = userInfo.get(0);
-        //joins fname and lname from index 1 and 2 in ArrayList userInfo
-        nameOfUser = userInfo.get(2) + " " + userInfo.get(3);
+    public TeacherGUI(HashMap<String, String> userInfo) {
+        this.userInfo = userInfo;
         tabForside = new TabForside();
         //create the moduloversikt-tab for the given userType
-        tabModuloversikt = new TabModuloversikt(userInfo.get(1), frame);
-        tabFagstoff = new TabFagstoff();
+        tabModuloversikt = new TabModuloversikt(userInfo, frame);
+        tabFagstoff = new TabFagstoff(userInfo, frame);
         makeFrame();
     }
-    /*
-    public String getNameOfUser(String userName)   {
-        String returnString = dbConnector.multiQuery("SELECT fname, ename FROM User where userName = " + userName +";");
-        return returnString;
+    public String getUserInfo(String key)   {
+        return userInfo.get(key);
     }
     /**
      * Lager vinduet. Vinduet har GridBagLayout (enn så lenge i hvert fall).
@@ -72,7 +67,9 @@ public class TeacherGUI {
      * Kaller også makeTabs().
      */
     public void makeFrame() {
-        frame = new JFrame("SLIT - " + nameOfUser);
+        String fName = getUserInfo("fName");
+        String lName = getUserInfo("lName");
+        frame = new JFrame("SLIT - " + fName + " " + lName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
@@ -118,8 +115,9 @@ public class TeacherGUI {
         JLabel logoLabel = new JLabel("LOGO");
         content.add(logoLabel, BorderLayout.CENTER);
 
-        JButton nameButton = new JButton(nameOfUser);
-        content.add(nameButton, BorderLayout.EAST);
+        String fName = getUserInfo("fName");
+        String lName = getUserInfo("lName");
+        JButton nameButton = new JButton(fName + " " + lName);
 
         return content;
         

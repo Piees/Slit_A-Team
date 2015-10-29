@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import db.dbConnector;
 import db.dbConnectorRemote;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import prototypes.CreateUser;
 
@@ -75,17 +76,16 @@ public class Login {
                 
                 EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                ArrayList<String> loginResult = dbConnector.login(userName, pwd);
+                HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
               
-                if (loginResult.size() == 4) {
-                    // index 0 == userName, index 1 == userType, index 2 = fname, index 3 = lname
-                    if (loginResult.get(1).equals("student")) {
+                if (loginResult.size() > 1) {
+                    if (loginResult.get("userType").equals("student")) {
                         //create StudentGUI object with the list
                         StudentGUI studentGUI = new StudentGUI(loginResult);
                         frame.setVisible(false);
                     }
-                    else if (loginResult.get(1).equals("teacher") || 
-                            loginResult.get(1).equals("helpTeacher")) {
+                    else if (loginResult.get("userType").equals("teacher") || 
+                            loginResult.get("userType").equals("helpTeacher")) {
                         //create TeacherGUI object with the list
                         TeacherGUI teacherGUI = new TeacherGUI(loginResult);
                         frame.setVisible(false);
@@ -96,7 +96,7 @@ public class Login {
                     }
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, loginResult.get(0));    
+                    JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
                 }
             }
         });

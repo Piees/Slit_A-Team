@@ -7,6 +7,7 @@ package db;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.ejb.Remote;
 
 /**
@@ -25,11 +26,11 @@ public interface dbConnectorRemote {
     
     public Connection dbConnection();
     
-    public ArrayList<String> login(String userName, String pwd);
+    public HashMap<String, String> login(String userName, String pwd);
     
     public ArrayList<String> multiQuery(String query);
 
-    public void insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
+    public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
     
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
