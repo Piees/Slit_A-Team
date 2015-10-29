@@ -185,33 +185,6 @@ public class TabModuloversikt {
             }
         });
     }
-    
-    
-//    public JLabel testQuery()     {
-//        EJBConnector ejbConnector = new EJBConnector();
-//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-//        ArrayList<String> columns = new ArrayList<>();
-//        ArrayList<String> tables = new ArrayList<>();
-//        ArrayList<String> where = new ArrayList<>();
-//        columns.add("*");
-//        tables.add("User");
-//        where.add("userName = 'arildh14'");
-//        ArrayList<String> queryResults = dbConnector.multiQuery(columns, tables, where);
-//        String labelString = "";
-//        for (String string : queryResults)  {
-//            labelString += string;
-//        }
-//        JLabel label = new JLabel(labelString);
-//        return label;
-//    }
-//    public JLabel testQuery2()     {
-//        EJBConnector ejbConnector = new EJBConnector();
-//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-//        String query = "SELECT description FROM Modul WHERE idModul = '2';";
-//        JLabel label = new JLabel();
-//        label.setText(dbConnector.singleQuery(query, "description"));
-//        return label;
-//    }
     public void createModul()   {
         JDialog createModulDialog = new JDialog(frame, true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();

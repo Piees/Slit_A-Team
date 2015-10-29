@@ -5,22 +5,8 @@
  */
 package slitclient;
 
-import db.dbConnector;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
-
-<<<<<<< HEAD:SLIT-client/src/java/slitclient/TeacherGUI.java
-=======
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 
->>>>>>> db0854c3c3873361c51281730f020d7e228ee6af:GUI/src/my/GUI/MakeGUI.java
 
 /**
  *
