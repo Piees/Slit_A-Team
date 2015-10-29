@@ -161,7 +161,7 @@ public class TabModuloversikt {
         JDialog createModulDialog = new JDialog(frame, true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
         JTextField createModulDesc = new JTextField("Modulbeskrivelse");
-        JTextField createModulLearningObj = new JTextField("Læringsmål i denne modulen");
+        JTextField createModulLearningObj = new JTextField("LÃ¦ringsmÃ¥l i denne modulen");
         JTextField createModulRes = new JTextField("Ressurser");
         JTextField createModulEx = new JTextField("Oppgave");
         JTextField createModulEval = new JTextField("Godkjenning");

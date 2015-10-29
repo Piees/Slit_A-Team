@@ -5,7 +5,6 @@
  */
 package db;
 
-import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
 import javax.ejb.Remote;
@@ -37,4 +36,7 @@ public interface dbConnectorRemote {
     
     public int countRows(String column, String tableName);     
     
+    public ArrayList<ArrayList> getUserNotifications(String query, String userName);
+    
+    public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
 }

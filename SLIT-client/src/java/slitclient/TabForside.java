@@ -6,6 +6,7 @@
 package slitclient;
 
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,6 +18,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -37,13 +43,18 @@ public class TabForside {
         GridBagLayout tab1Layout = new GridBagLayout();
         tab1Panel.setLayout(tab1Layout);
         
-        JPanel nextLecturePanel = makeNextLecturePanel();
+        JPanel nextLecturePanel = makeLecturePanel();
+        JScrollPane scrollLecturePanel = new JScrollPane(nextLecturePanel);
         GridBagConstraints gbcNLP = new GridBagConstraints();
+        scrollLecturePanel.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        scrollLecturePanel.setHorizontalScrollBarPolicy ( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         gbcNLP.gridx = 0;
-        gbcNLP.gridy = 1;
+        gbcNLP.gridy = 0; //1
+        gbcNLP.gridheight = 3;
+        gbcNLP.insets = new Insets(-80, -125, -50, 15);
         gbcNLP.fill = GridBagConstraints.VERTICAL;
-        tab1Layout.setConstraints(nextLecturePanel, gbcNLP);
-        tab1Panel.add(nextLecturePanel);
+        tab1Layout.setConstraints(scrollLecturePanel, gbcNLP); //nextlecpan
+        tab1Panel.add(scrollLecturePanel); //nextlecpan
 
         JPanel messagesPanel = makeMessagesPanel();
         GridBagConstraints gbcMP = new GridBagConstraints();
@@ -55,42 +66,80 @@ public class TabForside {
         tab1Panel.add(messagesPanel);
 
         JPanel contactPanel = makeContactPanel();
+        JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
         GridBagConstraints gbcCP = new GridBagConstraints();
+        scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         gbcCP.gridx = 2;
         gbcCP.gridy = 1;
-        tab1Layout.setConstraints(contactPanel, gbcCP);
-        tab1Panel.add(contactPanel);
+        gbcCP.gridheight = 2;
+        gbcCP.insets = new Insets(-150, 0, 10, -225);
+        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
+        tab1Panel.add(scrollContactPanel);
 
         JPanel activityPanel = makeActivityPanel();
         GridBagConstraints gbcAP = new GridBagConstraints();
         gbcAP.gridx = 2;
-        gbcAP.gridy = 2;
+        gbcAP.gridy = 3;
         gbcAP.fill = GridBagConstraints.VERTICAL;
         tab1Layout.setConstraints(activityPanel, gbcAP);
         tab1Panel.add(activityPanel);
     return tab1Panel;
     }    
     
+    
+    public class ForsideTab extends JPanel {
+        
+        @Override
+        public Dimension getMinimumSize() {
+            return new Dimension(720, 450);
+        }
+        
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(720, 450);
+        }
+        
+        public ForsideTab() {
+        
+        }
+    }
+    
+    
     /**
      * Lager nextLecturePanelet som er inni forside-taben. Returnerer til makeForsideTab()
      * @return JPanel nextLecturePanel panelet med neste forelesninger
      */
-    private JPanel makeNextLecturePanel()    {
-        JPanel nextLecturePanel = new JPanel();
-        nextLecturePanel.setLayout(new BoxLayout(nextLecturePanel, BoxLayout.Y_AXIS));
+    public class LecturePanel extends JPanel   {
+       
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(250, 500);
+        }
+        
+        public LecturePanel() {
+            //setMinimumSize(new Dimension(200, 25));
+            setBorder(new TitledBorder (new EtchedBorder(), 
+                "Neste Forelesning"));
+        }
+    }
+            
+    public JPanel makeLecturePanel() {
+        LecturePanel LecturePanel = new LecturePanel();
+        LecturePanel.setLayout(new BoxLayout(LecturePanel, BoxLayout.Y_AXIS));
 
-        JLabel nextLectureHeader = new JLabel("Neste forelesning:");
-        nextLecturePanel.add(nextLectureHeader);
+        /*JLabel nextLectureHeader = new JLabel("Neste forelesning:");
+        LecturePanel.add(nextLectureHeader);*/
 
         JLabel nextLecture1 = new JLabel("<html><u>Onsdag 23. september,</u><br>08:15-11:00."
                 + "<br>Tema: Abstraksjon</html>");
-        nextLecturePanel.add(nextLecture1);
+        LecturePanel.add(nextLecture1);
 
         JLabel nextLecture2 = new JLabel("<html><u>Tirsdag 01. oktober,</u><br>08:15-10:00."
                 + "<br>Tema: Modularisering</html>");
-        nextLecturePanel.add(nextLecture2);
-    return nextLecturePanel;
-    }
+        LecturePanel.add(nextLecture2);
+        return LecturePanel;
+        }
    
     /**
      * Lager messagesPanel som er inni forside-taben. Returnerer til makeForsideTab()
@@ -122,15 +171,24 @@ public class TabForside {
         GridBagLayout contactLayout = new GridBagLayout();
         contactPanel.setLayout(contactLayout);
 
+        GridBagConstraints gbcSearchField = new GridBagConstraints();
+        JTextField searchField = new JTextField(20);
+        gbcSearchField.gridx = 0;
+        gbcSearchField.gridy = 0;
+        gbcSearchField.gridwidth = 2;
+        contactLayout.setConstraints(searchField, gbcSearchField);
+        //searchField.addActionListener(new returnSearchResults); //tbi
+        contactPanel.add(searchField);        
+        
         GridBagConstraints gbcContact = new GridBagConstraints();
-        JButton contactLecturer1 = new JButton("<html>Hallgeir Nilsen,<br>"
+        JLabel contactLecturer1 = new JLabel("<html>Hallgeir Nilsen,<br>"
                 + "hallgeir.nilsen@uia.no,<br>"
                 + "Kontor: H1 011</html>");
         String mailHallgeir = "hallgeir.nilsen@uia.no";
         gbcContact.gridx = 0;
-        gbcContact.gridy = 0;
+        gbcContact.gridy = 1;
         contactLayout.setConstraints(contactLecturer1, gbcContact);
-        contactLecturer1.addActionListener(new sendMailActionListener(mailHallgeir));
+        //contactLecturer1.addActionListener(new sendMailActionListener(mailHallgeir));
         contactPanel.add(contactLecturer1);
 
         JButton contactLecturer2 = new JButton("<html>Even Larsen,<br>"
@@ -138,7 +196,7 @@ public class TabForside {
                 + "Kontor: H1 007</html>");
         String mailEven = "even.larsen@uia.no";
         gbcContact.gridx = 1;
-        gbcContact.gridy = 0;
+        gbcContact.gridy = 1;
         contactLayout.setConstraints(contactLecturer2, gbcContact);
         contactLecturer2.addActionListener(new sendMailActionListener(mailEven));
         contactPanel.add(contactLecturer2);
@@ -147,7 +205,7 @@ public class TabForside {
                 + "arildh93@gmail.com</html>");
         String mailArild = "arildh93@gmail.com";
         gbcContact.gridx = 0;
-        gbcContact.gridy = 1;
+        gbcContact.gridy = 2;
         contactLayout.setConstraints(contactTA1, gbcContact);
         contactTA1.addActionListener(new sendMailActionListener(mailArild));
         contactPanel.add(contactTA1);
@@ -156,7 +214,7 @@ public class TabForside {
                 + "robin@example.com</html>");
         String mailRobin = "robin@example.com";
         gbcContact.gridx = 1;
-        gbcContact.gridy = 1;
+        gbcContact.gridy = 2;
         contactLayout.setConstraints(contactTA2, gbcContact);
         contactTA2.addActionListener(new sendMailActionListener(mailRobin));
         contactPanel.add(contactTA2);

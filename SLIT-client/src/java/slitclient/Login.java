@@ -20,6 +20,8 @@ import db.dbConnector;
 import db.dbConnectorRemote;
 import java.util.ArrayList;
 
+import prototypes.CreateUser;
+
 /**
  *
  * @author Viktor Setervang
