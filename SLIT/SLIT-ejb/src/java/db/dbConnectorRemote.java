@@ -37,7 +37,7 @@ public interface dbConnectorRemote {
     
     public int countRows(String column, String tableName);     
     
-    public ArrayList<ArrayList> getUserNotifications(String query, String userName);
+    public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName);
     
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
 }
