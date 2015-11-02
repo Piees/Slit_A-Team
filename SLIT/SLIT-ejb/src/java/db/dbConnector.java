@@ -300,9 +300,21 @@ public class dbConnector implements dbConnectorRemote {
     } 
     
     @Override
-    public ArrayList<ArrayList> getUserNotifications(String query, String userName) {
+    public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
+        String query = "SELECT * " +
+                       "FROM Notification " +
+                       "WHERE userName=? " +
+                       "AND Notification.seen=? ";
+        
+        query += queryPart2;
+        //               "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+        
+        // TRENGER 2 forskjellige resultat sett, ett med før og ett mer etter CURRENT_TIMESTAMP()
+        // DET ETTER CURRENT_TIMESTAMP() SKAL PUTTES INN I ASYNC NOTIFICATION METODEN.
+                       
+        
         Connection dbConnection = dbConnection();
-        ArrayList<ArrayList> notifications = new ArrayList<>();
+        ArrayList<HashMap> notifications = new ArrayList<>();
         try {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(query);
@@ -310,14 +322,14 @@ public class dbConnector implements dbConnectorRemote {
             ps.setBoolean(2, false);
             ResultSet rs = ps.executeQuery();
             while (rs.next())   {
-                ArrayList<Object> notification = new ArrayList<>();
+                HashMap<String, Object> notification = new HashMap<>();
                 int idNotification = rs.getInt("idNotification");
                 Timestamp timestamp =  rs.getTimestamp("notificationTime");
                 String notificationText = rs.getString("notificationText");
                 
-                notification.add(idNotification);
-                notification.add(timestamp);
-                notification.add(notificationText);
+                notification.put("idNotification", idNotification);
+                notification.put("timestamp", timestamp);
+                notification.put("notificationText", notificationText);
                 notifications.add(notification);
                 //String notificationTime = timestamp.toString();
                 //notifications.add(notificationTime + ":\n" + notificationText);           
@@ -346,4 +358,5 @@ public class dbConnector implements dbConnectorRemote {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 }

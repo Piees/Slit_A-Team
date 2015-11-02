@@ -20,7 +20,7 @@ public class GUIFileUploader {
     private File file;
   
     public String startFileExplorer() {
-        JFrame frame = new JFrame("Java Swing Examples");
+        JFrame frame = new JFrame("File Explorer");
         frame.setVisible(true);  
         return startFileExplorer(frame);
     }
