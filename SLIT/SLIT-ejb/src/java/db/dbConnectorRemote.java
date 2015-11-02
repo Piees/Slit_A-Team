@@ -5,7 +5,9 @@
  */
 package db;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.ejb.Remote;
@@ -24,6 +26,10 @@ public interface dbConnectorRemote {
      */
     public String singleQuery(String sql, String colName);
     
+    /**
+     *
+     * @return
+     */
     public Connection dbConnection();
     
     public HashMap<String, String> login(String userName, String pwd);
@@ -40,4 +46,11 @@ public interface dbConnectorRemote {
     public ArrayList<ArrayList> getUserNotifications(String query, String userName);
     
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
+
+     ///TEST_PASSORDHASH
+    public boolean addNewUser() throws SQLException, NoSuchAlgorithmException;
+
+
+
+
 }
