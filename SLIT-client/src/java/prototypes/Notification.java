@@ -194,9 +194,9 @@ public class Notification {
                     values.add(text);
                     System.out.println(dbConnector.insertIntoDB("Notification", columns, values));
                     System.out.println("ugly hack inc!");
-                    // DETTE FÅR PROGRAMMET TIL Å STOPPE OPP I 1 sekund, 
-                    // SLIK AT DB MEST SANSYNLIGVIS REKKER Å OPPDATERE SEG(INGEN GARANTI), 
-                    // VI BØR NOK IKKE HA LIGNENDE LOGIKK I DEN ENDELIGE VERSJONEN.
+                    // DETTE FÃ˜R PROGRAMMET TIL Ã… STOPPE OPP I 1 sekund, 
+                    // SLIK AT DB MEST SANSYNLIGVIS REKKER Ã… OPPDATERE SEG(INGEN GARANTI), 
+                    // VI BÃ˜R NOK IKKE HA LIGNENDE LOGIKK I DEN ENDELIGE VERSJONEN.
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ex) {

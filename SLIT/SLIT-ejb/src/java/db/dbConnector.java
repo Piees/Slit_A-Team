@@ -15,12 +15,22 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import slitcommon.DeliveryStatus;
+import com.google.common.collect.ImmutableMap;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.Map.Entry;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 /**
  *
  * @author piees
@@ -35,6 +45,9 @@ public class dbConnector implements dbConnectorRemote {
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
+    ArrayList<String> updateUsersArrayList;
+    private Map<String, String> userMap;
+    public static HashMap<String, Map> allUsersHashMap;
     
     @Override
     public Connection dbConnection() {        
@@ -226,6 +239,8 @@ public class dbConnector implements dbConnectorRemote {
             return "Opplasting feilet!";
         }
     }
+    
+    @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
         String numberOfRows = "";
@@ -357,6 +372,37 @@ public class dbConnector implements dbConnectorRemote {
         } catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    @Override
+    public Map<String, String> eachUserMap(int fromIndex) {
+        userMap = ImmutableMap.of(
+                "userType", updateUsersArrayList.get(fromIndex), //fromIndex (+1,2,3,4)
+                "mail", updateUsersArrayList.get(fromIndex + 1),
+                "fname", updateUsersArrayList.get(fromIndex + 2),
+                "lname", updateUsersArrayList.get(fromIndex + 3),
+                "userName", updateUsersArrayList.get(fromIndex + 4)
+            );
+        return userMap;
+    }
+    @Override
+    public void updateUsersHashMap() {
+        ArrayList<String> select = new ArrayList<>(Arrays.asList("userType,"
+                + "mail, fname, lname, userName"));
+        ArrayList<String> from = new ArrayList<>(Arrays.asList("User"));
+        ArrayList<String> where = new ArrayList<>(Arrays.asList("userName != 'null'"));
+        updateUsersArrayList = multiQuery(select, from, where);
+        allUsersHashMap = new HashMap<>();
+        for(int i = 0; i < updateUsersArrayList.size(); i += 5) {
+            Map<String, String> updateUserHashMapHelper = eachUserMap(i);
+            allUsersHashMap.put(updateUserHashMapHelper.get("userName"), 
+                        updateUserHashMapHelper);
+        }
+    }
+    
+    //@Override
+    public HashMap<String, Map> getAllUsersHashMap() {
+        return allUsersHashMap;
     }
     
 }

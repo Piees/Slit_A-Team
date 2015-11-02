@@ -77,7 +77,7 @@ public class TabFagstoff {
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Før start fileexplorer");
+                System.out.println("FÃ¸r start fileexplorer");
                 resourceFile.setText(fileUploader.startFileExplorer(frame));
             }
         });
@@ -87,7 +87,7 @@ public class TabFagstoff {
             public void actionPerformed(ActionEvent e) {
                 if (title.getText().length() > 0) {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
-                        JOptionPane.showMessageDialog(null, "Et av ressursfeltene må utfylles"); 
+                        JOptionPane.showMessageDialog(null, "Et av ressursfeltene mÃ¥ utfylles"); 
                     }
                     else {
                         JOptionPane.showMessageDialog(null, fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText()));            
