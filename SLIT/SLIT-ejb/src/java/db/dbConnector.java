@@ -314,6 +314,60 @@ public class dbConnector implements dbConnectorRemote {
         return queryResults;
     } 
     
+//    @Override
+//    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+//            tables, ArrayList<String> where)    {
+//        String query = "SELECT ";
+//        HashMap<String, String> queryResults = new HashMap<>();
+//        
+//        int countColumns = 0;
+//        while(columns.size() > (countColumns +1))   {
+//            query += columns.get(countColumns) + ", ";
+//            countColumns++;
+//        }
+//        query += columns.get(countColumns) + " FROM ";
+//        
+//        int countTables = 0;
+//        while(tables.size() > (countTables +1)) {
+//            query += tables.get(countTables) + ", ";
+//            countTables++;
+//        }
+//        query += tables.get(countTables);
+//        if(where != null)    {
+//            int countWhere = 0;
+//            query += " WHERE ";
+//                while(where.size() > (countWhere +1))   {
+//                query += where.get(countWhere) + ", ";
+//                countWhere ++;
+//                }
+//            query += where.get(countWhere) + ";";
+//        }
+//        else {
+//            query += ";";
+//        }
+//        DBConnection = dbConnection();
+//        try {
+//            System.out.println("try i multi-query metode");
+//            PreparedStatement ps = DBConnection.prepareStatement(query);
+//            System.out.println(ps);
+//            ResultSet rs = ps.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rsmd.getColumnCount();
+//            while (rs.next())   {
+//                int i = 1;
+//                while (columnCount >= i)    {
+//                    queryResults.put(columns.get(columnCount),rs.getString(i));
+//                    i++;
+//                }
+//            }
+//            System.out.println("QueryResults-liste HER: " + queryResults.size());
+//        }
+//        catch (SQLException e)  {
+//            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+//            System.out.println(e);
+//        }
+//        return queryResults;
+//    } 
     @Override
     public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
         String query = "SELECT * " +
