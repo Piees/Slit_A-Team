@@ -110,33 +110,6 @@ public class Notification {
     }
     
     /**
-     * This method initiate the notification update loop so, that notifications
-     * will be retrieved at a fixed rate.
-     */
-    private void initiateNotificationUpdateLoop() {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                checkForNotifications();
-            }
-        };
-        Timer timer = new Timer();        
-        timer.scheduleAtFixedRate(task, 600000, 600000);
-        timers.add(timer);
-    }
-    
-    
-    /**
-     * Gets the list of timers, especially important to shut them off before
-     * main program/frame shuts down.
-     * 
-     * @returns ArrayList<Timer> timers
-     */
-    public ArrayList<Timer> getTimers() {
-        return timers;
-    }
-    
-    /**
      * This method puts future notification timestamps into a timer.
      * When The timer goes off, the method checkForNotifications will be called.
      */
@@ -204,11 +177,8 @@ public class Notification {
         Set newSet = new HashSet(newFutureNotifications);
         Set oldSet = new HashSet(this.futureNotifications);
         // returns a SetView that only contains the elements that are unique for one Set. 
-        SetView setView = Sets.symmetricDifference(newSet, oldSet);
-        // futureNotifications now keep track of all notifications
+        SetView setView = Sets.symmetricDifference(newSet, oldSet); 
         this.futureNotifications = newFutureNotifications;
-        // newFutureNotifications now only contain the new notifications that
-        // has not been put into a timer yet.
         newFutureNotifications = new ArrayList(setView);
         
         return newFutureNotifications;
