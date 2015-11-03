@@ -76,6 +76,7 @@ public class Login {
                 
                 EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                dbConnector.updateUsersHashMap();
                 HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
               
                 if (loginResult.size() > 1) {

@@ -5,15 +5,22 @@
  */
 package slitclient;
 
+import db.dbConnectorRemote;
+import db.dbConnector;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -30,8 +37,13 @@ import javax.swing.border.TitledBorder;
  */
 public class TabForside {
     
+    dbConnectorRemote dbConnector;
+    
     public TabForside() {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
         
+        this.dbConnector = ejbConnector.getEjbRemote();
+        dbConnector.updateUsersHashMap();
     }
     
     /**
@@ -73,7 +85,7 @@ public class TabForside {
         gbcCP.gridx = 2;
         gbcCP.gridy = 1;
         gbcCP.gridheight = 2;
-        gbcCP.insets = new Insets(-150, 0, 10, -225);
+        gbcCP.insets = new Insets(-350, 0, 10, -200);
         tab1Layout.setConstraints(scrollContactPanel, gbcCP);
         tab1Panel.add(scrollContactPanel);
 
@@ -162,14 +174,60 @@ public class TabForside {
     return messagesPanel;
     }
     
+    public class borderPanel extends JPanel {
+        
+        public borderPanel() {
+            setBorder(new TitledBorder (new EtchedBorder(), 
+                "Kontakter"));
+        }
+    }
+    
     /**
      * Lager contactPanel som er inni forside-taben. Returnerer til makeForsideTab()
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
      */
     private JPanel makeContactPanel()    {
-        JPanel contactPanel = new JPanel();
+        JPanel contactPanel = new borderPanel();
         GridBagLayout contactLayout = new GridBagLayout();
         contactPanel.setLayout(contactLayout);
+        
+        
+        
+        System.out.println("Pre-FISH");
+        int contactHelpery = 1;
+        boolean contactHelperToRight = false;
+//        HashMap<String, Map> fishmap = this.dbConnector.getAllUsersHashMap();
+        for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) { //this.??
+            String key = entry.getKey();
+            String mail = (String) entry.getValue().get("mail");
+            String name = (String) entry.getValue().get("fname") + " " +
+                    entry.getValue().get("lname");
+            int contactHelperx = (contactHelperToRight) ? 1 : 0;
+            GridBagConstraints gbcContact = new GridBagConstraints();
+            JButton contactLabel = new JButton(String.format("<html>%s<br>", name)
+                            + String.format("<a href=''>%s</a></html>", mail)
+            );
+            contactLabel.setOpaque(false);
+            contactLabel.setBackground(Color.LIGHT_GRAY);
+            contactLabel.setToolTipText("Mailto: " + mail);
+            contactLabel.addActionListener(new sendMailActionListener(mail));
+            if(contactHelperToRight) {
+                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, Color.BLACK));
+            } else {
+                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
+            }
+            gbcContact.gridx = contactHelperx;
+            gbcContact.gridy = contactHelpery;
+            gbcContact.ipady = 10;
+            gbcContact.ipadx = 5;
+            gbcContact.anchor = GridBagConstraints.WEST;
+            contactLayout.setConstraints(contactLabel, gbcContact);
+            contactPanel.add(contactLabel);
+            if(contactHelperToRight == true) {
+                contactHelpery +=1;
+            }
+            contactHelperToRight = !contactHelperToRight;
+        }
 
         GridBagConstraints gbcSearchField = new GridBagConstraints();
         JTextField searchField = new JTextField(20);
@@ -178,46 +236,7 @@ public class TabForside {
         gbcSearchField.gridwidth = 2;
         contactLayout.setConstraints(searchField, gbcSearchField);
         //searchField.addActionListener(new returnSearchResults); //tbi
-        contactPanel.add(searchField);        
-        
-        GridBagConstraints gbcContact = new GridBagConstraints();
-        JLabel contactLecturer1 = new JLabel("<html>Hallgeir Nilsen,<br>"
-                + "hallgeir.nilsen@uia.no,<br>"
-                + "Kontor: H1 011</html>");
-        String mailHallgeir = "hallgeir.nilsen@uia.no";
-        gbcContact.gridx = 0;
-        gbcContact.gridy = 1;
-        contactLayout.setConstraints(contactLecturer1, gbcContact);
-        //contactLecturer1.addActionListener(new sendMailActionListener(mailHallgeir));
-        contactPanel.add(contactLecturer1);
-
-        JButton contactLecturer2 = new JButton("<html>Even Larsen,<br>"
-                + "even.larsen@uia.no,<br>"
-                + "Kontor: H1 007</html>");
-        String mailEven = "even.larsen@uia.no";
-        gbcContact.gridx = 1;
-        gbcContact.gridy = 1;
-        contactLayout.setConstraints(contactLecturer2, gbcContact);
-        contactLecturer2.addActionListener(new sendMailActionListener(mailEven));
-        contactPanel.add(contactLecturer2);
-
-        JButton contactTA1 = new JButton("<html>Arild Høyland,<br>"
-                + "arildh93@gmail.com</html>");
-        String mailArild = "arildh93@gmail.com";
-        gbcContact.gridx = 0;
-        gbcContact.gridy = 2;
-        contactLayout.setConstraints(contactTA1, gbcContact);
-        contactTA1.addActionListener(new sendMailActionListener(mailArild));
-        contactPanel.add(contactTA1);
-
-        JButton contactTA2 = new JButton("<html>Robin Rondestvedt,<br>"
-                + "robin@example.com</html>");
-        String mailRobin = "robin@example.com";
-        gbcContact.gridx = 1;
-        gbcContact.gridy = 2;
-        contactLayout.setConstraints(contactTA2, gbcContact);
-        contactTA2.addActionListener(new sendMailActionListener(mailRobin));
-        contactPanel.add(contactTA2);
+        contactPanel.add(searchField); 
     return contactPanel;
     }
     
