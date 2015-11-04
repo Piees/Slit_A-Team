@@ -180,7 +180,7 @@ public class TabModuloversikt {
                 deliveryLine.add(label);
                 lineIndex++;
             }
-            JButton openFileButton = new JButton("Åpne fil");
+            JButton openFileButton = new JButton("Ã…pne fil");
             deliveryLine.add(openFileButton);
             contentPane.add(deliveryLine);
             index += 8;
