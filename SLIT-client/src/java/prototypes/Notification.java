@@ -239,7 +239,7 @@ public class Notification {
             System.out.println(dbConnector.insertIntoDB("Notification", columns, values));
 //            System.out.println("ugly hack inc!");
 //            // DETTE FaaR PROGRAMMET TIL Å STOPPE OPP I 1 sekund, 
-//            // SLIK AT DB MEST SANSYNLIGVIS REKKER åå OPPDATERE SEG(INGEN GARANTI), 
+//            // SLIK AT DB MEST SANSYNLIGVIS REKKER å OPPDATERE SEG(INGEN GARANTI), 
 //            // VI BØR NOK IKKE HA LIGNENDE LOGIKK I DEN ENDELIGE VERSJONEN.
 //            try {
 //                Thread.sleep(1000);
