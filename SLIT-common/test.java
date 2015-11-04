@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package prototypes;
 
 /**
  *
- * @author zteff1
+ * @author hg_9__000
  */
-public class EditUser {
+public class test {
     
 }

@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package prototypes;
+package slitcommon;
 
 /**
  *
- * @author zteff1
+ * @author hg_9__000
  */
-public class EditUser {
+public enum DeliveryStatus {
     
+    IKKESETT, UNDERVURDERING, GODKJENT, IKKEGODKJENT
 }
+
