@@ -52,7 +52,7 @@ public class TabFagstoff {
     private void addResourceDialog() {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
-        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs", true);
+        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");
         addResourceDialog.setLayout(new GridLayout(0, 1));
         JPanel contentpane = (JPanel) addResourceDialog.getContentPane();
         
@@ -77,7 +77,8 @@ public class TabFagstoff {
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              resourceFile.setText(fileUploader.startFileExplorer(frame));
+                System.out.println("Før start fileexplorer");
+                resourceFile.setText(fileUploader.startFileExplorer(frame));
             }
         });
         
@@ -86,7 +87,7 @@ public class TabFagstoff {
             public void actionPerformed(ActionEvent e) {
                 if (title.getText().length() > 0) {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
-                        JOptionPane.showMessageDialog(null, "Et av ressursfeltene m� utfylles"); 
+                        JOptionPane.showMessageDialog(null, "Et av ressursfeltene må utfylles"); 
                     }
                     else {
                         JOptionPane.showMessageDialog(null, fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText()));            
@@ -100,3 +101,4 @@ public class TabFagstoff {
         });
     }
 }
+

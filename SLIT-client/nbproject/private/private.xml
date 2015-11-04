@@ -2,13 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/TabFagstoff.java</file>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/GUIFileUploader.java</file>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/prototypes/Notification.java</file>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/Login.java</file>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/prototypes/HintTextField.java</file>
-        </group>
         <group name="Slit_A-Team">
             <file>file:/C:/Users/hg_9__000/Documents/GitHub/A-Team/Slit_A-Team/SLIT-client/src/java/slitclient/TeacherGUI.java</file>
             <file>file:/C:/Users/hg_9__000/Documents/GitHub/A-Team/Slit_A-Team/SLIT-client/src/java/slitclient/TabModuloversikt.java</file>
@@ -16,6 +9,10 @@
             <file>file:/C:/Users/hg_9__000/Documents/GitHub/A-Team/Slit_A-Team/SLIT-client/src/java/slitclient/StudentGUI.java</file>
             <file>file:/C:/Users/hg_9__000/Documents/GitHub/A-Team/Slit_A-Team/SLIT-client/src/java/slitclient/GUIFileUploader.java</file>
             <file>file:/C:/Users/hg_9__000/Documents/GitHub/A-Team/Slit_A-Team/SLIT-client/src/java/slitclient/Login.java</file>
+        </group>
+        <group name="Slit_A-Team_v2"/>
+        <group>
+            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/Login.java</file>
         </group>
     </open-files>
 </project-private>

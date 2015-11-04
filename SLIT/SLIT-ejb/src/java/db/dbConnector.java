@@ -15,12 +15,22 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import slitcommon.DeliveryStatus;
+import com.google.common.collect.ImmutableMap;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.Map.Entry;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 /**
  *
  * @author piees
@@ -35,6 +45,9 @@ public class dbConnector implements dbConnectorRemote {
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
+    ArrayList<String> updateUsersArrayList;
+    private Map<String, String> userMap;
+    public static HashMap<String, Map> allUsersHashMap;
     
     @Override
     public Connection dbConnection() {        
@@ -226,6 +239,8 @@ public class dbConnector implements dbConnectorRemote {
             return "Opplasting feilet!";
         }
     }
+    
+    @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
         String numberOfRows = "";
@@ -299,10 +314,76 @@ public class dbConnector implements dbConnectorRemote {
         return queryResults;
     } 
     
+//    @Override
+//    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+//            tables, ArrayList<String> where)    {
+//        String query = "SELECT ";
+//        HashMap<String, String> queryResults = new HashMap<>();
+//        
+//        int countColumns = 0;
+//        while(columns.size() > (countColumns +1))   {
+//            query += columns.get(countColumns) + ", ";
+//            countColumns++;
+//        }
+//        query += columns.get(countColumns) + " FROM ";
+//        
+//        int countTables = 0;
+//        while(tables.size() > (countTables +1)) {
+//            query += tables.get(countTables) + ", ";
+//            countTables++;
+//        }
+//        query += tables.get(countTables);
+//        if(where != null)    {
+//            int countWhere = 0;
+//            query += " WHERE ";
+//                while(where.size() > (countWhere +1))   {
+//                query += where.get(countWhere) + ", ";
+//                countWhere ++;
+//                }
+//            query += where.get(countWhere) + ";";
+//        }
+//        else {
+//            query += ";";
+//        }
+//        DBConnection = dbConnection();
+//        try {
+//            System.out.println("try i multi-query metode");
+//            PreparedStatement ps = DBConnection.prepareStatement(query);
+//            System.out.println(ps);
+//            ResultSet rs = ps.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rsmd.getColumnCount();
+//            while (rs.next())   {
+//                int i = 1;
+//                while (columnCount >= i)    {
+//                    queryResults.put(columns.get(columnCount),rs.getString(i));
+//                    i++;
+//                }
+//            }
+//            System.out.println("QueryResults-liste HER: " + queryResults.size());
+//        }
+//        catch (SQLException e)  {
+//            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+//            System.out.println(e);
+//        }
+//        return queryResults;
+//    } 
     @Override
-    public ArrayList<ArrayList> getUserNotifications(String query, String userName) {
+    public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
+        String query = "SELECT * " +
+                       "FROM Notification " +
+                       "WHERE userName=? " +
+                       "AND Notification.seen=? ";
+        
+        query += queryPart2;
+        //               "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+        
+        // TRENGER 2 forskjellige resultat sett, ett med før og ett mer etter CURRENT_TIMESTAMP()
+        // DET ETTER CURRENT_TIMESTAMP() SKAL PUTTES INN I ASYNC NOTIFICATION METODEN.
+                       
+        
         Connection dbConnection = dbConnection();
-        ArrayList<ArrayList> notifications = new ArrayList<>();
+        ArrayList<HashMap> notifications = new ArrayList<>();
         try {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(query);
@@ -310,14 +391,14 @@ public class dbConnector implements dbConnectorRemote {
             ps.setBoolean(2, false);
             ResultSet rs = ps.executeQuery();
             while (rs.next())   {
-                ArrayList<Object> notification = new ArrayList<>();
+                HashMap<String, Object> notification = new HashMap<>();
                 int idNotification = rs.getInt("idNotification");
                 Timestamp timestamp =  rs.getTimestamp("notificationTime");
                 String notificationText = rs.getString("notificationText");
                 
-                notification.add(idNotification);
-                notification.add(timestamp);
-                notification.add(notificationText);
+                notification.put("idNotification", idNotification);
+                notification.put("timestamp", timestamp);
+                notification.put("notificationText", notificationText);
                 notifications.add(notification);
                 //String notificationTime = timestamp.toString();
                 //notifications.add(notificationTime + ":\n" + notificationText);           
@@ -346,4 +427,36 @@ public class dbConnector implements dbConnectorRemote {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    @Override
+    public Map<String, String> eachUserMap(int fromIndex) {
+        userMap = ImmutableMap.of(
+                "userType", updateUsersArrayList.get(fromIndex), //fromIndex (+1,2,3,4)
+                "mail", updateUsersArrayList.get(fromIndex + 1),
+                "fname", updateUsersArrayList.get(fromIndex + 2),
+                "lname", updateUsersArrayList.get(fromIndex + 3),
+                "userName", updateUsersArrayList.get(fromIndex + 4)
+            );
+        return userMap;
+    }
+    @Override
+    public void updateUsersHashMap() {
+        ArrayList<String> select = new ArrayList<>(Arrays.asList("userType,"
+                + "mail, fname, lname, userName"));
+        ArrayList<String> from = new ArrayList<>(Arrays.asList("User"));
+        ArrayList<String> where = new ArrayList<>(Arrays.asList("userName != 'null'"));
+        updateUsersArrayList = multiQuery(select, from, where);
+        allUsersHashMap = new HashMap<>();
+        for(int i = 0; i < updateUsersArrayList.size(); i += 5) {
+            Map<String, String> updateUserHashMapHelper = eachUserMap(i);
+            allUsersHashMap.put(updateUserHashMapHelper.get("userName"), 
+                        updateUserHashMapHelper);
+        }
+    }
+    
+    //@Override
+    public HashMap<String, Map> getAllUsersHashMap() {
+        return allUsersHashMap;
+    }
+    
 }

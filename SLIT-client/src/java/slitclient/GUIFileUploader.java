@@ -19,13 +19,20 @@ import slitclient.EJBConnector;
 public class GUIFileUploader {
     private File file;
   
+    public String startFileExplorer() {
+        JFrame frame = new JFrame("File Explorer");
+        frame.setVisible(true);  
+        return startFileExplorer(frame);
+    }
+    
+    
     public String startFileExplorer(JFrame frame) {
-        
+        System.out.println("start file explorer started");
         final JFileChooser fileDialog = new JFileChooser();
         int returnVal = fileDialog.showOpenDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             file = fileDialog.getSelectedFile();
-        return file.getName();
+            return file.getName();
         }
         else{
             return ("Ingen fil valgt");

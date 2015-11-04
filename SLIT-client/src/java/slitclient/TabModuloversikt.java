@@ -142,10 +142,53 @@ public class TabModuloversikt {
                     addDeliveryDialog(i);
                 }
             });
-        }  
+        }
+        else if (userInfo.get("userType").equals("teacher"))    {
+            JButton openDeliveryListButton = new JButton("Se innleveringer");
+            modulPane.add(openDeliveryListButton);
+            openDeliveryListButton.addActionListener(new ActionListener ()  {
+                @Override
+                public void actionPerformed(ActionEvent e)  {
+                    openDeliveryListDialog(i);
+                }
+            });
+        }
+                
+    }
+        
+    private void openDeliveryListDialog(int i)   {
+        JDialog deliveryListDialog = new JDialog();
+        JPanel contentPane = (JPanel) deliveryListDialog.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> tables = new ArrayList<>();
+        ArrayList<String> where = new ArrayList<>();
+        columns.add("*");
+        tables.add("Delivery");
+        where.add("idModul = " + i);
+        ArrayList<String> deliveryList = dbConnector.multiQuery(columns, tables, where);
+        int index = 0;
+        while (index < deliveryList.size()) {
+            System.out.println(index);
+            JPanel deliveryLine = new JPanel();
+            int lineIndex = index;
+            while(lineIndex < index + 8)    {
+                System.out.println("lineIndex:" + lineIndex);
+                JLabel label = new JLabel(deliveryList.get(lineIndex));
+                deliveryLine.add(label);
+                lineIndex++;
+            }
+            JButton openFileButton = new JButton("�pne fil");
+            deliveryLine.add(openFileButton);
+            contentPane.add(deliveryLine);
+            index += 8;
+        }
+        deliveryListDialog.pack();
+        deliveryListDialog.setVisible(true);
         
     }
-    
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
@@ -215,12 +258,16 @@ public class TabModuloversikt {
     public void createModul()   {
         JDialog createModulDialog = new JDialog(frame, true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
+        JTextField createIdModul = new JTextField("ID-modul");
+        JTextField createModulTitle= new JTextField();
         JTextField createModulDesc = new JTextField("Modulbeskrivelse");
         JTextField createModulLearningObj = new JTextField("Læringsmål i denne modulen");
         JTextField createModulRes = new JTextField("Ressurser");
         JTextField createModulEx = new JTextField("Oppgave");
         JTextField createModulEval = new JTextField("Godkjenning");
               
+        contentPane.add(createIdModul);
+        contentPane.add(createModulTitle);
         contentPane.add(createModulDesc);
         contentPane.add(createModulLearningObj);
         contentPane.add(createModulRes);
@@ -234,11 +281,17 @@ public class TabModuloversikt {
             ArrayList<String> columns = new ArrayList();
             ArrayList<Object> values = new ArrayList();
             String modul = "Modul";
+            columns.add("idModul");
+            columns.add("title");
             columns.add("description");
             columns.add("learningObj");
             columns.add("resources");
             columns.add("excercise");
-            columns.add("evalForm");values.add(createModulDesc.getText());
+            columns.add("evalForm");
+            int i = Integer.parseInt(createIdModul.getText());
+            values.add(i);
+            values.add(createModulTitle.getText());
+            values.add(createModulDesc.getText());
             values.add(createModulLearningObj.getText());
             values.add(createModulRes.getText());
             values.add(createModulEx.getText());
