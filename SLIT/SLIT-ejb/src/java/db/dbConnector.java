@@ -26,6 +26,7 @@ import slitcommon.DeliveryStatus;
 import com.google.common.collect.ImmutableMap;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.sql.Types;
 import java.util.Map.Entry;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -97,24 +98,7 @@ public class dbConnector implements dbConnectorRemote {
     // This method is not sql injection proof.
     // What if a crooked admin creates a new user where userName is 
     // is an injection?
-    @Override
-    public ArrayList<String> multiQuery(String query)   {
-        Connection dbConnection = dbConnection();
-        ArrayList<String> queryResults = new ArrayList<>();
-        try {
-            PreparedStatement ps = dbConnection.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            int i = 0;
-            while(rs.next())    {
-                queryResults.add(rs.getString(i));
-                i++;
-            }
-        }
-        catch (SQLException e)  {
-            System.out.println(e);
-        }
-        return queryResults;
-    }
+    
     /**
      * This method is used by the Login class to check if the user
      * has supplied a correct userName and password combination.
@@ -314,60 +298,68 @@ public class dbConnector implements dbConnectorRemote {
         return queryResults;
     } 
     
-//    @Override
-//    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
-//            tables, ArrayList<String> where)    {
-//        String query = "SELECT ";
-//        HashMap<String, String> queryResults = new HashMap<>();
-//        
-//        int countColumns = 0;
-//        while(columns.size() > (countColumns +1))   {
-//            query += columns.get(countColumns) + ", ";
-//            countColumns++;
-//        }
-//        query += columns.get(countColumns) + " FROM ";
-//        
-//        int countTables = 0;
-//        while(tables.size() > (countTables +1)) {
-//            query += tables.get(countTables) + ", ";
-//            countTables++;
-//        }
-//        query += tables.get(countTables);
-//        if(where != null)    {
-//            int countWhere = 0;
-//            query += " WHERE ";
-//                while(where.size() > (countWhere +1))   {
-//                query += where.get(countWhere) + ", ";
-//                countWhere ++;
-//                }
-//            query += where.get(countWhere) + ";";
-//        }
-//        else {
-//            query += ";";
-//        }
-//        DBConnection = dbConnection();
-//        try {
-//            System.out.println("try i multi-query metode");
-//            PreparedStatement ps = DBConnection.prepareStatement(query);
-//            System.out.println(ps);
-//            ResultSet rs = ps.executeQuery();
-//            ResultSetMetaData rsmd = rs.getMetaData();
-//            int columnCount = rsmd.getColumnCount();
-//            while (rs.next())   {
-//                int i = 1;
-//                while (columnCount >= i)    {
-//                    queryResults.put(columns.get(columnCount),rs.getString(i));
-//                    i++;
-//                }
-//            }
-//            System.out.println("QueryResults-liste HER: " + queryResults.size());
-//        }
-//        catch (SQLException e)  {
-//            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
-//            System.out.println(e);
-//        }
-//        return queryResults;
-//    } 
+    @Override
+    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+            tables, ArrayList<String> where)    {
+        String query = "SELECT ";
+        HashMap<String, String> queryResults = new HashMap<>();
+        
+        int countColumns = 0;
+        while(columns.size() > (countColumns +1))   {
+            query += columns.get(countColumns) + ", ";
+            countColumns++;
+        }
+        query += columns.get(countColumns) + " FROM ";
+        
+        int countTables = 0;
+        while(tables.size() > (countTables +1)) {
+            query += tables.get(countTables) + ", ";
+            countTables++;
+        }
+        query += tables.get(countTables);
+        if(where != null)    {
+            int countWhere = 0;
+            query += " WHERE ";
+                while(where.size() > (countWhere +1))   {
+                query += where.get(countWhere) + ", ";
+                countWhere ++;
+                }
+            query += where.get(countWhere) + ";";
+        }
+        else {
+            query += ";";
+        }
+        DBConnection = dbConnection();
+        try {
+            System.out.println("try i multi-query metode");
+            PreparedStatement ps = DBConnection.prepareStatement(query);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while (rs.next())   {
+                int i = 1;
+                while (columnCount >= i)    {
+                    int type = rsmd.getColumnType(i);
+                    if (type == Types.BLOB)    {
+                        queryResults.put(rsmd.getColumnName(i), rs.getBlob(i));
+                        i++;
+                    }
+                    else {
+                        queryResults.put(rsmd.getColumnName(i), rs.getString(i));
+                        i++;
+                        
+                    }
+                }
+                System.out.println("QueryResults-map HER: " + queryResults.size());
+            }
+        }
+        catch (SQLException e)  {
+            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+            System.out.println(e);
+        }
+        return queryResults;
+    } 
     @Override
     public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
         String query = "SELECT * " +

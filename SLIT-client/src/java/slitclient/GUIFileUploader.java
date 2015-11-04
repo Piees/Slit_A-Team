@@ -71,12 +71,14 @@ public class GUIFileUploader {
         return uploader.insertIntoDB("Resources", columns, values);
 
     }
-    public String uploadDelivery(String userName, int idModul) {
+    public String uploadDelivery(String title, String userName, int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote uploader = ejbConnector.getEjbRemote();
         String table = "Delivery";
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<Object> values = new ArrayList<>();
+        columns.add("title");
+        values.add(title);
         columns.add("deliveryFile");
         values.add(file);
         columns.add("deliveredBy");

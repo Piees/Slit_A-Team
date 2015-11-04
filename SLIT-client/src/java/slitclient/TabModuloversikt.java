@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.BoxLayout;
@@ -194,16 +195,18 @@ public class TabModuloversikt {
         
         JDialog addDeliveryDialog = new JDialog();
         addDeliveryDialog.setLayout(new GridLayout(0, 1));
-        JPanel contentpane = (JPanel) addDeliveryDialog.getContentPane();
+        JPanel contentPane = (JPanel) addDeliveryDialog.getContentPane();
         
+        JTextField fileName = new JTextField("Navn på innlevering");
         JLabel deliveryFile = new JLabel("Ingen fil valgt");
         
         JButton chooseFileButton = new JButton("Velg fil");
         JButton uploadDeliveryButton = new JButton("Last opp innlevering");
         
-        contentpane.add(deliveryFile);
-        contentpane.add(chooseFileButton);
-        contentpane.add(uploadDeliveryButton);
+        contentPane.add(fileName);
+        contentPane.add(deliveryFile);
+        contentPane.add(chooseFileButton);
+        contentPane.add(uploadDeliveryButton);
         
         addDeliveryDialog.pack();
         addDeliveryDialog.setVisible(true);
@@ -223,7 +226,7 @@ public class TabModuloversikt {
                     }
                 else {
                     String userName = userInfo.get("userName");
-                    JOptionPane.showMessageDialog(null, fileUploader.uploadDelivery(userName, i));            
+                    JOptionPane.showMessageDialog(null, fileUploader.uploadDelivery(fileName.getText(), userName, i));            
                 }
             }
         });
