@@ -5,6 +5,7 @@
  */
 package db;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +31,6 @@ public interface dbConnectorRemote {
     
     public HashMap<String, String> login(String userName, String pwd);
     
-    public ArrayList<String> multiQuery(String query);
-
     public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
     
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
@@ -49,5 +48,6 @@ public interface dbConnectorRemote {
     
     public HashMap<String, Map> getAllUsersHashMap();
     
+    public FileInputStream getFileFromDelivery(String userName, int idModul);
     //public JPanel makeContactPanel();
 }

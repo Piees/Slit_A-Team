@@ -12,7 +12,8 @@
         </group>
         <group name="Slit_A-Team_v2"/>
         <group>
-            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/Login.java</file>
+            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/TabModuloversikt.java</file>
+            <file>file:/C:/skole/is-202/prosjekter/Slit_A-Team/SLIT-client/src/java/slitclient/GUIFileUploader.java</file>
         </group>
     </open-files>
 </project-private>

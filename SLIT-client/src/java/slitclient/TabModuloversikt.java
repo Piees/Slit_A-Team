@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -162,33 +163,50 @@ public class TabModuloversikt {
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> columns = new ArrayList(Arrays.asList("deliveryDate", "evaluationDate", "deliveryStatus", "deliveredBy", "evaluatedBy"));
         ArrayList<String> tables = new ArrayList<>();
         ArrayList<String> where = new ArrayList<>();
-        columns.add("*");
         tables.add("Delivery");
         where.add("idModul = " + i);
+        
         ArrayList<String> deliveryList = dbConnector.multiQuery(columns, tables, where);
         int index = 0;
         while (index < deliveryList.size()) {
             System.out.println(index);
             JPanel deliveryLine = new JPanel();
             int lineIndex = index;
-            while(lineIndex < index + 8)    {
+        
+            while(lineIndex < index + columns.size())    {
                 System.out.println("lineIndex:" + lineIndex);
                 JLabel label = new JLabel(deliveryList.get(lineIndex));
                 deliveryLine.add(label);
                 lineIndex++;
             }
+                        
             JButton openFileButton = new JButton("Åpne fil");
+            openFileButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    downloadFile();
+                }
+            });
+            
             deliveryLine.add(openFileButton);
             contentPane.add(deliveryLine);
-            index += 8;
+            index += columns.size();
         }
         deliveryListDialog.pack();
         deliveryListDialog.setVisible(true);
         
     }
+    
+    private void downloadFile() {
+        // Hente fra database : dbConnector.getFileFromDelivery();
+        // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
+        // automatisk lagre i default download mappe.
+        System.out.print("hei");
+    }
+    
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         

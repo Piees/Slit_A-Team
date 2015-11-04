@@ -24,13 +24,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import slitcommon.DeliveryStatus;
 import com.google.common.collect.ImmutableMap;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.util.Map.Entry;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.io.InputStream;
 /**
  *
  * @author piees
@@ -94,27 +88,6 @@ public class dbConnector implements dbConnectorRemote {
         return queryResult;
     }
     
-    // This method is not sql injection proof.
-    // What if a crooked admin creates a new user where userName is 
-    // is an injection?
-    @Override
-    public ArrayList<String> multiQuery(String query)   {
-        Connection dbConnection = dbConnection();
-        ArrayList<String> queryResults = new ArrayList<>();
-        try {
-            PreparedStatement ps = dbConnection.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            int i = 0;
-            while(rs.next())    {
-                queryResults.add(rs.getString(i));
-                i++;
-            }
-        }
-        catch (SQLException e)  {
-            System.out.println(e);
-        }
-        return queryResults;
-    }
     /**
      * This method is used by the Login class to check if the user
      * has supplied a correct userName and password combination.
@@ -300,7 +273,7 @@ public class dbConnector implements dbConnectorRemote {
             int columnCount = rsmd.getColumnCount();
             while (rs.next())   {
                 int i = 1;
-                while (columnCount >= i)    {
+                while (columnCount >= i) {
                     queryResults.add(rs.getString(i));
                     i++;
                 }
@@ -459,4 +432,28 @@ public class dbConnector implements dbConnectorRemote {
         return allUsersHashMap;
     }
     
+    @Override
+    public FileInputStream getFileFromDelivery(String userName, int idModul) {
+        String query = "SELECT deliveryFile FROM Delivery WHERE deliveredBy =? AND idModul=?";
+
+        Connection dbConnection = dbConnection();
+        
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setString(1, userName);
+            ps.setInt(2, idModul);
+            ResultSet rs = ps.executeQuery();
+            // If true then the username + password was a match
+            if (rs.next()) {
+                FileInputStream fileInputStream = (FileInputStream) rs.getBinaryStream("deliveryFile");
+                return fileInputStream;
+            }   
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+   
 }
