@@ -208,7 +208,7 @@ public class TabForside {
                             + String.format("<a href=''>%s</a></html>", mail)
             );
             contactLabel.setOpaque(false);
-            contactLabel.setBackground(Color.LIGHT_GRAY);
+            contactLabel.setBackground(new Color(0, 0, 0, 0));
             contactLabel.setToolTipText("Mailto: " + mail);
             contactLabel.addActionListener(new sendMailActionListener(mail));
             if(contactHelperToRight) {
