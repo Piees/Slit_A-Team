@@ -212,7 +212,7 @@ public class TabForside {
             contactLabel.setToolTipText("Mailto: " + mail);
             contactLabel.addActionListener(new sendMailActionListener(mail));
             if(contactHelperToRight) {
-                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, Color.BLACK));
+                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
             } else {
                 contactLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
             }
