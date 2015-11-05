@@ -331,7 +331,7 @@ public class dbConnector implements dbConnectorRemote {
 //            while (rs.next())   {
 //                int i = 1;
 //                while (columnCount >= i)    {
-//                    queryResults.put(columns.get(columnCount),rs.getString(i));
+//                    queryResults.put(columns.get(i),rs.getString(i));
 //                    i++;
 //                }
 //            }

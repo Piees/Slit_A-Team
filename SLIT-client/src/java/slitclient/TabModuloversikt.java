@@ -206,6 +206,7 @@ public class TabModuloversikt {
                     System.out.println(userName);
                     System.out.println(userNameIndex + " " + userName);
                     downloadFile(userName, i);
+                    openEvaluationDialog(deliveryListDialog);
                 }
             });
             
@@ -290,7 +291,35 @@ public class TabModuloversikt {
 
         
     }
+    private void openEvaluationDialog(JDialog deliveryListDialog) {
+        JDialog openEvaluationDialog = new JDialog(deliveryListDialog);
+        JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.add(new JLabel("Din tilbakemelding:"));
+        JTextField evaluation = new JTextField();
+        contentPane.add(evaluation);
+        JButton uploadEvaluationButton = new JButton("Lagre tilbakemelding");
+        contentPane.add(uploadEvaluationButton);
+//        uploadEvaluationButton.addActionListener(new ActionListener()   {
+//            @Override
+//            public void actionPerformed(ActionEvent e)  {
+//                String returnString = uploadEvaluationToDB(evaluation.getText());
+//                JOptionPane.showMessageDialog(openEvaluationDialog, returnString);
+//                if(returnString.equals("Lagret i database."))  {
+//                    openEvaluationDialog.dispose();
+//                }
+//            }
+//        });
+        openEvaluationDialog.pack();
+        openEvaluationDialog.setVisible(true);
+    }
     
+//    private String uploadEvaluationToDB(String evaluation)  {
+//        EJBConnector ejbConnector = EJBConnector.getInstance();
+//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+//        return dbConnector.updateInDB();
+//        
+//    }
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
@@ -332,31 +361,6 @@ public class TabModuloversikt {
     }
     
     
-//    public JLabel testQuery()     {
-//        EJBConnector ejbConnector = new EJBConnector();
-//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-//        ArrayList<String> columns = new ArrayList<>();
-//        ArrayList<String> tables = new ArrayList<>();
-//        ArrayList<String> where = new ArrayList<>();
-//        columns.add("*");
-//        tables.add("User");
-//        where.add("userName = 'arildh14'");
-//        ArrayList<String> queryResults = dbConnector.multiQuery(columns, tables, where);
-//        String labelString = "";
-//        for (String string : queryResults)  {
-//            labelString += string;
-//        }
-//        JLabel label = new JLabel(labelString);
-//        return label;
-//    }
-//    public JLabel testQuery2()     {
-//        EJBConnector ejbConnector = new EJBConnector();
-//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-//        String query = "SELECT description FROM Modul WHERE idModul = '2';";
-//        JLabel label = new JLabel();
-//        label.setText(dbConnector.singleQuery(query, "description"));
-//        return label;
-//    }
     public void createModul()   {
         JDialog createModulDialog = new JDialog(frame, true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();

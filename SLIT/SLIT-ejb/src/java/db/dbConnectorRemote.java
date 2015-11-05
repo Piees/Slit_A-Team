@@ -35,6 +35,9 @@ public interface dbConnectorRemote {
     
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
+   
+//    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+//            tables, ArrayList<String> where);
     
     public int countRows(String column, String tableName);     
     
