@@ -20,6 +20,7 @@ import db.dbConnector;
 import db.dbConnectorRemote;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.Action;
 
 import prototypes.CreateUser;
 
@@ -30,47 +31,24 @@ import prototypes.CreateUser;
 
 public class Login {
     
+    JTextField userText;
+    JPasswordField passwordText;
+    ActionListener loginAction;
+    JFrame frame;
+    
     public Login() {        
-       	JFrame frame = new JFrame("Login");
+       	frame = new JFrame("Login");
 	frame.setSize(300, 150);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	placeComponents(frame);
-	frame.setVisible(true); 
+	frame.setVisible(true);      
     }
-
-    private void placeComponents(JFrame frame) {
-	frame.setLayout(null);
-	JLabel userLabel = new JLabel("User");
-	userLabel.setBounds(10, 10, 80, 25);
-	frame.add(userLabel);
-        
-	JTextField userText = new JTextField(20);
-	userText.setBounds(100, 10, 160, 25);
-	frame.add(userText);
-
-	JLabel passwordLabel = new JLabel("Password");
-	passwordLabel.setBounds(10, 40, 80, 25);
-	frame.add(passwordLabel);
-
-	JPasswordField passwordText = new JPasswordField(20);
-	passwordText.setBounds(100, 40, 160, 25);
-	frame.add(passwordText);
-
-        JButton createButton = new JButton("create user");
-	createButton.setBounds(95, 80, 80, 25);
-	frame.add(createButton);
-        
-	JButton loginButton = new JButton("login");
-	loginButton.setBounds(10, 80, 80, 25);
-	frame.add(loginButton);
-
-	JButton forgotPwdButton = new JButton("forgot my password!");
-	forgotPwdButton.setBounds(180, 80, 80, 25);
-	frame.add(forgotPwdButton);
-                
-        loginButton.addActionListener(new ActionListener() {
+    
+    
+        class LoginAction implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {    
+                System.out.println("inside actionperformed");
                 String userName = userText.getText();
                 String pwd = passwordText.getText();
                 
@@ -100,7 +78,41 @@ public class Login {
                     JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
                 }
             }
-        });
+        };
+    
+    
+
+    private void placeComponents(JFrame frame) {
+	frame.setLayout(null);
+	JLabel userLabel = new JLabel("User");
+	userLabel.setBounds(10, 10, 80, 25);
+	frame.add(userLabel);
+        
+	userText = new JTextField(20);
+	userText.setBounds(100, 10, 160, 25);
+	frame.add(userText);
+
+	JLabel passwordLabel = new JLabel("Password");
+	passwordLabel.setBounds(10, 40, 80, 25);
+	frame.add(passwordLabel);
+
+	passwordText = new JPasswordField(20);
+	passwordText.setBounds(100, 40, 160, 25);
+	frame.add(passwordText);
+
+        JButton createButton = new JButton("create user");
+	createButton.setBounds(95, 80, 80, 25);
+	frame.add(createButton);
+        
+	JButton loginButton = new JButton("login");
+	loginButton.setBounds(10, 80, 80, 25);
+	frame.add(loginButton);
+
+	JButton forgotPwdButton = new JButton("forgot my password!");
+	forgotPwdButton.setBounds(180, 80, 80, 25);
+	frame.add(forgotPwdButton);
+                
+        loginButton.addActionListener(new LoginAction()); //listener her
                 
         forgotPwdButton.addActionListener(new ActionListener() {
             @Override
