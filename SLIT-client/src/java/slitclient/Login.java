@@ -18,6 +18,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import db.dbConnector;
 import db.dbConnectorRemote;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.Action;
@@ -45,40 +47,95 @@ public class Login {
     }
     
     
-        class LoginAction implements ActionListener {
-            @Override
-            public void actionPerformed(ActionEvent e) {    
-                System.out.println("inside actionperformed");
-                String userName = userText.getText();
-                String pwd = passwordText.getText();
-                
-                EJBConnector ejbConnector = EJBConnector.getInstance();
-                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                dbConnector.updateUsersHashMap();
-                HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
-              
-                if (loginResult.size() > 1) {
-                    if (loginResult.get("userType").equals("student")) {
-                        //create StudentGUI object with the list
-                        StudentGUI studentGUI = new StudentGUI(loginResult);
-                        frame.setVisible(false);
-                    }
-                    else if (loginResult.get("userType").equals("teacher") || 
-                            loginResult.get("userType").equals("helpTeacher")) {
+    class LoginKeyAction implements KeyListener {
+        
+        public LoginKeyAction() {
+            
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode()==KeyEvent.VK_ENTER){
+            System.out.println("KEYPRESSED");
+            System.out.println("KEYPRESSED");
+            System.out.println("KEYPRESSED");
+            System.out.println("inside actionperformed");
+            String userName = userText.getText();
+            String pwd = passwordText.getText();
+            
+            EJBConnector ejbConnector = EJBConnector.getInstance();
+            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+            dbConnector.updateUsersHashMap();
+            HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
+          
+            if (loginResult.size() > 1) {
+                if (loginResult.get("userType").equals("student")) {
+                    //create StudentGUI object with the list
+                    StudentGUI studentGUI = new StudentGUI(loginResult);
+                    frame.setVisible(false);
+                }
+                else if (loginResult.get("userType").equals("teacher") || 
+                        loginResult.get("userType").equals("helpTeacher")) {
                         //create TeacherGUI object with the list
-                        TeacherGUI teacherGUI = new TeacherGUI(loginResult);
-                        frame.setVisible(false);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "userType invalid, "
-                                + "contact the database manager");                    
-                    }
+                            TeacherGUI teacherGUI = new TeacherGUI(loginResult);
+                            frame.setVisible(false);
                 }
                 else {
-                    JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
+                    JOptionPane.showMessageDialog(null, "userType invalid, "
+                            + "contact the database manager");                    
                 }
             }
-        };
+            else {
+                JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
+            }
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+    }
+    
+    
+    class LoginAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("inside actionperformed");
+            String userName = userText.getText();
+            String pwd = passwordText.getText();
+            
+            EJBConnector ejbConnector = EJBConnector.getInstance();
+            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+            dbConnector.updateUsersHashMap();
+            HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
+          
+            if (loginResult.size() > 1) {
+                if (loginResult.get("userType").equals("student")) {
+                    //create StudentGUI object with the list
+                    StudentGUI studentGUI = new StudentGUI(loginResult);
+                    frame.setVisible(false);
+                }
+                else if (loginResult.get("userType").equals("teacher") || 
+                        loginResult.get("userType").equals("helpTeacher")) {
+                        //create TeacherGUI object with the list
+                            TeacherGUI teacherGUI = new TeacherGUI(loginResult);
+                            frame.setVisible(false);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "userType invalid, "
+                            + "contact the database manager");                    
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
+            }
+        }
+    };
     
     
 
@@ -97,6 +154,7 @@ public class Login {
 	frame.add(passwordLabel);
 
 	passwordText = new JPasswordField(20);
+        passwordText.addKeyListener(new LoginKeyAction());
 	passwordText.setBounds(100, 40, 160, 25);
 	frame.add(passwordText);
 
