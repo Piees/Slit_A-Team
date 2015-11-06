@@ -24,6 +24,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import slitcommon.DeliveryStatus;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.ByteStreams;
+import java.io.IOException;
 import java.io.InputStream;
 /**
  *
@@ -433,7 +435,7 @@ public class dbConnector implements dbConnectorRemote {
     }
     
     @Override
-    public FileInputStream getFileFromDelivery(String userName, int idModul) {
+    public byte[] getFileFromDelivery(String userName, int idModul) {
         String query = "SELECT deliveryFile FROM Delivery WHERE deliveredBy =? AND idModul=?";
 
         Connection dbConnection = dbConnection();
@@ -446,8 +448,16 @@ public class dbConnector implements dbConnectorRemote {
             ResultSet rs = ps.executeQuery();
             // If true then the username + password was a match
             if (rs.next()) {
-                FileInputStream fileInputStream = (FileInputStream) rs.getBinaryStream("deliveryFile");
-                return fileInputStream;
+                InputStream InputStream = rs.getBinaryStream("deliveryFile");
+                System.out.println("deliveryFile seems to be converted to inputStream");
+                
+                byte[] bytes;
+                try {
+                    bytes = ByteStreams.toByteArray(InputStream);
+                    return bytes;
+                } catch (IOException ex) {
+                    Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                } 
             }   
         } 
         catch (SQLException ex) {

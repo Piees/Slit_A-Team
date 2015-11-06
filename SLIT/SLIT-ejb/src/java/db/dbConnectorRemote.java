@@ -6,13 +6,12 @@
  */
 package db;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.Remote;
-import javax.swing.JPanel;
 
 /**
  *
@@ -49,6 +48,6 @@ public interface dbConnectorRemote {
     
     public HashMap<String, Map> getAllUsersHashMap();
     
-    public FileInputStream getFileFromDelivery(String userName, int idModul);
+    public byte[] getFileFromDelivery(String userName, int idModul);
     //public JPanel makeContactPanel();
 }
