@@ -37,6 +37,7 @@ public class TabModuloversikt {
     private final int IS110 = 10;
     private HashMap<String, String> userInfo;
     private JFrame frame;
+    //ArrayList<String> deliveryList;
     
     public TabModuloversikt(HashMap<String, String> userInfo, JFrame frame)   {
         this.userInfo = userInfo;
@@ -182,18 +183,30 @@ public class TabModuloversikt {
                 JLabel label = new JLabel(deliveryList.get(lineIndex));
                 deliveryLine.add(label);
                 lineIndex++;
-            }
-                        
+                if (lineIndex == index + columns.size()) {
+                   
+                int userNameIndex = index + columns.size() -2;  
+        
             JButton openFileButton = new JButton("Åpne fil");
             openFileButton.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    downloadFile();
+                public void actionPerformed(ActionEvent e) { 
+                    //int userNameIndex = deliveryList.size()-1;
+                    //int userNameIndex = userNameIndex; 
+//                    for (String s : TabModuloversikt.this.deliveryList) {
+//                        System.out.println(s);
+//                    }
+                    String userName = deliveryList.get(userNameIndex);
+                    System.out.println(deliveryList.size());
+                    System.out.println(userNameIndex);
+                    System.out.println(userName);
+                    System.out.println(userNameIndex + " " + userName);
+                    downloadFile(i, userName);
                 }
             });
             
             deliveryLine.add(openFileButton);
-            contentPane.add(deliveryLine);
+            contentPane.add(deliveryLine); }}
             index += columns.size();
         }
         deliveryListDialog.pack();
@@ -201,11 +214,14 @@ public class TabModuloversikt {
         
     }
     
-    private void downloadFile() {
+    private void downloadFile(int idModul, String userName) {
         // Hente fra database : dbConnector.getFileFromDelivery();
         // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
         // automatisk lagre i default download mappe.
-        System.out.print("hei");
+        // Temp hardcoded
+        
+                
+        System.out.print("idModul " + idModul + " userName: " + userName);
     }
     
     private void addDeliveryDialog(int i) {
