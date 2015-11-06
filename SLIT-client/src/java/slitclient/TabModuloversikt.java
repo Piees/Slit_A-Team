@@ -13,9 +13,13 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -201,7 +205,7 @@ public class TabModuloversikt {
                     System.out.println(userNameIndex);
                     System.out.println(userName);
                     System.out.println(userNameIndex + " " + userName);
-                    downloadFile(i, userName);
+                    downloadFile(userName, i);
                 }
             });
             
@@ -214,14 +218,77 @@ public class TabModuloversikt {
         
     }
     
-    private void downloadFile(int idModul, String userName) {
+    private void downloadFile(String userName, int idModul) {
         // Hente fra database : dbConnector.getFileFromDelivery();
         // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
         // automatisk lagre i default download mappe.
-        // Temp hardcoded
+        System.out.println("idModul " + idModul + " userName: " + userName);
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
         
-                
-        System.out.print("idModul " + idModul + " userName: " + userName);
+        //InputStream inputStream = dbConnector.getFileFromDelivery(userName, idModul);
+        String fileName = "modul" + idModul + "_" + userName;
+        String path = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath();
+        String filepath = path.concat("/" + fileName);
+        
+        System.out.println(filepath);
+        //System.out.println(javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory());
+        
+        byte[] byteData = dbConnector.getFileFromDelivery(userName, idModul);
+       
+        try {
+            FileOutputStream out = new FileOutputStream(filepath);
+            out.write(byteData);
+            out.close();
+        } catch (IOException ex) {
+            Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+//        try {
+//            Files.write(byteArray, new File(path));
+//        } catch (IOException ex) {
+//            Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
+//        }    
+            
+            
+//        try {
+//            // Hardcoded path on my computer
+//            outputStream = new FileOutputStream(new File("/home/archheretic/Downloads/test"));
+//
+//            int read = 0;
+//            // This might restrict the size of the file and fuck things up
+//            byte[] bytes = new byte[1024];
+//
+//            while ((read = inputStream.read(bytes)) != -1) {
+//                outputStream.write(bytes, 0, read);
+//            }
+//        
+//        } catch (IOException ex) {
+//            Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        // Not sure if its neccerary to close the file like this.
+//        finally {
+//            if (inputStream != null) {
+//                    try {
+//                            inputStream.close();
+//                    } catch (IOException e) {
+//                        System.out.println(e);
+//                    }
+//            }
+//            if (outputStream != null) {
+//                    try {
+//                            // outputStream.flush();
+//                            outputStream.close();
+//                    } catch (IOException e) {
+//                        System.out.println(e);                        
+//                    }
+//
+//            }
+//	}
+//        
+
+
+        
     }
     
     private void addDeliveryDialog(int i) {
