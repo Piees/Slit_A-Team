@@ -216,6 +216,24 @@ public class dbConnector implements dbConnectorRemote {
     }
     
     @Override
+    public String updateInDB(String table, String updateColumn, String updateValue,
+            int whereValue1, String whereValue)   {
+        String update = "UPDATE " + table + " SET " + updateColumn + " = '" + updateValue
+                + "' WHERE idModul = " + whereValue1 + " AND deliveredBy = 'arildh14';";// + whereValue + "';";
+        DBConnection = dbConnection();
+        try {
+            PreparedStatement ps = DBConnection.prepareStatement(update);
+            ps.executeUpdate();
+            return "Lagret i database.";
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+            return "Feil! Ble ikke lagret i database.";
+        }
+    }
+        
+    
+    @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
         String numberOfRows = "";

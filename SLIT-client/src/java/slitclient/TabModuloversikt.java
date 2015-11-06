@@ -206,7 +206,7 @@ public class TabModuloversikt {
                     System.out.println(userName);
                     System.out.println(userNameIndex + " " + userName);
                     downloadFile(userName, i);
-                    openEvaluationDialog(deliveryListDialog);
+                    openEvaluationDialog(deliveryListDialog, i);
                 }
             });
             
@@ -291,7 +291,7 @@ public class TabModuloversikt {
 
         
     }
-    private void openEvaluationDialog(JDialog deliveryListDialog) {
+    private void openEvaluationDialog(JDialog deliveryListDialog, int i) {
         JDialog openEvaluationDialog = new JDialog(deliveryListDialog);
         JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -300,26 +300,27 @@ public class TabModuloversikt {
         contentPane.add(evaluation);
         JButton uploadEvaluationButton = new JButton("Lagre tilbakemelding");
         contentPane.add(uploadEvaluationButton);
-//        uploadEvaluationButton.addActionListener(new ActionListener()   {
-//            @Override
-//            public void actionPerformed(ActionEvent e)  {
-//                String returnString = uploadEvaluationToDB(evaluation.getText());
-//                JOptionPane.showMessageDialog(openEvaluationDialog, returnString);
-//                if(returnString.equals("Lagret i database."))  {
-//                    openEvaluationDialog.dispose();
-//                }
-//            }
-//        });
+        uploadEvaluationButton.addActionListener(new ActionListener()   {
+            @Override
+            public void actionPerformed(ActionEvent e)  {
+                String returnString = uploadEvaluationToDB(evaluation.getText(), i);
+                JOptionPane.showMessageDialog(openEvaluationDialog, returnString);
+                if(returnString.equals("Lagret i database."))  {
+                    openEvaluationDialog.dispose();
+                }
+            }
+        });
         openEvaluationDialog.pack();
         openEvaluationDialog.setVisible(true);
     }
     
-//    private String uploadEvaluationToDB(String evaluation)  {
-//        EJBConnector ejbConnector = EJBConnector.getInstance();
-//        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-//        return dbConnector.updateInDB();
-//        
-//    }
+    private String uploadEvaluationToDB(String evaluation, int i)  {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        return dbConnector.updateInDB("Delivery", "evaluation", evaluation, i, userInfo.get("userName"));
+        
+        
+    }
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
@@ -403,17 +404,11 @@ public class TabModuloversikt {
             values.add(createModulEx.getText());
             values.add(createModulEval.getText());
             
-            //how is idModul set? Auto increment? Or should it be specified for each insert?
-            /*String insert = "INSERT INTO Modul (idModul, description, learningObj,"
-                    + " resources, excercise, evalForm) "
-                 + "VALUES ('NULL', '" + modulDesc + "', '" + modulLearningObj + "', '" 
-                    + modulRes + "', '" + modulEx + "', '" + modulEval + "';";
-              */  EJBConnector ejbConnector = EJBConnector.getInstance();
+                EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
                 dbConnector.insertIntoDB(modul, columns, values);
                 //System.out.println(insert);
-                //we need a method for inserting into database here
-                //dbConnector.insert(insert);
+             
                 System.out.println("Lagrer modul i database");
                 
             }
