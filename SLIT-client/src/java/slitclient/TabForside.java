@@ -16,6 +16,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -231,6 +233,7 @@ public class TabForside {
 
         GridBagConstraints gbcSearchField = new GridBagConstraints();
         JTextField searchField = new JTextField(20);
+        searchField.addKeyListener(new ContactSearchKeyListener());
         gbcSearchField.gridx = 0;
         gbcSearchField.gridy = 0;
         gbcSearchField.gridwidth = 2;
@@ -238,6 +241,22 @@ public class TabForside {
         //searchField.addActionListener(new returnSearchResults); //tbi
         contactPanel.add(searchField); 
     return contactPanel;
+    }
+    
+    class ContactSearchKeyListener implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            System.out.println("FISH!");
+        }
     }
     
     /**
