@@ -33,8 +33,9 @@ public interface dbConnectorRemote {
     
     public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
     
-    public String updateInDB(String table, String updateColumn, String updateValue, int whereValue1, String whereValue);
-    
+    public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
+            int whereValue1, String whereValue2);   
+            
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
    

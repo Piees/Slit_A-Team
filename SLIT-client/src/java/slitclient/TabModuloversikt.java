@@ -187,8 +187,8 @@ public class TabModuloversikt {
                 JLabel label = new JLabel(deliveryList.get(lineIndex));
                 deliveryLine.add(label);
                 lineIndex++;
-                if (lineIndex == index + columns.size()) {
-                   
+                //if (lineIndex == index + columns.size()) {
+            }
                 int userNameIndex = index + columns.size() -2;  
         
             JButton openFileButton = new JButton("Åpne fil");
@@ -210,8 +210,9 @@ public class TabModuloversikt {
                 }
             });
             
+            
             deliveryLine.add(openFileButton);
-            contentPane.add(deliveryLine); }}
+            contentPane.add(deliveryLine);
             index += columns.size();
         }
         deliveryListDialog.pack();
@@ -317,7 +318,7 @@ public class TabModuloversikt {
     private String uploadEvaluationToDB(String evaluation, int i)  {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        return dbConnector.updateInDB("Delivery", "evaluation", evaluation, i, userInfo.get("userName"));
+        return dbConnector.addDeliveryEvaluation(evaluation, userInfo.get("userName"), i, "viktos08");
         
         
     }
