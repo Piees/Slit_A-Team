@@ -206,12 +206,12 @@ public class dbConnector implements dbConnectorRemote {
             }
             System.out.println(ps);
             ps.executeUpdate();
-            return "Opplasting vellykket!";
+            return "Opplastning vellykket!";
         }
         catch (SQLException ex)  {
             System.out.println("CATCH I INSERT-METODE");
             System.out.println(ex);
-            return "Opplasting feilet!";
+            return "Opplastning feilet!";
         }
     }
     

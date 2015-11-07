@@ -37,39 +37,48 @@ public class TabFagstoff {
         JPanel tab3Panel = new JPanel();
         JTextField textField = new JTextField("Her kommer alt fagstoff.");
         tab3Panel.add(textField);
-        
-        JButton addResourceButton = new JButton("Last opp ressurs");
-        tab3Panel.add(addResourceButton);
-        addResourceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               addResourceDialog();
-            }
-        });
+        if(userInfo.get("userType").equals("teacher"))  {
+            JButton addResourceButton = new JButton("Last opp ressurs");
+            tab3Panel.add(addResourceButton);
+            addResourceButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                   addResourceDialog();
+                }
+            });
+        }
         return tab3Panel;
     }    
     
     private void addResourceDialog() {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
-        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");
+        JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");//, true);
         addResourceDialog.setLayout(new GridLayout(0, 1));
-        JPanel contentpane = (JPanel) addResourceDialog.getContentPane();
+        JPanel contentPane = (JPanel) addResourceDialog.getContentPane();
         
+        JLabel titleLabel = new JLabel("Gi ressursen en tittel");
         JTextField title = new JTextField();
+        JLabel resourceTextLabel = new JLabel("Din melding her:");
         JTextField resourceText = new JTextField();
+        JLabel urlLabel = new JLabel("URL her:");
         JTextField url = new JTextField();
+        JLabel resourceFileLabel = new JLabel("Fil som skal lastes opp:");
         JLabel resourceFile = new JLabel("Ingen fil valgt");
         
         JButton chooseFileButton = new JButton("Velg fil");
         JButton uploadResourceButton = new JButton("Last opp ressurs");
         
-        contentpane.add(title);
-        contentpane.add(resourceText);
-        contentpane.add(url);
-        contentpane.add(resourceFile);
-        contentpane.add(chooseFileButton);
-        contentpane.add(uploadResourceButton);
+        contentPane.add(titleLabel);
+        contentPane.add(title);
+        contentPane.add(resourceTextLabel);
+        contentPane.add(resourceText);
+        contentPane.add(urlLabel);
+        contentPane.add(url);
+        contentPane.add(resourceFileLabel);
+        contentPane.add(resourceFile);
+        contentPane.add(chooseFileButton);
+        contentPane.add(uploadResourceButton);
         
         addResourceDialog.pack();
         addResourceDialog.setVisible(true);
@@ -87,14 +96,18 @@ public class TabFagstoff {
             public void actionPerformed(ActionEvent e) {
                 if (title.getText().length() > 0) {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
-                        JOptionPane.showMessageDialog(null, "Et av ressursfeltene mÃ¥ utfylles"); 
+                        JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene må fylles ut", "Et av ressursfeltene må fylles ut", 1); 
                     }
                     else {
-                        JOptionPane.showMessageDialog(null, fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText()));            
+                        String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText());
+                        JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
+                        if(confirmationString.equals("Opplastning vellykket!")) {
+                            addResourceDialog.dispose();
+                        }
                     }
-                } 
+                }
                 else { 
-                    JOptionPane.showMessageDialog(null, "Sett ressurstittel!");  
+                    JOptionPane.showMessageDialog(addResourceDialog, "Sett ressurstittel!", "Sett ressurstittel!", 1);  
                 }
 
             }

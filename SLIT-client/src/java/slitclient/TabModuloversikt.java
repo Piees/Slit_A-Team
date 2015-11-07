@@ -166,7 +166,7 @@ public class TabModuloversikt {
     }
         
     private void openDeliveryListDialog(int i)   {
-        JDialog deliveryListDialog = new JDialog();
+        JDialog deliveryListDialog = new JDialog(frame, "Innleveringer i modul " + i, true);
         JPanel contentPane = (JPanel) deliveryListDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         EJBConnector ejbConnector = EJBConnector.getInstance();
@@ -297,7 +297,7 @@ public class TabModuloversikt {
         
     }
     private void openEvaluationDialog(JDialog deliveryListDialog, int i, String userName) {
-        JDialog openEvaluationDialog = new JDialog(deliveryListDialog);
+        JDialog openEvaluationDialog = new JDialog(deliveryListDialog, "Gi tilbakemelding", true);
         JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         contentPane.add(new JLabel("Din tilbakemelding:"));
@@ -312,11 +312,15 @@ public class TabModuloversikt {
             @Override
             public void actionPerformed(ActionEvent e)  {
                 DeliveryStatus evaluationStatusEnum = (DeliveryStatus) evaluationStatusList.getSelectedItem();
-                
-                String returnString = uploadEvaluationToDB(evaluation.getText(), i, evaluationStatusEnum, userName);
-                JOptionPane.showMessageDialog(openEvaluationDialog, returnString);
-                if(returnString.equals("Lagret i database."))  {
-                    openEvaluationDialog.dispose();
+                if(evaluation.getText().length() > 2) {   
+                    String returnString = uploadEvaluationToDB(evaluation.getText(), i, evaluationStatusEnum, userName);
+                    JOptionPane.showMessageDialog(openEvaluationDialog, returnString, returnString, 1);
+                    if(returnString.equals("Lagret i database."))  {
+                        openEvaluationDialog.dispose();
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(openEvaluationDialog, "Du må skrive en tilbakemelding", "Du må skrive en tilbakemelding", 1);
                 }
             }
         });
@@ -336,7 +340,7 @@ public class TabModuloversikt {
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
-        JDialog addDeliveryDialog = new JDialog();
+        JDialog addDeliveryDialog = new JDialog(frame, "Last opp innlevering");//, true);
         addDeliveryDialog.setLayout(new GridLayout(0, 1));
         JPanel contentpane = (JPanel) addDeliveryDialog.getContentPane();
         
@@ -363,11 +367,15 @@ public class TabModuloversikt {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (deliveryFile.getText().equals("Ingen fil valgt")) {
-                    JOptionPane.showMessageDialog(null, deliveryFile.getText()); 
+                    JOptionPane.showMessageDialog(addDeliveryDialog, deliveryFile.getText(), "Ingen fil valgt", 1); 
                     }
                 else {
                     String userName = userInfo.get("userName");
-                    JOptionPane.showMessageDialog(null, fileUploader.uploadDelivery(userName, i));            
+                    String confirmationString = fileUploader.uploadDelivery(userName, i);
+                    JOptionPane.showMessageDialog(addDeliveryDialog, confirmationString, confirmationString, 1); 
+                    if(confirmationString.equals("Opplastning vellykket!")) {
+                        addDeliveryDialog.dispose();
+                    }
                 }
             }
         });
@@ -375,22 +383,50 @@ public class TabModuloversikt {
     
     
     public void createModul()   {
-        JDialog createModulDialog = new JDialog(frame, true);
+        JDialog createModulDialog = new JDialog(frame, "Opprett ny modul", true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
-        JTextField createIdModul = new JTextField("ID-modul");
-        JTextField createModulTitle= new JTextField();
-        JTextField createModulDesc = new JTextField("Modulbeskrivelse");
-        JTextField createModulLearningObj = new JTextField("LÃ¦ringsmÃ¥l i denne modulen");
-        JTextField createModulRes = new JTextField("Ressurser");
-        JTextField createModulEx = new JTextField("Oppgave");
-        JTextField createModulEval = new JTextField("Godkjenning");
+        
+        JLabel idModulLabel = new JLabel("Velg hvilken modul du ønsker å opprette:");
+        Integer[] modules = {1, 2, 3, 4, 5};
+        JComboBox modulesList = new JComboBox(modules);
+        
+        JLabel modulTitleLabel = new JLabel("Tittel på modulen:");
+        JTextField createModulTitle = new JTextField();
+        
+        JLabel modulDescriptionLabel = new JLabel("Beskrivelse av modulen:");
+        JTextField createModulDesc = new JTextField();
+        
+        JLabel modulLearningObjLabel = new JLabel("Modulens læringsmål:");
+        JTextField createModulLearningObj = new JTextField();
+        
+        JLabel modulResourcesLabel = new JLabel("Ressurser for denne modulen:");
+        JTextField createModulRes = new JTextField();
+        
+        JLabel modulExcerciseLabel = new JLabel("Oppgave:");
+        JTextField createModulEx = new JTextField();
+        
+        JLabel modulEvaluationForm = new JLabel("Godkjenning av modulen/oppgaven:");
+        JTextField createModulEval = new JTextField();
               
-        contentPane.add(createIdModul);
+        contentPane.add(idModulLabel);
+        contentPane.add(modulesList);
+        
+        contentPane.add(modulTitleLabel);
         contentPane.add(createModulTitle);
+        
+        contentPane.add(modulDescriptionLabel);
         contentPane.add(createModulDesc);
+        
+        contentPane.add(modulLearningObjLabel);
         contentPane.add(createModulLearningObj);
+        
+        contentPane.add(modulResourcesLabel);
         contentPane.add(createModulRes);
+        
+        contentPane.add(modulExcerciseLabel);
         contentPane.add(createModulEx);
+        
+        contentPane.add(modulEvaluationForm);
         contentPane.add(createModulEval);
         
         JButton createModulButton = new JButton("Opprett modul");
@@ -407,7 +443,8 @@ public class TabModuloversikt {
             columns.add("resources");
             columns.add("excercise");
             columns.add("evalForm");
-            int i = Integer.parseInt(createIdModul.getText());
+            
+            int i = (Integer) modulesList.getSelectedItem();
             values.add(i);
             values.add(createModulTitle.getText());
             values.add(createModulDesc.getText());
@@ -418,10 +455,12 @@ public class TabModuloversikt {
             
                 EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                dbConnector.insertIntoDB(modul, columns, values);
-                //System.out.println(insert);
-             
-                System.out.println("Lagrer modul i database");
+                String confirmationString = dbConnector.insertIntoDB(modul, columns, values);
+                JOptionPane.showMessageDialog(createModulDialog, confirmationString, confirmationString, 1);
+                System.out.println(confirmationString);
+                if(confirmationString.equals("Opplastning vellykket!")) {
+                    createModulDialog.dispose();
+                }
                 
             }
         });
