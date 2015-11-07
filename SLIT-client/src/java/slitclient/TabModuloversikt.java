@@ -9,7 +9,10 @@ package slitclient;
 
 import db.dbConnectorRemote;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -168,7 +171,29 @@ public class TabModuloversikt {
     private void openDeliveryListDialog(int i)   {
         JDialog deliveryListDialog = new JDialog(frame, "Innleveringer i modul " + i, true);
         JPanel contentPane = (JPanel) deliveryListDialog.getContentPane();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        JLabel deliveredDateLabel = new JLabel("Leveringsdato:");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        contentPane.add(deliveredDateLabel, gbc);
+        JLabel evaluatedDateLabel = new JLabel("Vurderingsdato:");
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        contentPane.add(evaluatedDateLabel, gbc);
+        JLabel deliveryStatusLabel = new JLabel("Vurderingsstatus:");
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        contentPane.add(deliveryStatusLabel, gbc);
+        JLabel deliveredByLabel = new JLabel("Levert av:");
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        contentPane.add(deliveredByLabel, gbc);
+        JLabel evaluatedByLabel = new JLabel("Vurdert av:");
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        contentPane.add(evaluatedByLabel, gbc);
+        
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
         ArrayList<String> columns = new ArrayList(Arrays.asList("deliveryDate", "evaluationDate", "deliveryStatus", "deliveredBy", "evaluatedBy"));
@@ -179,15 +204,24 @@ public class TabModuloversikt {
         
         ArrayList<String> deliveryList = dbConnector.multiQuery(columns, tables, where);
         int index = 0;
+        int gridBagYCounter = 1;
         while (index < deliveryList.size()) {
             System.out.println(index);
-            JPanel deliveryLine = new JPanel();
+//            JPanel deliveryLine = new JPanel();
             int lineIndex = index;
+            int gridBagXCounter = 0;
             while(lineIndex < index + columns.size())    {
-                System.out.println("lineIndex:" + lineIndex);
+//                System.out.println("lineIndex:" + lineIndex);
                 JLabel label = new JLabel(deliveryList.get(lineIndex));
-                deliveryLine.add(label);
+                JPanel panel = new JPanel();
+                panel.setBackground(Color.WHITE);
+                panel.add(label);
+                gbc.fill = GridBagConstraints.VERTICAL;
+                gbc.gridx = gridBagXCounter;
+                gbc.gridy = gridBagYCounter;
+                contentPane.add(panel, gbc);
                 lineIndex++;
+                gridBagXCounter++;
                 
             }
                 if (lineIndex == index + columns.size()) {
@@ -213,11 +247,13 @@ public class TabModuloversikt {
                 }
             });
                 
-            
-            deliveryLine.add(openFileButton);
-            contentPane.add(deliveryLine);
+            gbc.gridx = gridBagXCounter;
+            gbc.gridy = gridBagYCounter;
+            contentPane.add(openFileButton, gbc);
             index += columns.size();
-        }
+            gridBagXCounter++;
+                }
+            gridBagYCounter++;
         }
         deliveryListDialog.pack();
         deliveryListDialog.setVisible(true);
