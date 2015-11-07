@@ -217,10 +217,12 @@ public class dbConnector implements dbConnectorRemote {
     
     @Override
     public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
-            int whereValue1, String whereValue2)    {
+            int whereValue1, String whereValue2, DeliveryStatus evaluationStatus)    {
         String update = "UPDATE Delivery SET evaluation = '" + evaluationValue  + "'"
-                + ", evaluatedBy = '" + evaluatedByValue + "', evaluationDate = now()"
-                + " WHERE idModul = " + whereValue1 + " AND deliveredBy = '" + whereValue2 + "';";
+                + ", evaluatedBy = '" + evaluatedByValue + "', evaluationDate = now(), "
+                + " deliveryStatus = '" + evaluationStatus + "' WHERE idModul = " +
+                whereValue1 + " AND deliveredBy = '" + whereValue2 + "';";
+        System.out.println(update);
         DBConnection = dbConnection();
         try {
             PreparedStatement ps = DBConnection.prepareStatement(update);

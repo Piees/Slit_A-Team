@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,6 +32,7 @@ import javax.swing.JTextField;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
+import slitcommon.DeliveryStatus;
 
 /**
  *
@@ -181,16 +183,16 @@ public class TabModuloversikt {
             System.out.println(index);
             JPanel deliveryLine = new JPanel();
             int lineIndex = index;
-        
             while(lineIndex < index + columns.size())    {
                 System.out.println("lineIndex:" + lineIndex);
                 JLabel label = new JLabel(deliveryList.get(lineIndex));
                 deliveryLine.add(label);
                 lineIndex++;
-                //if (lineIndex == index + columns.size()) {
+                
             }
-                int userNameIndex = index + columns.size() -2;  
-        
+                if (lineIndex == index + columns.size()) {
+                    int userNameIndex = index + columns.size() -2;  
+                
             JButton openFileButton = new JButton("Åpne fil");
             openFileButton.addActionListener(new ActionListener() {
                 @Override
@@ -206,14 +208,16 @@ public class TabModuloversikt {
                     System.out.println(userName);
                     System.out.println(userNameIndex + " " + userName);
                     downloadFile(userName, i);
-                    openEvaluationDialog(deliveryListDialog, i);
+                    openEvaluationDialog(deliveryListDialog, i, userName);
+                    
                 }
             });
-            
+                
             
             deliveryLine.add(openFileButton);
             contentPane.add(deliveryLine);
             index += columns.size();
+        }
         }
         deliveryListDialog.pack();
         deliveryListDialog.setVisible(true);
@@ -292,19 +296,24 @@ public class TabModuloversikt {
 
         
     }
-    private void openEvaluationDialog(JDialog deliveryListDialog, int i) {
+    private void openEvaluationDialog(JDialog deliveryListDialog, int i, String userName) {
         JDialog openEvaluationDialog = new JDialog(deliveryListDialog);
         JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         contentPane.add(new JLabel("Din tilbakemelding:"));
         JTextField evaluation = new JTextField();
+        DeliveryStatus[] evaluationStatus = {DeliveryStatus.GODKJENT, DeliveryStatus.IKKEGODKJENT};
+        JComboBox evaluationStatusList = new JComboBox(evaluationStatus);
+        contentPane.add(evaluationStatusList);
         contentPane.add(evaluation);
         JButton uploadEvaluationButton = new JButton("Lagre tilbakemelding");
         contentPane.add(uploadEvaluationButton);
         uploadEvaluationButton.addActionListener(new ActionListener()   {
             @Override
             public void actionPerformed(ActionEvent e)  {
-                String returnString = uploadEvaluationToDB(evaluation.getText(), i);
+                DeliveryStatus evaluationStatusEnum = (DeliveryStatus) evaluationStatusList.getSelectedItem();
+                
+                String returnString = uploadEvaluationToDB(evaluation.getText(), i, evaluationStatusEnum, userName);
                 JOptionPane.showMessageDialog(openEvaluationDialog, returnString);
                 if(returnString.equals("Lagret i database."))  {
                     openEvaluationDialog.dispose();
@@ -315,10 +324,12 @@ public class TabModuloversikt {
         openEvaluationDialog.setVisible(true);
     }
     
-    private String uploadEvaluationToDB(String evaluation, int i)  {
+    private String uploadEvaluationToDB(String evaluation, int i, DeliveryStatus evaluationStatus,
+            String userName)  {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        return dbConnector.addDeliveryEvaluation(evaluation, userInfo.get("userName"), i, "viktos08");
+        return dbConnector.addDeliveryEvaluation(evaluation, userInfo.get("userName"), 
+                i, userName, evaluationStatus);
         
         
     }

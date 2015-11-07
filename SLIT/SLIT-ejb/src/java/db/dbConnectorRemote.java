@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.Remote;
+import slitcommon.DeliveryStatus;
 
 /**
  *
@@ -34,7 +35,7 @@ public interface dbConnectorRemote {
     public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
     
     public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
-            int whereValue1, String whereValue2);   
+            int whereValue1, String whereValue2, DeliveryStatus evaluationStatus);   
             
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
