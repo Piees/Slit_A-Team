@@ -41,7 +41,7 @@ public class dbConnector implements dbConnectorRemote {
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
-    ArrayList<String> updateUsersArrayList;
+    private ArrayList<String> updateUsersArrayList;
     private Map<String, String> userMap;
     public static HashMap<String, Map> allUsersHashMap;
     
@@ -65,6 +65,12 @@ public class dbConnector implements dbConnectorRemote {
         }
     }
     
+    /**
+     * UNUSED METHOD - REMOVE??
+     * @param query
+     * @param colName
+     * @return 
+     */
     @Override
     public String singleQuery(String query, String colName) {
         String queryResult = null;
@@ -215,17 +221,29 @@ public class dbConnector implements dbConnectorRemote {
         }
     }
     
+    /**
+     * Add evaluation to the correct row in the Delivery table in the DB
+     * @param evaluationValue the evaluation comment
+     * @param evaluatedByValue the userName of the teacher-user evaluation this delivery
+     * @param whereValue1 the idModul of the delivery being evaluated
+     * @param whereValue2 the userName of the student-user that made this delivery
+     * @param evaluationStatus the result of the evaluation, in either enum GODKJENT 
+     * or IKKEGODKJENT
+     * @return confirmation string describing result of statement
+     */
     @Override
     public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
             int whereValue1, String whereValue2, DeliveryStatus evaluationStatus)    {
-        String update = "UPDATE Delivery SET evaluation = '" + evaluationValue  + "'"
-                + ", evaluatedBy = '" + evaluatedByValue + "', evaluationDate = now(), "
-                + " deliveryStatus = '" + evaluationStatus + "' WHERE idModul = " +
-                whereValue1 + " AND deliveredBy = '" + whereValue2 + "';";
-        System.out.println(update);
+        String update = "UPDATE Delivery SET evaluation =? "
+                + ", evaluatedBy =?, evaluationDate = now(), deliveryStatus = '" + evaluationStatus + "'"
+                + " WHERE idModul =? AND deliveredBy =?;";
         DBConnection = dbConnection();
         try {
             PreparedStatement ps = DBConnection.prepareStatement(update);
+            ps.setString(1, evaluationValue);
+            ps.setString(2, evaluatedByValue);
+            ps.setInt(3, whereValue1);
+            ps.setString(4, whereValue2);
             ps.executeUpdate();
             return "Lagret i database.";
         }
@@ -236,6 +254,12 @@ public class dbConnector implements dbConnectorRemote {
     }
         
     
+    /**
+     * Counts the number of rows in a given table
+     * @param column the name of column to be counted (can be all, expressed with *)
+     * @param tableName the name of the DB-table to count rows in
+     * @return the number of rows found in the given table
+     */
     @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
@@ -310,60 +334,61 @@ public class dbConnector implements dbConnectorRemote {
         return queryResults;
     } 
     
-//    @Override
-//    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
-//            tables, ArrayList<String> where)    {
-//        String query = "SELECT ";
-//        HashMap<String, String> queryResults = new HashMap<>();
-//        
-//        int countColumns = 0;
-//        while(columns.size() > (countColumns +1))   {
-//            query += columns.get(countColumns) + ", ";
-//            countColumns++;
-//        }
-//        query += columns.get(countColumns) + " FROM ";
-//        
-//        int countTables = 0;
-//        while(tables.size() > (countTables +1)) {
-//            query += tables.get(countTables) + ", ";
-//            countTables++;
-//        }
-//        query += tables.get(countTables);
-//        if(where != null)    {
-//            int countWhere = 0;
-//            query += " WHERE ";
-//                while(where.size() > (countWhere +1))   {
-//                query += where.get(countWhere) + ", ";
-//                countWhere ++;
-//                }
-//            query += where.get(countWhere) + ";";
-//        }
-//        else {
-//            query += ";";
-//        }
-//        DBConnection = dbConnection();
-//        try {
-//            System.out.println("try i multi-query metode");
-//            PreparedStatement ps = DBConnection.prepareStatement(query);
-//            System.out.println(ps);
-//            ResultSet rs = ps.executeQuery();
-//            ResultSetMetaData rsmd = rs.getMetaData();
-//            int columnCount = rsmd.getColumnCount();
-//            while (rs.next())   {
-//                int i = 1;
-//                while (columnCount >= i)    {
-//                    queryResults.put(columns.get(i),rs.getString(i));
-//                    i++;
-//                }
-//            }
-//            System.out.println("QueryResults-liste HER: " + queryResults.size());
-//        }
-//        catch (SQLException e)  {
-//            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
-//            System.out.println(e);
-//        }
-//        return queryResults;
-//    } 
+    @Override
+    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+            tables, ArrayList<String> where)    {
+        String query = "SELECT ";
+        HashMap<String, String> queryResults = new HashMap<>();
+        
+        int countColumns = 0;
+        while(columns.size() > (countColumns +1))   {
+            query += columns.get(countColumns) + ", ";
+            countColumns++;
+        }
+        query += columns.get(countColumns) + " FROM ";
+        
+        int countTables = 0;
+        while(tables.size() > (countTables +1)) {
+            query += tables.get(countTables) + ", ";
+            countTables++;
+        }
+        query += tables.get(countTables);
+        if(where != null)    {
+            int countWhere = 0;
+            query += " WHERE ";
+                while(where.size() > (countWhere +1))   {
+                query += where.get(countWhere) + ", ";
+                countWhere ++;
+                }
+            query += where.get(countWhere) + ";";
+        }
+        else {
+            query += ";";
+        }
+        DBConnection = dbConnection();
+        try {
+            System.out.println("try i multi-query metode");
+            PreparedStatement ps = DBConnection.prepareStatement(query);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while (rs.next())   {
+                int i = 1;
+                while (columnCount >= i)    {
+                    queryResults.put(columns.get(i),rs.getString(i));
+                    i++;
+                }
+            }
+            System.out.println("QueryResults-liste HER: " + queryResults.size());
+        }
+        catch (SQLException e)  {
+            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+            System.out.println(e);
+        }
+        return queryResults;
+    } 
+    
     @Override
     public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
         String query = "SELECT * " +
