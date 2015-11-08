@@ -336,10 +336,10 @@ public class dbConnector implements dbConnectorRemote {
     } 
     
     @Override
-    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+    public ArrayList multiQueryHash(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where)    {
         String query = "SELECT ";
-        HashMap<String, String> queryResults = new HashMap<>();
+        ArrayList<HashMap> queryResults = new ArrayList();
         
         int countColumns = 0;
         while(columns.size() > (countColumns +1))   {
@@ -375,11 +375,15 @@ public class dbConnector implements dbConnectorRemote {
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
             while (rs.next())   {
-                int i = 1;
-                while (columnCount >= i)    {
-                    queryResults.put(columns.get(i),rs.getString(i));
-                    i++;
+                HashMap<String, String> resultMap = new HashMap<>();
+                int columnsListIndex = 0;
+                int resultSetIndex = 1;
+                while (columnCount >= columnsListIndex)    {
+                    resultMap.put(columns.get(columnsListIndex),rs.getString(resultSetIndex));
+                    columnsListIndex++;
+                    resultSetIndex++;
                 }
+                queryResults.add(resultMap);
             }
             System.out.println("QueryResults-liste HER: " + queryResults.size());
         }
