@@ -52,11 +52,7 @@ public class TabModuloversikt {
         this.userInfo = userInfo;
         this.frame = frame;
     }
-    /**
-     * Lager moduloversikttaben. 
-     * Lager utvidbar liste med antall moduler.
-     * @return JPanel tab2Panel returnerer panel med innholdet i tab2
-     */
+    
     public JPanel makeModuloversiktTab()    {
         JPanel tab2Panel = new JPanel();
         
@@ -78,6 +74,7 @@ public class TabModuloversikt {
 //        tab2Panel.add(testQuery2());
         return tab2Panel;
     }   
+    
     public Component makeAccordion(){
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
@@ -90,7 +87,6 @@ public class TabModuloversikt {
     
     return panel;
     }
-    
     public JXTaskPaneContainer makeModulList(int numberOfModuls)    {
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();  
         int i = 1;
@@ -139,6 +135,16 @@ public class TabModuloversikt {
         
         return modulListContainer;
     }
+    
+    /**
+     * Adds the content for each module by looping through the arraylist and
+     * displaying all results as labels
+     * If student-user, adds a button for adding deliveries to each module
+     * If teacher-user, adds a button for opening list of deleveries for each module
+     * @param content list of content in modules
+     * @param modulPane the modulPane component labels should be added to
+     * @param i the idModul of the current module
+     */
     public void addContent(ArrayList<String> content, JXTaskPane modulPane, int i)   {
         for(String string : content)    {
             JLabel label = new JLabel(string);
@@ -168,6 +174,13 @@ public class TabModuloversikt {
                 
     }
         
+    /**
+     * Window for showing all deliveries for the chosen module
+     * Gets all deliveries for the current module from the DB, showing them in a
+     * GirdBagLayout-grid. Each delivery has a button which downloads the delivery-file
+     * and opens the evaluation window by calling openEvaluationDialog(..)
+     * @param i the idModul of the selected module
+     */
     private void openDeliveryListDialog(int i)   {
         JDialog deliveryListDialog = new JDialog(frame, "Innleveringer i modul " + i, true);
         JPanel contentPane = (JPanel) deliveryListDialog.getContentPane();
@@ -260,6 +273,12 @@ public class TabModuloversikt {
         
     }
     
+    /**
+     * Downloads a file from the DB and saves it to desktop-directory of users system
+     * 
+     * @param userName the user name of the user that has delivered this file
+     * @param idModul the id of the modul we're downloading the delivered file for
+     */
     private void downloadFile(String userName, int idModul) {
         // Hente fra database : dbConnector.getFileFromDelivery();
         // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
@@ -332,6 +351,17 @@ public class TabModuloversikt {
 
         
     }
+    
+    /**
+     * Add window for teacher-users, in order to give evaluation on deliveries
+     * User needs to choose one alternative from the drop-down list and then 
+     * enter an evaluation comment. When button store-evaluation is clicked,
+     * method uploadEvaluationToDB is called. This returns a confirmation string.
+     * If stored successfully in DB, window is closed.
+     * @param deliveryListDialog the parent component of this JDialog
+     * @param i the idModul-number of the module that's being evaluated
+     * @param userName the userName of the user that has made a delivery for this module
+     */
     private void openEvaluationDialog(JDialog deliveryListDialog, int i, String userName) {
         JDialog openEvaluationDialog = new JDialog(deliveryListDialog, "Gi tilbakemelding", true);
         JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
@@ -364,6 +394,17 @@ public class TabModuloversikt {
         openEvaluationDialog.setVisible(true);
     }
     
+    /**
+     * Used by the addEvaluationDialog() method for storing an evaluation in the
+     * DB. Calls the updating-method in dbConnector, which returns a confirmation
+     * string. This is returned to addEvaluationMethod()
+     * @param evaluation the evaluation that should be stored in DB
+     * @param i idModule of the module this delivery belongs to
+     * @param evaluationStatus the enum-value of the evaluation, either GODKJENT
+     * or IKKEGODKJENT
+     * @param userName the user name of the student that has made this delivery
+     * @return confirmation string showing result of update-statement
+     */
     private String uploadEvaluationToDB(String evaluation, int i, DeliveryStatus evaluationStatus,
             String userName)  {
         EJBConnector ejbConnector = EJBConnector.getInstance();
@@ -373,6 +414,16 @@ public class TabModuloversikt {
         
         
     }
+    
+    /**
+     * Adds window for adding a deliery to a module (for a student-user)
+     * When clicking button for choosing file, default OS file explorer opens and user needs
+     * to select which file to upload. Only supports uploading one file.
+     * When user clicks button for uploading delivery, the file and user
+     * information is stored as a new row in the database table Delivery.
+     * Show user a confirmation dialog. If stored successfully, window is closed.
+     * @param i which module this delivery belongs to
+     */
     private void addDeliveryDialog(int i) {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
@@ -417,7 +468,11 @@ public class TabModuloversikt {
         });
     }
     
-    
+    /**
+     * Adds window for creating a new module, storing it in the database
+     * and showing the user a confirmation dialog. If stored successfully,
+     * window is closed.
+     */
     public void createModul()   {
         JDialog createModulDialog = new JDialog(frame, "Opprett ny modul", true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
