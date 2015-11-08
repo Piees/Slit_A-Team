@@ -1,5 +1,4 @@
 /*
- *  test
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -39,20 +38,28 @@ import slitcommon.DeliveryStatus;
 
 /**
  *
- * @author Arild
+ * @author Arild, Viktor, Håkon
  */
 public class TabModuloversikt {
-    private final int IS109 = 5;
-    private final int IS110 = 10;
     private HashMap<String, String> userInfo;
     private JFrame frame;
-    //ArrayList<String> deliveryList;
     
+    /**
+     * Constructor for class TabModuloversikt. Stores the containing SWING-component
+     * and a HashMap with information about the currently logged in user
+     * @param userInfo map with information about the currently logged in user
+     * @param frame containing SWING-component
+     */
     public TabModuloversikt(HashMap<String, String> userInfo, JFrame frame)   {
         this.userInfo = userInfo;
         this.frame = frame;
     }
     
+    /**
+     * Creates the tab with with collapsible modul panes
+     * if teacher-user logged in, adds button for creating new modules
+     * @return JPanel containing the components created
+     */
     public JPanel makeModuloversiktTab()    {
         JPanel tab2Panel = new JPanel();
         
@@ -64,29 +71,37 @@ public class TabModuloversikt {
                         createModul();
                     }
                 });
-                
             tab2Panel.add(createModulButton);
         }
-        
         Component accordion = makeAccordion();
         tab2Panel.add(accordion);
-//        tab2Panel.add(testQuery());
-//        tab2Panel.add(testQuery2());
         return tab2Panel;
     }   
     
+    /**
+     * Creates the containing element for the collapsible modul panes
+     * @return the component containing the reated collapsible modul panes
+     */
     public Component makeAccordion(){
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
-        
-        ArrayList<Modul> modulList = new ArrayList<Modul>(Modul.makeModules(IS109));  
-    EJBConnector ejbConnector = EJBConnector.getInstance();
-    dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-    int numberOfModuls = dbConnector.countRows("*", "Modul");
-    panel.add(makeModulList(numberOfModuls));// = makeModulList(numberOfModuls); 
-    
-    return panel;
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        panel.add(makeModulList(numberOfModuls));
+        return panel;
     }
+    
+    /**
+     * Creates the collapsible panes for each module
+     * If student-user logged in, each module header shows module name and status
+     * of current delivery for this module
+     * If teacher-user logged in, module header shows module name and number of 
+     * deliveries for this module divided on total number of students
+     * @param numberOfModuls the number of modules to be created
+     * @return JXTaskPaneContainer  the container containing all the collapsible
+     * panes with module content
+     */
     public JXTaskPaneContainer makeModulList(int numberOfModuls)    {
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();  
         int i = 1;
@@ -132,7 +147,6 @@ public class TabModuloversikt {
                 i++;
                 }
             }
-        
         return modulListContainer;
     }
     
@@ -161,6 +175,7 @@ public class TabModuloversikt {
                 }
             });
         }
+            //DELIVERY LIST BUTTON
         else if (userInfo.get("userType").equals("teacher"))    {
             JButton openDeliveryListButton = new JButton("Se innleveringer");
             modulPane.add(openDeliveryListButton);
