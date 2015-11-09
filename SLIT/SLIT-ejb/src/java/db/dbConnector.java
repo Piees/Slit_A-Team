@@ -498,7 +498,6 @@ public class dbConnector implements dbConnectorRemote {
             // If true then the username + password was a match
             if (rs.next()) {
                 InputStream InputStream = rs.getBinaryStream("deliveryFile");
-                String fileName = rs.getString("fileName");
                 //System.out.println("deliveryFile seems to be converted to inputStream");
                 
                 byte[] byteData;
@@ -542,5 +541,62 @@ public class dbConnector implements dbConnectorRemote {
         }
         return null;
     }
-   
+    
+    @Override
+    public ArrayList<HashMap> getResources() {
+        String query = "SELECT idResources, title, ResourceText, fileName, url, resourceDate, userName, resourceDate, userName FROM Resources";
+        Connection dbConnection = dbConnection();
+        ArrayList<HashMap> resources = new ArrayList<>();
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            // If true then the username + password was a match
+            if (rs.next()) {
+                HashMap<String, Object> resourceMap = new HashMap<>();
+                resourceMap.put("userName", rs.getString("userName"));
+                resourceMap.put("idResources", rs.getInt("idResources"));
+                resourceMap.put("title", rs.getString("title"));
+                resourceMap.put("ResourceText", rs.getString("ResourceText"));
+                resourceMap.put("url", rs.getString("url"));
+                resourceMap.put("resourceDate", rs.getTimestamp("resourceDate"));
+                resourceMap.put("fileName", rs.getString("fileName"));
+                resources.add(resourceMap);
+            } 
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return resources;
+    }
+    
+    @Override
+    public byte[] getResourceFile(int idResources) {
+        String query = "SELECT resourceFile FROM Resources WHERE idResources=?";
+        Connection dbConnection = dbConnection();
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setInt(1, idResources);
+            ResultSet rs = ps.executeQuery();
+            // If true then the username + password was a match
+            if (rs.next()) {
+                InputStream InputStream = rs.getBinaryStream("resourceFile");
+                byte[] byteData;
+                try {
+                    byteData = ByteStreams.toByteArray(InputStream);
+ 
+                    return byteData;
+                } catch (IOException ex) {
+                    Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+            } 
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+           
+    }
 }
