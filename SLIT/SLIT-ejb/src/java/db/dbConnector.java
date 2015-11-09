@@ -193,10 +193,11 @@ public class dbConnector implements dbConnectorRemote {
                     FileInputStream fileInput = null;
                     try {
                         fileInput = new FileInputStream(file);
+                        ps.setBinaryStream(i,(FileInputStream) fileInput);
+
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    ps.setBinaryStream(i,(FileInputStream) fileInput);
                 }           
                 else if (values.get(index) instanceof Timestamp) {
                     ps.setTimestamp(i,(Timestamp) values.get(index)); 
@@ -479,10 +480,11 @@ public class dbConnector implements dbConnectorRemote {
     public HashMap<String, Map> getAllUsersHashMap() {
         return allUsersHashMap;
     }
+
     
     @Override
     public byte[] getFileFromDelivery(String userName, int idModul) {
-        String query = "SELECT deliveryFile FROM Delivery WHERE deliveredBy =? AND idModul=?";
+        String query = "SELECT deliveryFile, fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
 
         Connection dbConnection = dbConnection();
         
@@ -492,18 +494,47 @@ public class dbConnector implements dbConnectorRemote {
             ps.setString(1, userName);
             ps.setInt(2, idModul);
             ResultSet rs = ps.executeQuery();
+                        
             // If true then the username + password was a match
             if (rs.next()) {
                 InputStream InputStream = rs.getBinaryStream("deliveryFile");
-                System.out.println("deliveryFile seems to be converted to inputStream");
+                String fileName = rs.getString("fileName");
+                //System.out.println("deliveryFile seems to be converted to inputStream");
                 
-                byte[] bytes;
+                byte[] byteData;
                 try {
-                    bytes = ByteStreams.toByteArray(InputStream);
-                    return bytes;
+                    byteData = ByteStreams.toByteArray(InputStream);
+ 
+                    return byteData;
                 } catch (IOException ex) {
                     Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
                 } 
+            }   
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    @Override
+    public String getFileNameFromDelivery(String userName, int idModul) {
+        String query = "SELECT fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
+
+        Connection dbConnection = dbConnection();
+        
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setString(1, userName);
+            ps.setInt(2, idModul);
+            ResultSet rs = ps.executeQuery();
+                        
+            // If true then the username + password was a match
+            if (rs.next()) {
+                String fileName = rs.getString("fileName");
+                //System.out.println("deliveryFile seems to be converted to inputStream");
+                return fileName;
             }   
         } 
         catch (SQLException ex) {

@@ -57,4 +57,5 @@ public interface dbConnectorRemote {
     
     public byte[] getFileFromDelivery(String userName, int idModul);
     //public JPanel makeContactPanel();
+    public String getFileNameFromDelivery(String userName, int idModul);
 }
