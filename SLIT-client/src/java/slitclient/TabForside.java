@@ -6,7 +6,6 @@
 package slitclient;
 
 import db.dbConnectorRemote;
-import db.dbConnector;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -14,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,6 +22,7 @@ import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -90,7 +89,8 @@ public class TabForside {
         
 //        updateContactPanel();
         contactPanel = makeContactPanel();
-        JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
+//        JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
+        scrollContactPanel = new JScrollPane(contactPanel);
         GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -213,6 +213,12 @@ public class TabForside {
             setBorder(new TitledBorder (new EtchedBorder(), 
                 "Kontakter"));
         }
+        
+//        @Override
+//        public Dimension getMinimumSize() {
+//            return new Dimension(400,200);
+//        }
+        
     }
     
     /**
@@ -229,13 +235,17 @@ public class TabForside {
         boolean contactHelperToRight = false;
         HashMap<String, Map> allUsersLimitedHashMap = new HashMap<>();
         try {
-            if(searchField.getText().isEmpty()) {
+            if(searchField.getText().length() <= 0) {
+//            if(searchField.getText().isEmpty()) {
             allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
             System.out.println("Empty-Fish");
             } 
             else {
                 for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
+                    if(Pattern.matches(".*" + searchField.getText() + ".*", entry.getKey())) {
                     allUsersLimitedHashMap.put(entry.getKey(), entry.getValue());
+                    System.out.println("Pattern matches!");
+                    }
                     System.out.println("ENTRY-FISH");
                     System.out.println(allUsersLimitedHashMap);
                 }
@@ -244,9 +254,10 @@ public class TabForside {
         catch(Exception e) {
             System.out.println(e);
         }
-        allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
+//        allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
 //        HashMap<String, Map> fishmap = this.dbConnector.getAllUsersHashMap();
-        for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) { //this.??
+        for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
+//        for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
             String key = entry.getKey();
             String mail = (String) entry.getValue().get("mail");
             String name = (String) entry.getValue().get("fname") + " " +
@@ -316,7 +327,7 @@ public class TabForside {
 //            contactPanel.removeAll();
             makeContactPanel();
             contactPanel.revalidate();
-            contactPanel.repaint();
+//            contactPanel.repaint();
 //            makeContactPanel();
 //            updateContactPanel();
             
