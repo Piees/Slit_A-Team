@@ -8,6 +8,7 @@ package slitclient;
 import db.dbConnectorRemote;
 import db.dbConnector;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -19,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,12 @@ import javax.swing.border.TitledBorder;
 public class TabForside {
     
     dbConnectorRemote dbConnector;
+    JTextField searchField;
+    JPanel contactPanel;
+    GridBagLayout tab1Layout;
+    JPanel tab1Panel;
+    JScrollPane scrollContactPanel;
+    boolean initialRun = true;
     
     public TabForside() {
         EJBConnector ejbConnector = EJBConnector.getInstance();
@@ -53,8 +61,8 @@ public class TabForside {
      * @return JPanel tab1Panel panel med innholdet i tab 1
      */
     public JPanel makeForsideTab()    {
-        JPanel tab1Panel = new JPanel();
-        GridBagLayout tab1Layout = new GridBagLayout();
+        tab1Panel = new JPanel();
+        tab1Layout = new GridBagLayout();
         tab1Panel.setLayout(tab1Layout);
         
         JPanel nextLecturePanel = makeLecturePanel();
@@ -79,7 +87,9 @@ public class TabForside {
         tab1Layout.setConstraints(messagesPanel, gbcMP);
         tab1Panel.add(messagesPanel);
 
-        JPanel contactPanel = makeContactPanel();
+        
+//        updateContactPanel();
+        contactPanel = makeContactPanel();
         JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
         GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -100,6 +110,27 @@ public class TabForside {
         tab1Panel.add(activityPanel);
     return tab1Panel;
     }    
+    
+    
+    public void updateContactPanel() {
+        try {
+            tab1Panel.remove(scrollContactPanel);
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
+        contactPanel = makeContactPanel();
+        scrollContactPanel = new JScrollPane(contactPanel);
+        GridBagConstraints gbcCP = new GridBagConstraints();
+        scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        gbcCP.gridx = 2;
+        gbcCP.gridy = 1;
+        gbcCP.gridheight = 2;
+        gbcCP.insets = new Insets(-350, 0, 10, -200);
+        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
+        tab1Panel.add(scrollContactPanel);
+    }
     
     
     public class ForsideTab extends JPanel {
@@ -189,15 +220,31 @@ public class TabForside {
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
      */
     private JPanel makeContactPanel()    {
-        JPanel contactPanel = new borderPanel();
+        if(contactPanel == null) {
+            contactPanel = new borderPanel();
+        }
         GridBagLayout contactLayout = new GridBagLayout();
         contactPanel.setLayout(contactLayout);
-        
-        
-        
-        System.out.println("Pre-FISH");
         int contactHelpery = 1;
         boolean contactHelperToRight = false;
+        HashMap<String, Map> allUsersLimitedHashMap = new HashMap<>();
+        try {
+            if(searchField.getText().isEmpty()) {
+            allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
+            System.out.println("Empty-Fish");
+            } 
+            else {
+                for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
+                    allUsersLimitedHashMap.put(entry.getKey(), entry.getValue());
+                    System.out.println("ENTRY-FISH");
+                    System.out.println(allUsersLimitedHashMap);
+                }
+            } 
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
+        allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
 //        HashMap<String, Map> fishmap = this.dbConnector.getAllUsersHashMap();
         for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) { //this.??
             String key = entry.getKey();
@@ -230,16 +277,18 @@ public class TabForside {
             }
             contactHelperToRight = !contactHelperToRight;
         }
-
+        
+        if(initialRun) {
         GridBagConstraints gbcSearchField = new GridBagConstraints();
-        JTextField searchField = new JTextField(20);
+        searchField = new JTextField(20);
         searchField.addKeyListener(new ContactSearchKeyListener());
         gbcSearchField.gridx = 0;
         gbcSearchField.gridy = 0;
         gbcSearchField.gridwidth = 2;
         contactLayout.setConstraints(searchField, gbcSearchField);
         //searchField.addActionListener(new returnSearchResults); //tbi
-        contactPanel.add(searchField); 
+        contactPanel.add(searchField); }
+        initialRun = false;
     return contactPanel;
     }
     
@@ -256,6 +305,27 @@ public class TabForside {
         @Override
         public void keyReleased(KeyEvent e) {
             System.out.println("FISH!");
+            System.out.println(searchField.getText());
+            Component[] contactPanelComponents = contactPanel.getComponents();
+            for(int i = 0; i < contactPanelComponents.length; i++) {
+                System.out.println(Array.get(contactPanelComponents, i));
+                if(Array.get(contactPanelComponents, i) instanceof JButton) {
+                contactPanel.remove((Component) Array.get(contactPanelComponents, i));
+                }
+            }
+//            contactPanel.removeAll();
+            makeContactPanel();
+            contactPanel.revalidate();
+            contactPanel.repaint();
+//            makeContactPanel();
+//            updateContactPanel();
+            
+//    JTextField searchField;
+//    JPanel contactPanel;
+//    GridBagLayout tab1Layout;
+//    JPanel tab1Panel;
+//    JScrollPane scrollContactPanel;            
+            
         }
     }
     
