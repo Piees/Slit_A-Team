@@ -57,7 +57,7 @@ public class FileDownloader {
      * @param userName the user name of the user that has delivered this file
      * @param idModul the id of the modul we're downloading the delivered file for
      */
-    public void downloadDeliveryFile(String userName, int idModul) {
+    public String downloadDeliveryFile(String userName, int idModul) {
         // Hente fra database : dbConnector.getFileFromDelivery();
         // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
         // automatisk lagre i default download mappe.
@@ -76,10 +76,11 @@ public class FileDownloader {
             FileOutputStream out = new FileOutputStream(filepath);
             out.write(byteData);
             out.close();
+            return filename + " successfully downloaded";
         } catch (Exception ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }
-                
+        return "Downloading " + filename + " failed";         
     }
     
     /**
