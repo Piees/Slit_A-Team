@@ -308,8 +308,8 @@ public class TabModuloversikt {
         
         //System.out.println(javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory());
         
-        byte[] byteData = dbConnector.getFileFromDelivery(userName, idModul);
-        String oldFileName = dbConnector.getFileNameFromDelivery(userName, idModul);
+        byte[] byteData = dbConnector.getDeliveryFile(userName, idModul);
+        String oldFileName = dbConnector.getDeliveryFilename(userName, idModul);
         
         try {
             String[] fileMetadata = oldFileName.split(Pattern.quote("."));

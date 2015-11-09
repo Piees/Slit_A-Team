@@ -483,7 +483,7 @@ public class dbConnector implements dbConnectorRemote {
 
     
     @Override
-    public byte[] getFileFromDelivery(String userName, int idModul) {
+    public byte[] getDeliveryFile(String userName, int idModul) {
         String query = "SELECT deliveryFile, fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
 
         Connection dbConnection = dbConnection();
@@ -517,7 +517,7 @@ public class dbConnector implements dbConnectorRemote {
     }
     
     @Override
-    public String getFileNameFromDelivery(String userName, int idModul) {
+    public String getDeliveryFilename(String userName, int idModul) {
         String query = "SELECT fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
 
         Connection dbConnection = dbConnection();
@@ -544,7 +544,7 @@ public class dbConnector implements dbConnectorRemote {
     
     @Override
     public ArrayList<HashMap> getResources() {
-        String query = "SELECT idResources, title, ResourceText, fileName, url, resourceDate, userName, resourceDate, userName FROM Resources";
+        String query = "SELECT * FROM Resources";
         Connection dbConnection = dbConnection();
         ArrayList<HashMap> resources = new ArrayList<>();
         try {
@@ -552,10 +552,10 @@ public class dbConnector implements dbConnectorRemote {
             PreparedStatement ps = dbConnection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             // If true then the username + password was a match
-            if (rs.next()) {
+            while (rs.next()) {
                 HashMap<String, Object> resourceMap = new HashMap<>();
                 resourceMap.put("userName", rs.getString("userName"));
-                resourceMap.put("idResources", rs.getInt("idResources"));
+                resourceMap.put("idResource", rs.getInt("idResource"));
                 resourceMap.put("title", rs.getString("title"));
                 resourceMap.put("ResourceText", rs.getString("ResourceText"));
                 resourceMap.put("url", rs.getString("url"));
@@ -563,6 +563,7 @@ public class dbConnector implements dbConnectorRemote {
                 resourceMap.put("fileName", rs.getString("fileName"));
                 resources.add(resourceMap);
             } 
+
         } 
         catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
@@ -572,7 +573,7 @@ public class dbConnector implements dbConnectorRemote {
     
     @Override
     public byte[] getResourceFile(int idResources) {
-        String query = "SELECT resourceFile FROM Resources WHERE idResources=?";
+        String query = "SELECT resourceFile FROM Resources WHERE idResource=?";
         Connection dbConnection = dbConnection();
         try {
             // PreparedStatement prevents SQL Injections by users.
@@ -598,5 +599,6 @@ public class dbConnector implements dbConnectorRemote {
         return null;
     }
            
-    }
+ 
 }
+

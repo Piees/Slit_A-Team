@@ -55,9 +55,9 @@ public interface dbConnectorRemote {
     
     public HashMap<String, Map> getAllUsersHashMap();
     
-    public byte[] getFileFromDelivery(String userName, int idModul);
+    public byte[] getDeliveryFile(String userName, int idModul);
     //public JPanel makeContactPanel();
-    public String getFileNameFromDelivery(String userName, int idModul);
+    public String getDeliveryFilename(String userName, int idModul);
     
     public ArrayList<HashMap> getResources();
     
