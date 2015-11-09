@@ -54,7 +54,7 @@ public class TabFagstoff {
                 }
             });
         }
-        tab3Panel = showFagstoff(tab3Panel);
+        tab3Panel = makeContent(tab3Panel);
         tab3Panel.setLayout(new BoxLayout(tab3Panel, BoxLayout.PAGE_AXIS));
         tab3Panel.repaint();
         return tab3Panel;
@@ -123,65 +123,61 @@ public class TabFagstoff {
             }
         });
     }
-    
-        public JPanel showFagstoff(JPanel tab3Panel) {
-            EJBConnector ejbConnector = EJBConnector.getInstance();
-            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-            ArrayList<HashMap> resources = dbConnector.getResources();
-            
-            for (int i = resources.size()-1; i >= 0; i--) {
-                String title = resources.get(i).get("title").toString(); 
-                int idResources = (Integer) resources.get(i).get("idResource");
-                String resourceText = resources.get(i).get("ResourceText").toString();
-                String url = resources.get(i).get("url").toString();
-                String filename = resources.get(i).get("fileName").toString();
-                String userName = resources.get(i).get("userName").toString();
-                String timestamp = resources.get(i).get("resourceDate").toString();
-                timestamp = removeFractionalSeconds(timestamp);
-                byte[] fileData = dbConnector.getResourceFile(idResources);
+        
+    private JPanel makeContent(JPanel tab3Panel) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        ArrayList<HashMap> resources = dbConnector.getResources();
 
-                ArrayList<String> checkStrings = new ArrayList<>(Arrays.asList(title, resourceText, url));
-                String resourcePresentation = "<html>";
-                for (int index = 0; index < checkStrings.size(); index++) {
-                    if (!checkStrings.get(index).equals("")) {
-                        if (index+1 != checkStrings.size()) {
-                            resourcePresentation += checkStrings.get(index) + "<br>";
-                        }
-                        else {
-                        resourcePresentation += checkStrings.get(index) + "</html>";
-                        }
+        for (int i = resources.size()-1; i >= 0; i--) {
+            String title = resources.get(i).get("title").toString(); 
+            int idResources = (Integer) resources.get(i).get("idResource");
+            String resourceText = resources.get(i).get("ResourceText").toString();
+            String url = resources.get(i).get("url").toString();
+            String filename = resources.get(i).get("fileName").toString();
+            String userName = resources.get(i).get("userName").toString();
+            String timestamp = resources.get(i).get("resourceDate").toString();
+            timestamp = removeFractionalSeconds(timestamp);
+            byte[] fileData = dbConnector.getResourceFile(idResources);
+
+            ArrayList<String> checkStrings = new ArrayList<>(Arrays.asList(title, resourceText, url));
+            String resourcePresentation = "<html>";
+            for (int index = 0; index < checkStrings.size(); index++) {
+                if (!checkStrings.get(index).equals("")) {
+                    if (index+1 != checkStrings.size()) {
+                        resourcePresentation += checkStrings.get(index) + "<br>";
+                    }
+                    else {
+                    resourcePresentation += checkStrings.get(index) + "</html>";
                     }
                 }
-                JLabel resourceContentLabel = new JLabel(resourcePresentation);
-                tab3Panel.add(new JLabel(" "));
-                tab3Panel.add(resourceContentLabel);
-                
-                
-                if (fileData != null) {
-                    JButton downloadFileButton = new JButton(filename);
-                    downloadFileButton.addActionListener(new ActionListener() {      
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                String filepath = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath();
-                                filepath = filepath.concat("/" + filename);
-                                System.out.println(filepath);
-                                FileOutputStream out = new FileOutputStream(filepath);
-                                out.write(fileData);
-                                out.close();
-                            } catch (IOException ex) {
-                                Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    });
-                    tab3Panel.add(downloadFileButton);
-                }
-                JLabel resourceSignatureLabel = new JLabel(userName + " " + timestamp);
-                tab3Panel.add(resourceSignatureLabel);
             }
+            JLabel resourceContentLabel = new JLabel(resourcePresentation);
+            tab3Panel.add(new JLabel(" "));
+            tab3Panel.add(resourceContentLabel);
+
+
+            if (fileData != null) {
+                JButton downloadFileButton = new JButton(filename);
+                downloadFileButton.addActionListener(new ActionListener() {      
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        FileDownloader downloader = new FileDownloader();
+                        downloader.downloadResourceFile(fileData, filename);
+                    }
+                });
+                tab3Panel.add(downloadFileButton);
+            }
+            JLabel resourceSignatureLabel = new JLabel(userName + " " + timestamp);
+            tab3Panel.add(resourceSignatureLabel);
+        }
         return tab3Panel;
     }    
-        
+     
+    /**
+     * This method removes fractional seconds from timestamps, use this to give 
+     * cleaner timestamp output in GUI.
+     */
     private String removeFractionalSeconds(String timestamp) {
         return timestamp.substring(0, timestamp.length() -5);
     }

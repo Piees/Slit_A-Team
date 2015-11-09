@@ -269,7 +269,8 @@ public class TabModuloversikt {
                     System.out.println(userNameIndex);
                     System.out.println(userName);
                     System.out.println(userNameIndex + " " + userName);
-                    downloadFile(userName, i);
+                    FileDownloader downloader = new FileDownloader();
+                    downloader.downloadDeliveryFile(userName, i);
                     openEvaluationDialog(deliveryListDialog, i, userName);
                     
                 }
@@ -388,7 +389,7 @@ public class TabModuloversikt {
     }
     
     /**
-     * Adds window for adding a deliery to a module (for a student-user)
+     * Adds window for adding a delivery to a module (for a student-user)
      * When clicking button for choosing file, default OS file explorer opens and user needs
      * to select which file to upload. Only supports uploading one file.
      * When user clicks button for uploading delivery, the file and user
