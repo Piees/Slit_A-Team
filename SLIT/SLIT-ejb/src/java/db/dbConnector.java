@@ -557,7 +557,7 @@ public class dbConnector implements dbConnectorRemote {
                 resourceMap.put("userName", rs.getString("userName"));
                 resourceMap.put("idResource", rs.getInt("idResource"));
                 resourceMap.put("title", rs.getString("title"));
-                resourceMap.put("ResourceText", rs.getString("ResourceText"));
+                resourceMap.put("resourceText", rs.getString("resourceText"));
                 resourceMap.put("url", rs.getString("url"));
                 resourceMap.put("resourceDate", rs.getTimestamp("resourceDate"));
                 resourceMap.put("fileName", rs.getString("fileName"));

@@ -132,7 +132,7 @@ public class TabFagstoff {
         for (int i = resources.size()-1; i >= 0; i--) {
             String title = resources.get(i).get("title").toString(); 
             int idResources = (Integer) resources.get(i).get("idResource");
-            String resourceText = resources.get(i).get("ResourceText").toString();
+            String resourceText = resources.get(i).get("resourceText").toString();
             String url = resources.get(i).get("url").toString();
             String filename = resources.get(i).get("fileName").toString();
             String userName = resources.get(i).get("userName").toString();
