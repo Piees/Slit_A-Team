@@ -87,12 +87,13 @@ public class FileDownloader {
      * This method checks if a file with the same name already exists in the 
      * in the designated filepath. If it already exist the new file will be 
      * given a unique name.
-     */
-    private String checkIfFileAlreadyExists(String filename, String filetype) {
+     */     
+     private String checkIfFileAlreadyExists(String filename, String filetype) {
         boolean uniqueFile = false;
-        String path = filepath;
+        String path = filepath + "/" + filename + "." + filetype;
         String newFilename = filename;
         int i = 1;
+        
         while (!uniqueFile) {
             if (new File(path).exists()) {
                 newFilename = filename + "(" + i + ")";
@@ -105,6 +106,7 @@ public class FileDownloader {
         }
         return path;
     }
+
     
     /**
      * Splits a filename into filename and filetype
