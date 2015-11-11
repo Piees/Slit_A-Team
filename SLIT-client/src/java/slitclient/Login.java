@@ -21,6 +21,7 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 
 import prototypes.CreateUser;
+import prototypes.EditUser;
 
 /**
  *
@@ -170,9 +171,11 @@ public class Login {
         forgotPwdButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            JButton source = (JButton) e.getSource();
-            JOptionPane.showMessageDialog(source, source.getText()
-                        + " button has been pressed");                
+                new EditUser();
+                frame.dispose();
+//            JButton source = (JButton) e.getSource();
+//            JOptionPane.showMessageDialog(source, source.getText()
+//                        + " button has been pressed");                
             }
         });
         
