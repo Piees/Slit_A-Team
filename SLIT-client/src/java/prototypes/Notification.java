@@ -171,7 +171,7 @@ public class Notification {
      * and returns an ArrayList containing only the unique elements.
      * It also updates the futureNotifactions list
      * 
-     * (metoden bør kanskje skifte navn til noe mer beskrivende)
+     * (metoden bor kanskje skifte navn til noe mer beskrivende)
      */
     public ArrayList<HashMap> removeRegisteredNotification(ArrayList<HashMap> newFutureNotifications) {
         Set newSet = new HashSet(newFutureNotifications);
@@ -238,9 +238,9 @@ public class Notification {
             values.add(text);
             System.out.println(dbConnector.insertIntoDB("Notification", columns, values));
 //            System.out.println("ugly hack inc!");
-//            // DETTE FÅR PROGRAMMET TIL Å STOPPE OPP I 1 sekund, 
-//            // SLIK AT DB MEST SANSYNLIGVIS REKKER Å OPPDATERE SEG(INGEN GARANTI), 
-//            // VI BØR NOK IKKE HA LIGNENDE LOGIKK I DEN ENDELIGE VERSJONEN.
+//            // DETTE FoR PROGRAMMET TIL Ã¥ STOPPE OPP I 1 sekund, 
+//            // SLIK AT DB MEST SANSYNLIGVIS REKKER Ã¥ OPPDATERE SEG(INGEN GARANTI), 
+//            // VI BÃ¸R NOK IKKE HA LIGNENDE LOGIKK I DEN ENDELIGE VERSJONEN.
 //            try {
 //                Thread.sleep(1000);
 //            } catch (InterruptedException ex) {

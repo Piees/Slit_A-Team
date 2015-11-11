@@ -13,7 +13,6 @@
             </test-roots>
             <included-library dirs="200">reference.SLIT-common.jar</included-library>
             <included-library dirs="200">file.reference.swingx-all-1.6.4.jar</included-library>
-            <included-library dirs="100">reference.SLIT-ejb.dist</included-library>
             <included-library dirs="200">file.reference.guava-18.0.jar</included-library>
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
@@ -24,14 +23,6 @@
                 <target>jar</target>
                 <clean-target>clean</clean-target>
                 <id>jar</id>
-            </reference>
-            <reference>
-                <foreign-project>SLIT-ejb</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>dist</target>
-                <clean-target>clean</clean-target>
-                <id>dist</id>
             </reference>
         </references>
     </configuration>

@@ -7,8 +7,6 @@ package slitclient;
 
 import java.util.ArrayList;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import org.jdesktop.swingx.JXLabel;
 
 /**
  *

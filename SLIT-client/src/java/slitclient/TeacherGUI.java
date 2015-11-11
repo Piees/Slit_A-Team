@@ -5,11 +5,9 @@
  */
 package slitclient;
 
-import db.dbConnector;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;

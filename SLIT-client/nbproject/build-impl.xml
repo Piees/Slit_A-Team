@@ -771,13 +771,9 @@ exists or setup the property manually. For example like this:
     </target>
     <target depends="init" if="no.dist.ear.dir" name="-deps-module-jar" unless="no.deps">
         <ant antfile="${project.SLIT-common}/build.xml" inheritall="false" target="jar"/>
-        <ant antfile="${project.SLIT-ejb}/build.xml" inheritall="false" target="dist"/>
     </target>
     <target depends="init" if="dist.ear.dir" name="-deps-ear-jar" unless="no.deps">
         <ant antfile="${project.SLIT-common}/build.xml" inheritall="false" target="jar"/>
-        <ant antfile="${project.SLIT-ejb}/build.xml" inheritall="false" target="dist-ear">
-            <property location="${build.dir}" name="dist.ear.dir"/>
-        </ant>
     </target>
     <target depends="init, -check-main-class, -deps-module-jar, -deps-ear-jar" name="deps-jar"/>
     <target depends="init,deps-jar" name="-pre-pre-compile">
@@ -790,23 +786,20 @@ exists or setup the property manually. For example like this:
     <target depends="compile" if="is.server.weblogic" name="library-inclusion-in-archive">
         <basename file="${reference.SLIT-common.jar}" property="manifest.reference.SLIT-common.jar"/>
         <basename file="${file.reference.swingx-all-1.6.4.jar}" property="manifest.file.reference.swingx-all-1.6.4.jar"/>
-        <basename file="${reference.SLIT-ejb.dist}" property="manifest.reference.SLIT-ejb.dist"/>
         <basename file="${file.reference.guava-18.0.jar}" property="manifest.file.reference.guava-18.0.jar"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 "/>
+            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 "/>
             <attribute name="jar-1-Extension-Name" value="${manifest.reference.SLIT-common.jar}"/>
             <attribute name="jar-2-Extension-Name" value="${manifest.file.reference.swingx-all-1.6.4.jar}"/>
-            <attribute name="jar-3-Extension-Name" value="${manifest.reference.SLIT-ejb.dist}"/>
-            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.guava-18.0.jar}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.guava-18.0.jar}"/>
         </manifest>
     </target>
     <target depends="compile" if="dist.ear.dir" name="library-inclusion-in-manifest">
         <copyfiles files="${reference.SLIT-common.jar}" manifestproperty="manifest.reference.SLIT-common.jar" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.swingx-all-1.6.4.jar}" manifestproperty="manifest.file.reference.swingx-all-1.6.4.jar" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.SLIT-ejb.dist}" manifestproperty="manifest.reference.SLIT-ejb.dist" todir="${dist.ear.dir}"/>
         <copyfiles files="${file.reference.guava-18.0.jar}" manifestproperty="manifest.file.reference.guava-18.0.jar" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.reference.SLIT-common.jar} lib/${manifest.reference.SLIT-common.jar} ${manifest.file.reference.swingx-all-1.6.4.jar} lib/${manifest.file.reference.swingx-all-1.6.4.jar} ${manifest.reference.SLIT-ejb.dist} ${manifest.file.reference.guava-18.0.jar} lib/${manifest.file.reference.guava-18.0.jar} "/>
+            <attribute name="Class-Path" value="${manifest.reference.SLIT-common.jar} lib/${manifest.reference.SLIT-common.jar} ${manifest.file.reference.swingx-all-1.6.4.jar} lib/${manifest.file.reference.swingx-all-1.6.4.jar} ${manifest.file.reference.guava-18.0.jar} lib/${manifest.file.reference.guava-18.0.jar} "/>
         </manifest>
     </target>
     <target name="-copy-meta-inf">
@@ -1311,7 +1304,6 @@ exists or setup the property manually. For example like this:
             -->
     <target depends="init" name="deps-clean" unless="no.deps">
         <ant antfile="${project.SLIT-common}/build.xml" inheritall="false" target="clean"/>
-        <ant antfile="${project.SLIT-ejb}/build.xml" inheritall="false" target="clean"/>
     </target>
     <target depends="init" name="-do-clean">
         <delete dir="${build.dir}"/>

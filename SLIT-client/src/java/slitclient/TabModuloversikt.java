@@ -38,7 +38,7 @@ import slitcommon.DeliveryStatus;
 
 /**
  *
- * @author Arild, Viktor, Håkon
+ * @author Arild, Viktor, Hï¿½kon
  */
 public class TabModuloversikt {
     private HashMap<String, String> userInfo;
@@ -254,8 +254,8 @@ public class TabModuloversikt {
             }
                 if (lineIndex == index + columns.size()) {
                     int userNameIndex = index + columns.size() -2;  
-                
-            JButton openFileButton = new JButton("Åpne fil");
+                        
+            JButton openFileButton = new JButton("Ã¥pne fil");
             openFileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) { 
@@ -297,7 +297,7 @@ public class TabModuloversikt {
      */
     private void downloadFile(String userName, int idModul) {
         // Hente fra database : dbConnector.getFileFromDelivery();
-        // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
+        // Enten Ã¥pne filutforsker for Ã¥ velge mappe hvor det skal lagres, eller 
         // automatisk lagre i default download mappe.
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
@@ -359,7 +359,7 @@ public class TabModuloversikt {
                     }
                 }
                 else {
-                    JOptionPane.showMessageDialog(openEvaluationDialog, "Du må skrive en tilbakemelding", "Du må skrive en tilbakemelding", 1);
+                    JOptionPane.showMessageDialog(openEvaluationDialog, "Du mï¿½ skrive en tilbakemelding", "Du mï¿½ skrive en tilbakemelding", 1);
                 }
             }
         });
@@ -450,17 +450,17 @@ public class TabModuloversikt {
         JDialog createModulDialog = new JDialog(frame, "Opprett ny modul", true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
         
-        JLabel idModulLabel = new JLabel("Velg hvilken modul du ønsker å opprette:");
+        JLabel idModulLabel = new JLabel("Velg hvilken modul du ï¿½nsker ï¿½ opprette:");
         Integer[] modules = {1, 2, 3, 4, 5};
         JComboBox modulesList = new JComboBox(modules);
         
-        JLabel modulTitleLabel = new JLabel("Tittel på modulen:");
+        JLabel modulTitleLabel = new JLabel("Tittel pï¿½ modulen:");
         JTextField createModulTitle = new JTextField();
         
         JLabel modulDescriptionLabel = new JLabel("Beskrivelse av modulen:");
         JTextField createModulDesc = new JTextField();
         
-        JLabel modulLearningObjLabel = new JLabel("Modulens læringsmål:");
+        JLabel modulLearningObjLabel = new JLabel("Modulens lï¿½ringsmï¿½l:");
         JTextField createModulLearningObj = new JTextField();
         
         JLabel modulResourcesLabel = new JLabel("Ressurser for denne modulen:");

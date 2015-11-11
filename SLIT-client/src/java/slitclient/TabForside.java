@@ -90,13 +90,19 @@ public class TabForside {
 //        updateContactPanel();
         contactPanel = makeContactPanel();
 //        JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
-        scrollContactPanel = new JScrollPane(contactPanel);
+        scrollContactPanel = new JScrollPane(contactPanel){
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(400,200);
+            }
+        };
         GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         gbcCP.gridx = 2;
         gbcCP.gridy = 1;
         gbcCP.gridheight = 2;
+        gbcCP.anchor = GridBagConstraints.EAST;
         gbcCP.insets = new Insets(-350, 0, 10, -200);
         tab1Layout.setConstraints(scrollContactPanel, gbcCP);
         tab1Panel.add(scrollContactPanel);
@@ -215,7 +221,7 @@ public class TabForside {
         }
         
 //        @Override
-//        public Dimension getMinimumSize() {
+//        public Dimension getPreferredSize() {
 //            return new Dimension(400,200);
 //        }
         
@@ -234,6 +240,18 @@ public class TabForside {
         int contactHelpery = 1;
         boolean contactHelperToRight = false;
         HashMap<String, Map> allUsersLimitedHashMap = new HashMap<>();
+        
+        if(initialRun) {
+            GridBagConstraints gbcSearchField = new GridBagConstraints();
+            searchField = new JTextField(20);
+            searchField.addKeyListener(new ContactSearchKeyListener());
+            gbcSearchField.gridx = 0;
+            gbcSearchField.gridy = 0;
+            gbcSearchField.gridwidth = 2;
+            contactLayout.setConstraints(searchField, gbcSearchField);
+            //searchField.addActionListener(new returnSearchResults); //tbi
+            contactPanel.add(searchField); 
+        }
         try {
             if(searchField.getText().length() <= 0) {
 //            if(searchField.getText().isEmpty()) {
@@ -242,12 +260,14 @@ public class TabForside {
             } 
             else {
                 for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
-                    if(Pattern.matches(".*" + searchField.getText() + ".*", entry.getKey())) {
+                    if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", 
+                            entry.getValue().get("fname").toString().toUpperCase() + " " 
+                            + entry.getValue().get("lname").toString().toUpperCase())) {
+//                    if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", entry.getKey().toUpperCase())) {
+                    System.out.println(entry.getValue().get("fname") + " " 
+                            + entry.getValue().get("lname"));
                     allUsersLimitedHashMap.put(entry.getKey(), entry.getValue());
-                    System.out.println("Pattern matches!");
                     }
-                    System.out.println("ENTRY-FISH");
-                    System.out.println(allUsersLimitedHashMap);
                 }
             } 
         }
@@ -278,9 +298,9 @@ public class TabForside {
             }
             gbcContact.gridx = contactHelperx;
             gbcContact.gridy = contactHelpery;
-            gbcContact.ipady = 10;
-            gbcContact.ipadx = 5;
-            gbcContact.anchor = GridBagConstraints.WEST;
+            gbcContact.ipady = 5;
+            gbcContact.ipadx = 15;
+            gbcContact.anchor = GridBagConstraints.WEST; 
             contactLayout.setConstraints(contactLabel, gbcContact);
             contactPanel.add(contactLabel);
             if(contactHelperToRight == true) {
@@ -288,17 +308,6 @@ public class TabForside {
             }
             contactHelperToRight = !contactHelperToRight;
         }
-        
-        if(initialRun) {
-        GridBagConstraints gbcSearchField = new GridBagConstraints();
-        searchField = new JTextField(20);
-        searchField.addKeyListener(new ContactSearchKeyListener());
-        gbcSearchField.gridx = 0;
-        gbcSearchField.gridy = 0;
-        gbcSearchField.gridwidth = 2;
-        contactLayout.setConstraints(searchField, gbcSearchField);
-        //searchField.addActionListener(new returnSearchResults); //tbi
-        contactPanel.add(searchField); }
         initialRun = false;
     return contactPanel;
     }
@@ -315,11 +324,10 @@ public class TabForside {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            System.out.println("FISH!");
+            System.out.println("searchfield text");
             System.out.println(searchField.getText());
             Component[] contactPanelComponents = contactPanel.getComponents();
             for(int i = 0; i < contactPanelComponents.length; i++) {
-                System.out.println(Array.get(contactPanelComponents, i));
                 if(Array.get(contactPanelComponents, i) instanceof JButton) {
                 contactPanel.remove((Component) Array.get(contactPanelComponents, i));
                 }
