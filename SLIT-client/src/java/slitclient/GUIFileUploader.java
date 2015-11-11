@@ -20,7 +20,7 @@ public class GUIFileUploader {
     private File file;
   
     public String startFileExplorer() {
-        JFrame frame = new JFrame("Java Swing Examples");
+        JFrame frame = new JFrame("File Explorer");
         frame.setVisible(true);  
         return startFileExplorer(frame);
     }
@@ -52,6 +52,10 @@ public class GUIFileUploader {
         if (file != null) {
             columns.add("resourceFile");
             values.add(file);
+            columns.add("fileName");
+            values.add(file.getName());
+            // remove after test.
+            System.out.println(file.getName());
         }
         
         if (title != null) {
@@ -79,6 +83,10 @@ public class GUIFileUploader {
         ArrayList<Object> values = new ArrayList<>();
         columns.add("deliveryFile");
         values.add(file);
+        columns.add("fileName");
+        values.add(file.getName());
+        // remove after test.
+        //System.out.println(file.getName());
         columns.add("deliveredBy");
         values.add(userName);
         columns.add("idModul");

@@ -18,8 +18,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import db.dbConnector;
 import db.dbConnectorRemote;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.Action;
 
 import prototypes.CreateUser;
 
@@ -30,13 +33,110 @@ import prototypes.CreateUser;
 
 public class Login {
     
+    JTextField userText;
+    JPasswordField passwordText;
+    ActionListener loginAction;
+    JFrame frame;
+    
     public Login() {        
-       	JFrame frame = new JFrame("Login");
+       	frame = new JFrame("Login");
 	frame.setSize(300, 150);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	placeComponents(frame);
-	frame.setVisible(true); 
+	frame.setVisible(true);      
     }
+    
+    
+    class LoginKeyAction implements KeyListener {
+        
+        public LoginKeyAction() {
+            
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode()==KeyEvent.VK_ENTER){
+            System.out.println("KEYPRESSED");
+            System.out.println("KEYPRESSED");
+            System.out.println("KEYPRESSED");
+            System.out.println("inside actionperformed");
+            String userName = userText.getText();
+            String pwd = passwordText.getText();
+            
+            EJBConnector ejbConnector = EJBConnector.getInstance();
+            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+            dbConnector.updateUsersHashMap();
+            HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
+          
+            if (loginResult.size() > 1) {
+                if (loginResult.get("userType").equals("student")) {
+                    //create StudentGUI object with the list
+                    StudentGUI studentGUI = new StudentGUI(loginResult);
+                    frame.setVisible(false);
+                }
+                else if (loginResult.get("userType").equals("teacher") || 
+                        loginResult.get("userType").equals("helpTeacher")) {
+                        //create TeacherGUI object with the list
+                            TeacherGUI teacherGUI = new TeacherGUI(loginResult);
+                            frame.setVisible(false);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "userType invalid, "
+                            + "contact the database manager");                    
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
+            }
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+    }
+    
+    
+    class LoginAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("inside actionperformed");
+            String userName = userText.getText();
+            String pwd = passwordText.getText();
+            
+            EJBConnector ejbConnector = EJBConnector.getInstance();
+            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+            dbConnector.updateUsersHashMap();
+            HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
+          
+            if (loginResult.size() > 1) {
+                if (loginResult.get("userType").equals("student")) {
+                    //create StudentGUI object with the list
+                    StudentGUI studentGUI = new StudentGUI(loginResult);
+                    frame.setVisible(false);
+                }
+                else if (loginResult.get("userType").equals("teacher") || 
+                        loginResult.get("userType").equals("helpTeacher")) {
+                        //create TeacherGUI object with the list
+                            TeacherGUI teacherGUI = new TeacherGUI(loginResult);
+                            frame.setVisible(false);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "userType invalid, "
+                            + "contact the database manager");                    
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
+            }
+        }
+    };
+    
+    
 
     private void placeComponents(JFrame frame) {
 	frame.setLayout(null);
@@ -44,7 +144,7 @@ public class Login {
 	userLabel.setBounds(10, 10, 80, 25);
 	frame.add(userLabel);
         
-	JTextField userText = new JTextField(20);
+	userText = new JTextField(20);
 	userText.setBounds(100, 10, 160, 25);
 	frame.add(userText);
 
@@ -52,7 +152,8 @@ public class Login {
 	passwordLabel.setBounds(10, 40, 80, 25);
 	frame.add(passwordLabel);
 
-	JPasswordField passwordText = new JPasswordField(20);
+	passwordText = new JPasswordField(20);
+        passwordText.addKeyListener(new LoginKeyAction());
 	passwordText.setBounds(100, 40, 160, 25);
 	frame.add(passwordText);
 
@@ -68,38 +169,7 @@ public class Login {
 	forgotPwdButton.setBounds(180, 80, 80, 25);
 	frame.add(forgotPwdButton);
                 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {    
-                String userName = userText.getText();
-                String pwd = passwordText.getText();
-                
-                EJBConnector ejbConnector = EJBConnector.getInstance();
-                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
-              
-                if (loginResult.size() > 1) {
-                    if (loginResult.get("userType").equals("student")) {
-                        //create StudentGUI object with the list
-                        StudentGUI studentGUI = new StudentGUI(loginResult);
-                        frame.setVisible(false);
-                    }
-                    else if (loginResult.get("userType").equals("teacher") || 
-                            loginResult.get("userType").equals("helpTeacher")) {
-                        //create TeacherGUI object with the list
-                        TeacherGUI teacherGUI = new TeacherGUI(loginResult);
-                        frame.setVisible(false);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "userType invalid, "
-                                + "contact the database manager");                    
-                    }
-                }
-                else {
-                    JOptionPane.showMessageDialog(null, loginResult.get("error1"));    
-                }
-            }
-        });
+        loginButton.addActionListener(new LoginAction()); //listener her
                 
         forgotPwdButton.addActionListener(new ActionListener() {
             @Override

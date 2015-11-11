@@ -19,12 +19,18 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import slitcommon.DeliveryStatus;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.io.InputStream;
 /**
  *
  * @author piees
@@ -39,6 +45,9 @@ public class dbConnector implements dbConnectorRemote {
     private static final String PASSWORD = "a_team";
     //private String queryResult;
     private static Connection DBConnection;
+    private ArrayList<String> updateUsersArrayList;
+    private Map<String, String> userMap;
+    public static HashMap<String, Map> allUsersHashMap;
     
 
     public Connection dbConnection() {        
@@ -60,7 +69,16 @@ public class dbConnector implements dbConnectorRemote {
         }
     }
     
+<<<<<<< HEAD
     
+=======
+    /**
+     * UNUSED METHOD - REMOVE??
+     * @param query
+     * @param colName
+     * @return 
+     */
+>>>>>>> refs/remotes/origin/master
     @Override
     public String singleQuery(String query, String colName) {
         String queryResult = null;
@@ -86,27 +104,6 @@ public class dbConnector implements dbConnectorRemote {
         return queryResult;
     }
     
-    // This method is not sql injection proof.
-    // What if a crooked admin creates a new user where userName is 
-    // is an injection?
-    @Override
-    public ArrayList<String> multiQuery(String query)   {
-        Connection dbConnection = dbConnection();
-        ArrayList<String> queryResults = new ArrayList<>();
-        try {
-            PreparedStatement ps = dbConnection.prepareStatement(query);
-            ResultSet rs = ps.executeQuery();
-            int i = 0;
-            while(rs.next())    {
-                queryResults.add(rs.getString(i));
-                i++;
-            }
-        }
-        catch (SQLException e)  {
-            System.out.println(e);
-        }
-        return queryResults;
-    }
     /**
      * This method is used by the Login class to check if the user
      * has supplied a correct userName and password combination.
@@ -204,10 +201,11 @@ public class dbConnector implements dbConnectorRemote {
                     FileInputStream fileInput = null;
                     try {
                         fileInput = new FileInputStream(file);
+                        ps.setBinaryStream(i,(FileInputStream) fileInput);
+
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    ps.setBinaryStream(i,(FileInputStream) fileInput);
                 }           
                 else if (values.get(index) instanceof Timestamp) {
                     ps.setTimestamp(i,(Timestamp) values.get(index)); 
@@ -223,14 +221,55 @@ public class dbConnector implements dbConnectorRemote {
             }
             System.out.println(ps);
             ps.executeUpdate();
-            return "Opplasting vellykket!";
+            return "Opplastning vellykket!";
         }
         catch (SQLException ex)  {
             System.out.println("CATCH I INSERT-METODE");
             System.out.println(ex);
-            return "Opplasting feilet!";
+            return "Opplastning feilet!";
         }
     }
+    
+    /**
+     * Add evaluation to the correct row in the Delivery table in the DB
+     * @param evaluationValue the evaluation comment
+     * @param evaluatedByValue the userName of the teacher-user evaluation this delivery
+     * @param whereValue1 the idModul of the delivery being evaluated
+     * @param whereValue2 the userName of the student-user that made this delivery
+     * @param evaluationStatus the result of the evaluation, in either enum GODKJENT 
+     * or IKKEGODKJENT
+     * @return confirmation string describing result of statement
+     */
+    @Override
+    public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
+            int whereValue1, String whereValue2, DeliveryStatus evaluationStatus)    {
+        String update = "UPDATE Delivery SET evaluation =? "
+                + ", evaluatedBy =?, evaluationDate = now(), deliveryStatus = '" + evaluationStatus + "'"
+                + " WHERE idModul =? AND deliveredBy =?;";
+        DBConnection = dbConnection();
+        try {
+            PreparedStatement ps = DBConnection.prepareStatement(update);
+            ps.setString(1, evaluationValue);
+            ps.setString(2, evaluatedByValue);
+            ps.setInt(3, whereValue1);
+            ps.setString(4, whereValue2);
+            ps.executeUpdate();
+            return "Lagret i database.";
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+            return "Feil! Ble ikke lagret i database.";
+        }
+    }
+        
+    
+    /**
+     * Counts the number of rows in a given table
+     * @param column the name of column to be counted (can be all, expressed with *)
+     * @param tableName the name of the DB-table to count rows in
+     * @return the number of rows found in the given table
+     */
+    @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
         String numberOfRows = "";
@@ -290,7 +329,7 @@ public class dbConnector implements dbConnectorRemote {
             int columnCount = rsmd.getColumnCount();
             while (rs.next())   {
                 int i = 1;
-                while (columnCount >= i)    {
+                while (columnCount >= i) {
                     queryResults.add(rs.getString(i));
                     i++;
                 }
@@ -305,9 +344,76 @@ public class dbConnector implements dbConnectorRemote {
     } 
     
     @Override
-    public ArrayList<ArrayList> getUserNotifications(String query, String userName) {
+    public HashMap multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+            tables, ArrayList<String> where)    {
+        String query = "SELECT ";
+        HashMap<String, String> queryResults = new HashMap<>();
+        
+        int countColumns = 0;
+        while(columns.size() > (countColumns +1))   {
+            query += columns.get(countColumns) + ", ";
+            countColumns++;
+        }
+        query += columns.get(countColumns) + " FROM ";
+        
+        int countTables = 0;
+        while(tables.size() > (countTables +1)) {
+            query += tables.get(countTables) + ", ";
+            countTables++;
+        }
+        query += tables.get(countTables);
+        if(where != null)    {
+            int countWhere = 0;
+            query += " WHERE ";
+                while(where.size() > (countWhere +1))   {
+                query += where.get(countWhere) + ", ";
+                countWhere ++;
+                }
+            query += where.get(countWhere) + ";";
+        }
+        else {
+            query += ";";
+        }
+        DBConnection = dbConnection();
+        try {
+            System.out.println("try i multi-query metode");
+            PreparedStatement ps = DBConnection.prepareStatement(query);
+            System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while (rs.next())   {
+                int i = 1;
+                while (columnCount >= i)    {
+                    queryResults.put(columns.get(i),rs.getString(i));
+                    i++;
+                }
+            }
+            System.out.println("QueryResults-liste HER: " + queryResults.size());
+        }
+        catch (SQLException e)  {
+            System.out.println("SQL-SYNTAX-ERROR I MULTI-QUERY-METODE");
+            System.out.println(e);
+        }
+        return queryResults;
+    } 
+    
+    @Override
+    public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
+        String query = "SELECT * " +
+                       "FROM Notification " +
+                       "WHERE userName=? " +
+                       "AND Notification.seen=? ";
+        
+        query += queryPart2;
+        //               "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+        
+        // TRENGER 2 forskjellige resultat sett, ett med før og ett mer etter CURRENT_TIMESTAMP()
+        // DET ETTER CURRENT_TIMESTAMP() SKAL PUTTES INN I ASYNC NOTIFICATION METODEN.
+                       
+        
         Connection dbConnection = dbConnection();
-        ArrayList<ArrayList> notifications = new ArrayList<>();
+        ArrayList<HashMap> notifications = new ArrayList<>();
         try {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(query);
@@ -315,14 +421,14 @@ public class dbConnector implements dbConnectorRemote {
             ps.setBoolean(2, false);
             ResultSet rs = ps.executeQuery();
             while (rs.next())   {
-                ArrayList<Object> notification = new ArrayList<>();
+                HashMap<String, Object> notification = new HashMap<>();
                 int idNotification = rs.getInt("idNotification");
                 Timestamp timestamp =  rs.getTimestamp("notificationTime");
                 String notificationText = rs.getString("notificationText");
                 
-                notification.add(idNotification);
-                notification.add(timestamp);
-                notification.add(notificationText);
+                notification.put("idNotification", idNotification);
+                notification.put("timestamp", timestamp);
+                notification.put("notificationText", notificationText);
                 notifications.add(notification);
                 //String notificationTime = timestamp.toString();
                 //notifications.add(notificationTime + ":\n" + notificationText);           
@@ -351,6 +457,7 @@ public class dbConnector implements dbConnectorRemote {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+<<<<<<< HEAD
 
 
     
@@ -434,4 +541,158 @@ public class dbConnector implements dbConnectorRemote {
         return salt.toString();
     }
 
+=======
+    
+    @Override
+    public Map<String, String> eachUserMap(int fromIndex) {
+        userMap = ImmutableMap.of(
+                "userType", updateUsersArrayList.get(fromIndex), //fromIndex (+1,2,3,4)
+                "mail", updateUsersArrayList.get(fromIndex + 1),
+                "fname", updateUsersArrayList.get(fromIndex + 2),
+                "lname", updateUsersArrayList.get(fromIndex + 3),
+                "userName", updateUsersArrayList.get(fromIndex + 4)
+            );
+        return userMap;
+    }
+    @Override
+    public void updateUsersHashMap() {
+        ArrayList<String> select = new ArrayList<>(Arrays.asList("userType,"
+                + "mail, fname, lname, userName"));
+        ArrayList<String> from = new ArrayList<>(Arrays.asList("User"));
+        ArrayList<String> where = new ArrayList<>(Arrays.asList("userName != 'null'"));
+        updateUsersArrayList = multiQuery(select, from, where);
+        allUsersHashMap = new HashMap<>();
+        for(int i = 0; i < updateUsersArrayList.size(); i += 5) {
+            Map<String, String> updateUserHashMapHelper = eachUserMap(i);
+            allUsersHashMap.put(updateUserHashMapHelper.get("userName"), 
+                        updateUserHashMapHelper);
+        }
+    }
+    
+    //@Override
+    public HashMap<String, Map> getAllUsersHashMap() {
+        return allUsersHashMap;
+    }
+
+    
+    @Override
+    public byte[] getDeliveryFile(String userName, int idModul) {
+        String query = "SELECT deliveryFile, fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
+
+        Connection dbConnection = dbConnection();
+        
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setString(1, userName);
+            ps.setInt(2, idModul);
+            ResultSet rs = ps.executeQuery();
+                        
+            // If true then the username + password was a match
+            if (rs.next()) {
+                InputStream InputStream = rs.getBinaryStream("deliveryFile");
+                //System.out.println("deliveryFile seems to be converted to inputStream");
+                
+                byte[] byteData;
+                try {
+                    byteData = ByteStreams.toByteArray(InputStream);
+ 
+                    return byteData;
+                } catch (IOException ex) {
+                    Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+            }   
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    @Override
+    public String getDeliveryFilename(String userName, int idModul) {
+        String query = "SELECT fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
+
+        Connection dbConnection = dbConnection();
+        
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setString(1, userName);
+            ps.setInt(2, idModul);
+            ResultSet rs = ps.executeQuery();
+                        
+            // If true then the username + password was a match
+            if (rs.next()) {
+                String fileName = rs.getString("fileName");
+                //System.out.println("deliveryFile seems to be converted to inputStream");
+                return fileName;
+            }   
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    @Override
+    public ArrayList<HashMap> getResources() {
+        String query = "SELECT * FROM Resources";
+        Connection dbConnection = dbConnection();
+        ArrayList<HashMap> resources = new ArrayList<>();
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            // If true then the username + password was a match
+            while (rs.next()) {
+                HashMap<String, Object> resourceMap = new HashMap<>();
+                resourceMap.put("userName", rs.getString("userName"));
+                resourceMap.put("idResource", rs.getInt("idResource"));
+                resourceMap.put("title", rs.getString("title"));
+                resourceMap.put("resourceText", rs.getString("resourceText"));
+                resourceMap.put("url", rs.getString("url"));
+                resourceMap.put("resourceDate", rs.getTimestamp("resourceDate"));
+                resourceMap.put("fileName", rs.getString("fileName"));
+                resources.add(resourceMap);
+            } 
+
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return resources;
+    }
+    
+    @Override
+    public byte[] getResourceFile(int idResources) {
+        String query = "SELECT resourceFile FROM Resources WHERE idResource=?";
+        Connection dbConnection = dbConnection();
+        try {
+            // PreparedStatement prevents SQL Injections by users.
+            PreparedStatement ps = dbConnection.prepareStatement(query);
+            ps.setInt(1, idResources);
+            ResultSet rs = ps.executeQuery();
+            // If true then the username + password was a match
+            if (rs.next()) {
+                InputStream InputStream = rs.getBinaryStream("resourceFile");
+                byte[] byteData;
+                try {
+                    byteData = ByteStreams.toByteArray(InputStream);
+ 
+                    return byteData;
+                } catch (IOException ex) {
+                    Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+            } 
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+           
+ 
+>>>>>>> refs/remotes/origin/master
 }
+
