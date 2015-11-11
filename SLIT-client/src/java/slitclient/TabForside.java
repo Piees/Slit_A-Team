@@ -73,12 +73,12 @@ public class TabForside {
         scrollLecturePanel.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         scrollLecturePanel.setHorizontalScrollBarPolicy ( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         gbcNLP.gridx = 0;
-        gbcNLP.gridy = 0; //1
+        gbcNLP.gridy = 0;
         gbcNLP.gridheight = 3;
         gbcNLP.insets = new Insets(-80, -125, -50, 15);
         gbcNLP.fill = GridBagConstraints.VERTICAL;
-        tab1Layout.setConstraints(scrollLecturePanel, gbcNLP); //nextlecpan
-        tab1Panel.add(scrollLecturePanel); //nextlecpan
+        tab1Layout.setConstraints(scrollLecturePanel, gbcNLP);
+        tab1Panel.add(scrollLecturePanel);
 
         JPanel messagesPanel = makeMessagesPanel();
         GridBagConstraints gbcMP = new GridBagConstraints();
@@ -90,9 +90,7 @@ public class TabForside {
         tab1Panel.add(messagesPanel);
 
         
-//        updateContactPanel();
         contactPanel = makeContactPanel();
-//        JScrollPane scrollContactPanel = new JScrollPane(contactPanel);
         scrollContactPanel = new JScrollPane(contactPanel){
             @Override
             public Dimension getPreferredSize() {
@@ -172,7 +170,6 @@ public class TabForside {
         }
         
         public LecturePanel() {
-            //setMinimumSize(new Dimension(200, 25));
             setBorder(new TitledBorder (new EtchedBorder(), 
                 "Neste Forelesning"));
         }
@@ -222,12 +219,6 @@ public class TabForside {
             setBorder(new TitledBorder (new EtchedBorder(), 
                 "Kontakter"));
         }
-        
-//        @Override
-//        public Dimension getPreferredSize() {
-//            return new Dimension(400,200);
-//        }
-        
     }
     
     /**
@@ -252,23 +243,17 @@ public class TabForside {
             gbcSearchField.gridy = 0;
             gbcSearchField.gridwidth = 2;
             contactLayout.setConstraints(searchField, gbcSearchField);
-            //searchField.addActionListener(new returnSearchResults); //tbi
             contactPanel.add(searchField); 
         }
         try {
             if(searchField.getText().length() <= 0) {
-//            if(searchField.getText().isEmpty()) {
             allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
-            System.out.println("Empty-Fish");
             } 
             else {
                 for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
                     if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", 
                             entry.getValue().get("fname").toString().toUpperCase() + " " 
                             + entry.getValue().get("lname").toString().toUpperCase())) {
-//                    if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", entry.getKey().toUpperCase())) {
-                    System.out.println(entry.getValue().get("fname") + " " 
-                            + entry.getValue().get("lname"));
                     allUsersLimitedHashMap.put(entry.getKey(), entry.getValue());
                     }
                 }
@@ -277,11 +262,7 @@ public class TabForside {
         catch(Exception e) {
             System.out.println(e);
         }
-//        allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
-//        HashMap<String, Map> fishmap = this.dbConnector.getAllUsersHashMap();
         for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
-//        for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
-            String key = entry.getKey();
             String mail = (String) entry.getValue().get("mail");
             String name = (String) entry.getValue().get("fname") + " " +
                     entry.getValue().get("lname");
@@ -327,27 +308,14 @@ public class TabForside {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            System.out.println("searchfield text");
-            System.out.println(searchField.getText());
             Component[] contactPanelComponents = contactPanel.getComponents();
             for(int i = 0; i < contactPanelComponents.length; i++) {
                 if(Array.get(contactPanelComponents, i) instanceof JButton) {
                 contactPanel.remove((Component) Array.get(contactPanelComponents, i));
                 }
             }
-//            contactPanel.removeAll();
             makeContactPanel();
             contactPanel.revalidate();
-//            contactPanel.repaint();
-//            makeContactPanel();
-//            updateContactPanel();
-            
-//    JTextField searchField;
-//    JPanel contactPanel;
-//    GridBagLayout tab1Layout;
-//    JPanel tab1Panel;
-//    JScrollPane scrollContactPanel;            
-            
         }
     }
     
