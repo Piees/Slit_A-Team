@@ -5,14 +5,18 @@
  */
 package prototypes;
 
+import db.dbConnectorRemote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import slitclient.EJBConnector;
 
 import slitclient.Login;
 
@@ -33,13 +37,14 @@ public class CreateUser {
     
     private void placeComponents(JFrame cframe) {
 	cframe.setLayout(null);
-	JLabel roleLabel = new JLabel("Role");
+	JLabel roleLabel = new JLabel("Choose Role");
 	roleLabel.setBounds(10, 10, 80, 25);
 	cframe.add(roleLabel);
         
-	JTextField roleText = new JTextField(20);
-	roleText.setBounds(100, 10, 160, 25);
-	cframe.add(roleText);
+	String[] roles = { "teacher", "student" };
+        JComboBox roleCombo = new JComboBox(roles);
+	roleCombo.setBounds(100, 10, 160, 25);
+	cframe.add(roleCombo);
 
 	JLabel nameLabel = new JLabel("Name");
 	nameLabel.setBounds(10, 40, 80, 25);
@@ -102,42 +107,34 @@ public class CreateUser {
          nextButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ev) {
-            /**
-            static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-            static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
-            private static final String USERNAME = "steffen";
-            private static final String PASSWORD = "a_team";
-            static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-            static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
-            private static final String USERNAME = "yngve";
-            private static final String PASSWORD = "a_team";
-                Class.forName("com.mysql.jdbc.Driver")
-                conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-                stmt = conn.createStatement();
-                
-                String sql = "INSERT INTO User " + 
-                "VALUES (roleText.getText()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ passwordText.getText()+ mailText.getText())";
-                **/
-                System.out.println(roleText.getText()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ passwordText.getText()+ mailText.getText());
+            ArrayList<String> columns = new ArrayList();
+            ArrayList<Object> values = new ArrayList();
+            String newUser = "User";
+            columns.add("userType");
+            columns.add("userName");
+            columns.add("lName");
+            columns.add("fName");
+            columns.add("pwd");
+            columns.add("mail");
+            values.add(roleCombo.getSelectedItem());
+            values.add(unameText.getText());
+            values.add(snameText.getText());
+            values.add(nameText.getText());
+            values.add(passwordText.getText());
+            values.add(mailText.getText());
             
-            }/**catch(SQLException se){
-                se.printStackTrace();
-            }catch(Exception e){
-                e.printStackTrace();
-            }finally{
-                try{
-                    if(stmt!=null)
-                        conn.close();
-                }catch(SQLException se){
-                }// do nothing
-                try{
-                    if(conn!=null)
-                        conn.close();
-                }catch(SQLException se){
-                se.printStackTrace();
-                }     
+            EJBConnector ejbConnector = EJBConnector.getInstance();
+                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                dbConnector.insertIntoDB(newUser, columns, values);
+                
+                System.out.println("Nytt bruker lagrer i database");
+            
+                System.out.println(roleCombo.getSelectedItem()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ passwordText.getText()+ mailText.getText());
+            
+                new Login(); 
+                cframe.dispose();
             }
-            **/
+
         });
          
         
