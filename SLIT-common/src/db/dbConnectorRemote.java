@@ -37,10 +37,10 @@ public interface dbConnectorRemote {
     public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
             int whereValue1, String whereValue2, DeliveryStatus evaluationStatus);   
             
-    public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
+    public ArrayList<String> multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
    
-    public ArrayList multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+    public ArrayList<HashMap> multiQueryHash(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
     
     public int countRows(String column, String tableName);     

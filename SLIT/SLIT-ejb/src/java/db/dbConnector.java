@@ -264,22 +264,24 @@ public class dbConnector implements dbConnectorRemote {
     @Override
     public int countRows(String column, String tableName)    {
         String count = "SELECT COUNT(" + column + ") FROM " +  tableName + ";";
-        String numberOfRows = "";
+//        String numberOfRows = "";
+        int returnInt = 0;
         DBConnection = dbConnection();
         try {
             PreparedStatement ps = DBConnection.prepareStatement(count);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            numberOfRows = rs.getString(1);
-            System.out.println("ANTALL REKKER I MODUL:" + numberOfRows);
+//            numberOfRows = rs.getString(1);
+            returnInt = rs.getInt(1);
+            System.out.println("ANTALL RADER I MODUL:" + returnInt);
         }
         catch (SQLException e)  {
             System.out.println(e);
         }
-        int returnInt = Integer.parseInt(numberOfRows);
+//        int returnInt = Integer.parseInt(numberOfRows);
         return returnInt;
     }
-    
+    @Deprecated
     @Override
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where)    {
@@ -378,7 +380,7 @@ public class dbConnector implements dbConnectorRemote {
                 HashMap<String, String> resultMap = new HashMap<>();
                 int columnsListIndex = 0;
                 int resultSetIndex = 1;
-                while (columnCount >= columnsListIndex)    {
+                while (columnCount > columnsListIndex)    {
                     resultMap.put(columns.get(columnsListIndex),rs.getString(resultSetIndex));
                     columnsListIndex++;
                     resultSetIndex++;
