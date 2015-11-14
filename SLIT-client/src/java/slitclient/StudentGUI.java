@@ -35,7 +35,7 @@ public class StudentGUI {
     private TabModuloversikt tabModuloversikt;
     private TabFagstoff tabFagstoff;
     private HashMap<String, String> userInfo;
-    private static final String LOGO_PATH = "src/img/slitlogo.png";
+    private static final String LOGO_PATH = "src/img/slit_logo.png";
     
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
