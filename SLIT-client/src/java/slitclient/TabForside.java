@@ -119,25 +119,25 @@ public class TabForside {
     }    
     
     
-    public void updateContactPanel() {
-        try {
-            tab1Panel.remove(scrollContactPanel);
-        }
-        catch(Exception e) {
-            System.out.println(e);
-        }
-        contactPanel = makeContactPanel();
-        scrollContactPanel = new JScrollPane(contactPanel);
-        GridBagConstraints gbcCP = new GridBagConstraints();
-        scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        gbcCP.gridx = 2;
-        gbcCP.gridy = 1;
-        gbcCP.gridheight = 2;
-        gbcCP.insets = new Insets(-350, 0, 10, -200);
-        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
-        tab1Panel.add(scrollContactPanel);
-    }
+//    public void updateContactPanel() {
+//        try {
+//            tab1Panel.remove(scrollContactPanel);
+//        }
+//        catch(Exception e) {
+//            System.out.println(e);
+//        }
+//        contactPanel = makeContactPanel();
+//        scrollContactPanel = new JScrollPane(contactPanel);
+//        GridBagConstraints gbcCP = new GridBagConstraints();
+//        scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+//        scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//        gbcCP.gridx = 2;
+//        gbcCP.gridy = 1;
+//        gbcCP.gridheight = 2;
+//        gbcCP.insets = new Insets(-350, 0, 10, -200);
+//        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
+//        tab1Panel.add(scrollContactPanel);
+//    }
     
     
     public class ForsideTab extends JPanel {
