@@ -125,7 +125,12 @@ public class StudentGUI {
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout(300, 25));
         
-        JButton menuButton = new JButton("Meny");
+        JButton menuButton = new JButton("Meny"){
+            @Override
+            public int getHeight() {
+                return 25;
+            }
+        };
         content.add(menuButton, BorderLayout.LINE_START);
 
         JLabel logoLabel = new JLabel(loadLogo());
@@ -133,7 +138,12 @@ public class StudentGUI {
 
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
-        JButton nameButton = new JButton(fName + " " + lName);
+        JButton nameButton = new JButton(fName + " " + lName){
+            @Override
+            public int getHeight() {
+                return 25;
+            }
+        };
         content.add(nameButton, BorderLayout.LINE_END);
 
         return content;
