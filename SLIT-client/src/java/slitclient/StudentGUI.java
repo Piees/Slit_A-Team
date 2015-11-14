@@ -67,15 +67,15 @@ public class StudentGUI {
     }
     
     public class MainFrame extends JFrame {
-        @Override
-        public Dimension getMinimumSize() {
-            return new Dimension(1024, 700);
-        }
-        
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension(1024, 700);
-        }
+//        @Override
+//        public Dimension getMinimumSize() {
+//            return new Dimension(1024, 700);
+//        }
+//        
+//        @Override
+//        public Dimension getPreferredSize() {
+//            return new Dimension(1024, 700);
+//        }
         public MainFrame(String title) {
             
         }
