@@ -66,21 +66,6 @@ public class StudentGUI {
         return userInfo.get(key);
     }
     
-//    public class MainFrame extends JFrame {
-//        @Override
-//        public Dimension getMinimumSize() {
-//            return new Dimension(1024, 700);
-//        }
-//        
-//        @Override
-//        public Dimension getPreferredSize() {
-//            return new Dimension(1024, 700);
-//        }
-//        public MainFrame(String title) {
-//            
-//        }
-//    }
-    
     public class TabPane extends JTabbedPane {
         
         public TabPane() {
