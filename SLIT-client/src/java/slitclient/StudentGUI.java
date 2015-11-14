@@ -66,7 +66,7 @@ public class StudentGUI {
         return userInfo.get(key);
     }
     
-    public class MainFrame extends JFrame {
+//    public class MainFrame extends JFrame {
 //        @Override
 //        public Dimension getMinimumSize() {
 //            return new Dimension(1024, 700);
@@ -76,10 +76,10 @@ public class StudentGUI {
 //        public Dimension getPreferredSize() {
 //            return new Dimension(1024, 700);
 //        }
-        public MainFrame(String title) {
-            
-        }
-    }
+//        public MainFrame(String title) {
+//            
+//        }
+//    }
     
     public class TabPane extends JTabbedPane {
         
@@ -101,7 +101,7 @@ public class StudentGUI {
     public void makeFrame() {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
-        frame = new MainFrame("SLIT - " + fName + " " + lName);
+        frame = new JFrame("SLIT - " + fName + " " + lName);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
@@ -112,14 +112,12 @@ public class StudentGUI {
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
         gbcCommon.gridy = 0;
-        gbcCommon.gridwidth = 3;
         gblContent.setConstraints(commonContent, gbcCommon);
         
         JTabbedPane tabbedPane = makeTabs();
         GridBagConstraints gbcTab = new GridBagConstraints();
         gbcTab.gridx = 0;
         gbcTab.gridy = 1;
-        gbcTab.gridwidth = 3;
         gblContent.setConstraints(tabbedPane, gbcTab);
 
         contentPane.add(commonContent);
@@ -143,7 +141,6 @@ public class StudentGUI {
         content.setLayout(new BorderLayout(300, 25));
         
         JButton menuButton = new JButton("Meny");
-        //content.add(menuButton, BorderLayout.WEST);
         content.add(menuButton, BorderLayout.LINE_START);
 
         JLabel logoLabel = new JLabel(loadLogo());
@@ -152,7 +149,6 @@ public class StudentGUI {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
         JButton nameButton = new JButton(fName + " " + lName);
-        //content.add(nameButton, BorderLayout.EAST);
         content.add(nameButton, BorderLayout.LINE_END);
 
         return content;
