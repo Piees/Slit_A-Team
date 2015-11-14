@@ -123,7 +123,7 @@ public class StudentGUI {
     public JPanel makeCommon() {
 
         JPanel content = new JPanel();
-        content.setLayout(new BorderLayout(300, 25));
+        content.setLayout(new BorderLayout(400, 25));
         
         JButton menuButton = new JButton("Meny"){
             @Override
