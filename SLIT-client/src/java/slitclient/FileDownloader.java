@@ -76,11 +76,11 @@ public class FileDownloader {
             FileOutputStream out = new FileOutputStream(filepath);
             out.write(byteData);
             out.close();
-            return filename + " successfully downloaded";
+            return filename + " ble lastet ned.";
         } catch (Exception ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Downloading " + filename + " failed";         
+        return "Nedlastning av " + filename + " feilet.";         
     }
     
     /**

@@ -144,17 +144,18 @@ public class TabModuloversikt {
                     modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul") + "    Ikke levert");
                 }
                 modulPane.setCollapsed(true);
-                addContent(moduls, modulPane, i);
+                int numberOfDeliveries = deliveryStatus.size();
+                addModulContentStudent(moduls, modulPane, i, numberOfDeliveries);
                 modulListContainer.add(modulPane);
                 i++;
             } else {
                 int numberOfDeliveries = dbConnector.countRows("*", "Delivery WHERE idModul = " + moduls.get(0).get("idModul"));
                 int numberOfStudents = dbConnector.countRows("*", "User WHERE userType = 'student'");
                 modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
-                        +  "    " + numberOfDeliveries + "/" 
+                        + "    " + numberOfDeliveries + "/"
                         + numberOfStudents + " innleveringer");
                 modulPane.setCollapsed(true);
-                addContent(moduls, modulPane, i);
+                addModulContentTeacher(moduls, modulPane, i);
                 modulListContainer.add(modulPane);
                 i++;
             }
@@ -172,7 +173,8 @@ public class TabModuloversikt {
      * @param modulPane the modulPane component labels should be added to
      * @param i the idModul of the current module
      */
-    public void addContent(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
+    public void addModulContentStudent(ArrayList<LinkedHashMap> content,
+            JXTaskPane modulPane, int i, int numberOfDeliveries) {
         for (LinkedHashMap map : content) {
             for (Object value : map.values()) {
                 if (value.toString().length() > 1) {
@@ -180,10 +182,20 @@ public class TabModuloversikt {
                     modulPane.add(label);
                 }
             }
+            if (numberOfDeliveries > 0) {
+                // READ EVALUATION BUTTON
+                JButton readEvaluationButton = new JButton("Les tilbakemelding");
+                modulPane.add(readEvaluationButton);
+                readEvaluationButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        readEvaluationDialog(frame, i, userInfo.get("userName"));
+                    }
+                });
+            } else {
+                // UPLOAD DELIVERY BUTTON
+                JButton uploadDeliveryButton = new JButton("Last opp besvarelse");
 
-            // UPLOAD DELIVERY BUTTON
-            if (userInfo.get("userType").equals("student")) {
-                JButton uploadDeliveryButton = new JButton("Opplast oppgave");
                 modulPane.add(uploadDeliveryButton);
                 uploadDeliveryButton.addActionListener(new ActionListener() {
                     @Override
@@ -191,17 +203,85 @@ public class TabModuloversikt {
                         addDeliveryDialog(i);
                     }
                 });
-            } //DELIVERY LIST BUTTON
-            else if (userInfo.get("userType").equals("teacher")) {
-                JButton openDeliveryListButton = new JButton("Se innleveringer");
-                modulPane.add(openDeliveryListButton);
-                openDeliveryListButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        openDeliveryListDialog(i);
-                    }
-                });
             }
+        }
+    }
+
+    public void readEvaluationDialog(JFrame frame, int i, String userName) {
+        JDialog readEvaluationDialog = new JDialog(frame, "Les tilbakemelding", true);
+        JPanel contentPane = (JPanel) readEvaluationDialog.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+
+        JButton downloadDeliveryButton = new JButton("Last ned din besvarelse");
+        contentPane.add(downloadDeliveryButton);
+        downloadDeliveryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                FileDownloader downloader = new FileDownloader();
+                JOptionPane.showMessageDialog(readEvaluationDialog, downloader.downloadDeliveryFile(userName, i), 
+                        downloader.downloadDeliveryFile(userName, i), 1);
+            }
+        });
+
+        JLabel deliveryDateLabelHeader = new JLabel("Besvarelse levert:");
+        contentPane.add(deliveryDateLabelHeader);
+        JLabel deliveryDateLabel = new JLabel();
+        contentPane.add(deliveryDateLabel);
+        JLabel evaluatedByLabelHeader = new JLabel("Vurdert av:");
+        contentPane.add(evaluatedByLabelHeader);
+        JLabel evaluatedByLabel = new JLabel();
+        contentPane.add(evaluatedByLabel);
+        JLabel evaluatedDateLabelHeader = new JLabel("Vurdert:");
+        contentPane.add(evaluatedDateLabelHeader);
+        JLabel evaluatedDateLabel = new JLabel();
+        contentPane.add(evaluatedDateLabel);
+        JLabel deliveryStatusLabelHeader = new JLabel("Vurdering:");
+        contentPane.add(deliveryStatusLabelHeader);
+        JLabel deliveryStatusLabel = new JLabel();
+        contentPane.add(deliveryStatusLabel);
+        JLabel evaluationCommentLabelHeader = new JLabel("Kommentarer:");
+        contentPane.add(evaluationCommentLabelHeader);
+        JLabel evaluationCommentLabel = new JLabel();
+        contentPane.add(evaluationCommentLabel);
+
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+
+        ArrayList<String> columns = new ArrayList(Arrays.asList("deliveryDate",
+                "evaluatedBy", "evaluationDate", "deliveryStatus", "evaluation"));
+        ArrayList<String> table = new ArrayList(Arrays.asList("Delivery"));
+        ArrayList<String> where = new ArrayList(Arrays.asList("deliveredBy = '"
+                + userName + "' AND idModul = " + i));
+        ArrayList<LinkedHashMap> deliveryList = dbConnector.multiQueryHash(columns, table, where);
+        LinkedHashMap<String, String> deliveryMap = deliveryList.get(0);
+        deliveryDateLabel.setText(deliveryMap.get("deliveryDate"));
+        evaluatedByLabel.setText(deliveryMap.get("evaluatedBy"));
+        evaluatedDateLabel.setText(deliveryMap.get("evaluationDate"));
+        deliveryStatusLabel.setText(deliveryMap.get("deliveryStatus"));
+        evaluationCommentLabel.setText(deliveryMap.get("evaluation"));
+
+        readEvaluationDialog.pack();
+        readEvaluationDialog.setVisible(true);
+    }
+
+    public void addModulContentTeacher(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
+        for (LinkedHashMap map : content) {
+            for (Object value : map.values()) {
+                if (value.toString().length() > 1) {
+                    JLabel label = new JLabel(value.toString());
+                    modulPane.add(label);
+                }
+            }
+            //DELIVERY LIST BUTTON
+
+            JButton openDeliveryListButton = new JButton("Se innleveringer");
+            modulPane.add(openDeliveryListButton);
+            openDeliveryListButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    openDeliveryListDialog(i);
+                }
+            });
 
         }
     }
