@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -127,7 +128,7 @@ public class TabModuloversikt {
             where.add("idModul = " + i + ";");
             EJBConnector ejbConnector = EJBConnector.getInstance();
             dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-            ArrayList<HashMap> moduls = dbConnector.multiQueryHash(columns, tables, where);
+            ArrayList<LinkedHashMap> moduls = dbConnector.multiQueryHash(columns, tables, where);
             if (userInfo.get("userType").equals("student")) {
                 columns.clear();
                 tables.clear();
@@ -135,12 +136,12 @@ public class TabModuloversikt {
                 columns.add("deliveryStatus");
                 tables.add("Delivery");
                 where.add("idModul = " + i + " AND deliveredBy = '" + userInfo.get("userName") + "';");
-                ArrayList<HashMap> deliveryStatus = dbConnector.multiQueryHash(columns, tables, where);
+                ArrayList<LinkedHashMap> deliveryStatus = dbConnector.multiQueryHash(columns, tables, where);
                 if (deliveryStatus.size() > 0) {
-                    modulPane = new JXTaskPane("Modul " + moduls.get(0).get("title")
-                            + deliveryStatus.get(0).get("deliveryStatus"));
+                    modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
+                            + "     " + deliveryStatus.get(0).get("deliveryStatus"));
                 } else {
-                    modulPane = new JXTaskPane(moduls.get(0).get("title") + "    Ikke levert");
+                    modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul") + "    Ikke levert");
                 }
                 modulPane.setCollapsed(true);
                 addContent(moduls, modulPane, i);
@@ -149,9 +150,9 @@ public class TabModuloversikt {
             } else {
                 int numberOfDeliveries = dbConnector.countRows("*", "Delivery WHERE idModul = " + moduls.get(0).get("idModul"));
                 int numberOfStudents = dbConnector.countRows("*", "User WHERE userType = 'student'");
-                modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul") 
-                        + ":" + moduls.get(0).get("title") + "         "
-                        + numberOfDeliveries + "/" + numberOfStudents + " innleveringer");
+                modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
+                        +  "    " + numberOfDeliveries + "/" 
+                        + numberOfStudents + " innleveringer");
                 modulPane.setCollapsed(true);
                 addContent(moduls, modulPane, i);
                 modulListContainer.add(modulPane);
@@ -171,35 +172,38 @@ public class TabModuloversikt {
      * @param modulPane the modulPane component labels should be added to
      * @param i the idModul of the current module
      */
-    public void addContent(ArrayList<HashMap> content, JXTaskPane modulPane, int i) {
-        for (HashMap map : content) {
+    public void addContent(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
+        for (LinkedHashMap map : content) {
             for (Object value : map.values()) {
-                JLabel label = new JLabel(value.toString());
-                modulPane.add(label);
+                if (value.toString().length() > 1) {
+                    JLabel label = new JLabel(value.toString());
+                    modulPane.add(label);
+                }
             }
-        }
-        // UPLOAD DELIVERY BUTTON
-        if (userInfo.get("userType").equals("student")) {
-            JButton uploadDeliveryButton = new JButton("Opplast oppgave");
-            modulPane.add(uploadDeliveryButton);
-            uploadDeliveryButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    addDeliveryDialog(i);
-                }
-            });
-        } //DELIVERY LIST BUTTON
-        else if (userInfo.get("userType").equals("teacher")) {
-            JButton openDeliveryListButton = new JButton("Se innleveringer");
-            modulPane.add(openDeliveryListButton);
-            openDeliveryListButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    openDeliveryListDialog(i);
-                }
-            });
-        }
 
+            // UPLOAD DELIVERY BUTTON
+            if (userInfo.get("userType").equals("student")) {
+                JButton uploadDeliveryButton = new JButton("Opplast oppgave");
+                modulPane.add(uploadDeliveryButton);
+                uploadDeliveryButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addDeliveryDialog(i);
+                    }
+                });
+            } //DELIVERY LIST BUTTON
+            else if (userInfo.get("userType").equals("teacher")) {
+                JButton openDeliveryListButton = new JButton("Se innleveringer");
+                modulPane.add(openDeliveryListButton);
+                openDeliveryListButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        openDeliveryListDialog(i);
+                    }
+                });
+            }
+
+        }
     }
 
     /**
@@ -245,16 +249,15 @@ public class TabModuloversikt {
         tables.add("Delivery");
         where.add("idModul = " + i);
 
-        ArrayList<HashMap> deliveryList = dbConnector.multiQueryHash(columns, tables, where);
+        ArrayList<LinkedHashMap> deliveryList = dbConnector.multiQueryHash(columns, tables, where);
         int gridBagYCounter = 1;
-        for(HashMap map : deliveryList) {
+        for (HashMap map : deliveryList) {
             int gridBagXCounter = 0;
             for (Object value : map.values()) {
                 JLabel label;
-                if(value != null)   {
+                if (value != null) {
                     label = new JLabel(value.toString());
-                }
-                else    {
+                } else {
                     label = new JLabel("");
                 }
                 JPanel panel = new JPanel();
@@ -270,13 +273,13 @@ public class TabModuloversikt {
             openFileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                        //int userNameIndex = deliveryList.size()-1;
+                    //int userNameIndex = deliveryList.size()-1;
                     //int userNameIndex = userNameIndex; 
                     //                    for (String s : TabModuloversikt.this.deliveryList) {
                     //                        System.out.println(s);
                     //                    }
                     String userName = map.get("deliveredBy").toString();
-    //                    System.out.println(deliveryList.size());
+                    //                    System.out.println(deliveryList.size());
                     //                    System.out.println(userNameIndex);
                     //                    System.out.println(userName);
                     //                    System.out.println(userNameIndex + " " + userName);
@@ -296,7 +299,6 @@ public class TabModuloversikt {
         deliveryListDialog.setVisible(true);
 
     }
-
 
     /**
      * Add window for teacher-users, in order to give evaluation on deliveries

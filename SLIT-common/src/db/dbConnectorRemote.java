@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.ejb.Remote;
 import slitcommon.DeliveryStatus;
@@ -40,7 +41,7 @@ public interface dbConnectorRemote {
     public ArrayList<String> multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
    
-    public ArrayList<HashMap> multiQueryHash(ArrayList<String> columns, ArrayList<String> 
+    public ArrayList<LinkedHashMap> multiQueryHash(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
     
     public int countRows(String column, String tableName);     

@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 /**
  *
  * @author piees
@@ -341,7 +342,7 @@ public class dbConnector implements dbConnectorRemote {
     public ArrayList multiQueryHash(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where)    {
         String query = "SELECT ";
-        ArrayList<HashMap> queryResults = new ArrayList();
+        ArrayList<LinkedHashMap> queryResults = new ArrayList();
         
         int countColumns = 0;
         while(columns.size() > (countColumns +1))   {
@@ -377,12 +378,13 @@ public class dbConnector implements dbConnectorRemote {
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
             while (rs.next())   {
-                HashMap<String, String> resultMap = new HashMap<>();
-                int columnsListIndex = 0;
+                System.out.println("GÅR TIL NESTE RAD");
+                LinkedHashMap<String, String> resultMap = new LinkedHashMap<>();
                 int resultSetIndex = 1;
-                while (columnCount > columnsListIndex)    {
-                    resultMap.put(columns.get(columnsListIndex),rs.getString(resultSetIndex));
-                    columnsListIndex++;
+                while (columnCount >= resultSetIndex)    {
+                    System.out.println("KOLONNER I RESULTSET HER: " + rsmd.getColumnName(resultSetIndex));
+                    System.out.println("KOLONNE I RAD HER:"+ rs.getString(resultSetIndex));
+                    resultMap.put(rsmd.getColumnName(resultSetIndex), rs.getString(resultSetIndex));
                     resultSetIndex++;
                 }
                 queryResults.add(resultMap);
