@@ -5,9 +5,12 @@
  */
 package slitclient;
 
+import notification.Notification;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -29,6 +32,10 @@ public class TeacherGUI {
     private TabModuloversikt tabModuloversikt;
     private TabFagstoff tabFagstoff;
     private HashMap<String, String> userInfo;
+    private JButton notificationButton;
+    // Its very important that the below field do not go out of scope.
+    private Notification notification;
+    
 
     /**
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
@@ -54,12 +61,13 @@ public class TeacherGUI {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
         frame = new JFrame("SLIT - " + fName + " " + lName);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Its very important that line under does not get uncommented or implemented anew.
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
         contentPane.setLayout(gblContent);
        
-        
+        notificationButton = new JButton("Varsler");
         JPanel commonContent =  makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
@@ -79,6 +87,8 @@ public class TeacherGUI {
         
         frame.pack();
         frame.setVisible(true);
+        
+        notification = new Notification(frame, userInfo, notificationButton);
     }
     
     /**
@@ -103,6 +113,18 @@ public class TeacherGUI {
         String lName = getUserInfo("lName");
         JButton nameButton = new JButton(fName + " " + lName);
 
+        JPanel eastContent = new JPanel();
+        eastContent.add(nameButton, BorderLayout.WEST);
+        eastContent.add(notificationButton, BorderLayout.LINE_END);
+        content.add(eastContent, BorderLayout.EAST);
+        
+        notificationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notification.createNotification();
+            }
+        });
+        
         return content;
         
     }

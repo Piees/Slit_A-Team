@@ -8,7 +8,7 @@
  *
  */
 
-package prototypes;
+package notification;
 
 import java.awt.Color;
 import java.awt.FontMetrics;

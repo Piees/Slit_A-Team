@@ -5,10 +5,13 @@
  */
 package slitclient;
 
+import notification.Notification;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +39,9 @@ public class StudentGUI {
     private TabFagstoff tabFagstoff;
     private HashMap<String, String> userInfo;
     private static final String LOGO_PATH = "src/img/slit_logo.png";
+    private JButton notificationButton;
+    // Its very important that the below field do not go out of scope.
+    private Notification notification;
     
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
@@ -59,7 +65,6 @@ public class StudentGUI {
         //create the moduloversikt-tab for the given userType
         tabModuloversikt = new TabModuloversikt(userInfo, frame);
         tabFagstoff = new TabFagstoff(userInfo, frame);
-        System.out.println(this.userInfo.get("fName"));
         makeFrame();
     }
     public String getUserInfo(String key)   {
@@ -87,12 +92,13 @@ public class StudentGUI {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
         frame = new JFrame("SLIT - " + fName + " " + lName);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Its very important that line under does not get uncommented or implemented anew.
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
         contentPane.setLayout(gblContent);
        
-        
+        notificationButton = new JButton("Varsler");
         JPanel commonContent =  makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
@@ -111,6 +117,8 @@ public class StudentGUI {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
+        
+        notification = new Notification(frame, userInfo, notificationButton);
     }
     
     /**
@@ -138,13 +146,26 @@ public class StudentGUI {
 
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
+
         JButton nameButton = new JButton(fName + " " + lName){
             @Override
             public int getHeight() {
                 return 25;
             }
         };
-        content.add(nameButton, BorderLayout.LINE_END);
+
+        //content.add(nameButton, BorderLayout.EAST);
+        JPanel eastContent = new JPanel();
+        eastContent.add(nameButton, BorderLayout.WEST);
+        eastContent.add(notificationButton, BorderLayout.LINE_END);
+        content.add(eastContent, BorderLayout.EAST);
+        
+        notificationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notification.createNotification();
+            }
+        });
 
         return content;
         
@@ -169,8 +190,5 @@ public class StudentGUI {
         tabbedPane.addTab("Fagstoff", null, tab3, null);
         return tabbedPane;
     }
-    
-    
-
-    
+        
 }
