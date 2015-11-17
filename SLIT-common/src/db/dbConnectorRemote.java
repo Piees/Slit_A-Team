@@ -22,13 +22,7 @@ import slitcommon.DeliveryStatus;
 @Remote
 public interface dbConnectorRemote {
     
-    /**
-     * UNUSED METHOD - REMOVE??
-     * @param sql
-     * @return single query string
-     */
-    public String singleQuery(String sql, String colName);
-    
+   
     public Connection dbConnection();
     
     public HashMap<String, String> login(String userName, String pwd);
