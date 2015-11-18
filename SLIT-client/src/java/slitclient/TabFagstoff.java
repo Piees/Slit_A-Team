@@ -106,7 +106,7 @@ public class TabFagstoff {
             public void actionPerformed(ActionEvent e) {
                 if (title.getText().length() > 0) {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
-                        JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene må fylles ut", "Et av ressursfeltene må fylles ut", 1); 
+                        JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene mÃ¥ fylles ut", "Et av ressursfeltene mÃ¥ fylles ut", 1); 
                     }
                     else {
                         String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText());
