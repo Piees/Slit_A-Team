@@ -169,7 +169,7 @@ public class TabModuloversikt {
                 //create the modul-pane header using the given data
                 modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
                         + "    " + numberOfDeliveries + "/"
-                        + numberOfStudents + " innleveringer");
+                        + numberOfStudents + " har levert");
                 //as above, set pane to collapsed from the beginning
                 modulPane.setCollapsed(true);
                 //display the content for this module. with a button that
@@ -425,7 +425,7 @@ public class TabModuloversikt {
             }
             //at the end of each row, we add a button for opening the dialog where
             //a teacher can give an evaluation. This also downloads the delivery automatically
-            JButton openFileButton = new JButton("Åpne fil");
+            JButton openFileButton = new JButton("Gi tilbakemelding");
             openFileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
