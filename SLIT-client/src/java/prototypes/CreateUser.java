@@ -8,7 +8,12 @@ package prototypes;
 import db.dbConnectorRemote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -107,38 +112,78 @@ public class CreateUser {
          nextButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ev) {
-            ArrayList<String> columns = new ArrayList();
-            ArrayList<Object> values = new ArrayList();
-            String newUser = "User";
-            columns.add("userType");
-            columns.add("userName");
-            columns.add("lName");
-            columns.add("fName");
-            columns.add("pwd");
-            columns.add("mail");
-            values.add(roleCombo.getSelectedItem());
-            values.add(unameText.getText());
-            values.add(snameText.getText());
-            values.add(nameText.getText());
-            values.add(passwordText.getText());
-            values.add(mailText.getText());
-            
-            EJBConnector ejbConnector = EJBConnector.getInstance();
-                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                dbConnector.insertIntoDB(newUser, columns, values);
-                
-                System.out.println("Nytt bruker lagrer i database");
-            
-                System.out.println(roleCombo.getSelectedItem()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ passwordText.getText()+ mailText.getText());
-            
-                new Login(); 
-                cframe.dispose();
+                try {
+                    //henter tilfeldig salt
+                    String salt = getSalt();
+                    //setter brukerens passordinput
+                    String preHashPass = (passwordText.getText());
+                    //krypterer passordet med salt
+                    String securePassword = getEncryptedPassword(preHashPass, salt);
+                    
+                    ArrayList<String> columns = new ArrayList();
+                    ArrayList<Object> values = new ArrayList();
+                    String newUser = "User";
+                    columns.add("userType");
+                    columns.add("userName");
+                    columns.add("lName");
+                    columns.add("fName");
+                    columns.add("pwd");
+                    columns.add("mail");
+                    columns.add("salt");
+                    values.add(roleCombo.getSelectedItem());
+                    values.add(unameText.getText());
+                    values.add(snameText.getText());
+                    values.add(nameText.getText());
+                    values.add(securePassword); //sender kryptert passord til dbconnect
+                    values.add(mailText.getText());
+                    values.add(salt);//sender salt til dbconnect
+                    
+                    EJBConnector ejbConnector = EJBConnector.getInstance();
+                    dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                    dbConnector.insertIntoDB(newUser, columns, values);
+                    
+                    System.out.println("Ny bruker lagret i databasen.");
+                    
+                    System.out.println(roleCombo.getSelectedItem()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ securePassword + mailText.getText());
+                    
+                    new Login();
+                    cframe.dispose();
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
         });
          
-        
-        
     }
 
+    //
+       private static String getEncryptedPassword(String preHashPass, String salt){
+       String generatedPassword = null;
+        try {
+            
+            MessageDigest hashValue = MessageDigest.getInstance("SHA-512");
+            hashValue.update(salt.getBytes()); //legger salt til message digest (verdien som brukes til å hashe)
+            byte[] bytes = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bytes"
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)//konverterer hvert tall i "bytes" fra desimal til hex
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString(); //hele "bytes" er nå konvertert til hex, i stringformat
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            System.out.println(e);
+        }
+    return generatedPassword;
+}
+    
+    //genererer tilfeldig salt med RNG, returner som string
+    private static String getSalt() throws NoSuchAlgorithmException{
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[8];
+        sr.nextBytes(salt);
+        return salt.toString();
+    }
 }
