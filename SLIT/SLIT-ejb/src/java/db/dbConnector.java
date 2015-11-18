@@ -579,4 +579,30 @@ public class dbConnector implements dbConnectorRemote {
         return null;
     }
 
+    /**
+     * Deletes a delivery from the Delivery-table in the DB, if it fits the
+     * given idModul and userName
+     * @param idModul the idModul attribute of this delivery
+     * @param userName the deliveredBy attribute of this delivery
+     * @return confirmation string telling whether operation was successful
+     */
+    @Override
+    public String deleteDelivery(int idModul, String userName)  {
+        Connection dbConnection = dbConnection();
+        String delete = "DELETE FROM Delivery WHERE idModul="+ idModul +" AND deliveredBy='"+userName+"';";
+        try {
+            PreparedStatement ps = dbConnection.prepareStatement(delete);
+            //this should be used to make it inejction-proof, but I can't get it to work
+            //stuck with SQL syntax-error even after triple-checking delete-statement
+//            ps.setInt(1, idModul);
+//            ps.setString(2, userName);
+            System.out.print(ps);
+            ps.executeUpdate(delete);
+            return "Innlevering slettet.";
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+            return "Feil! Innlevering ble ikke slettet.";
+        }  
+    }
 }

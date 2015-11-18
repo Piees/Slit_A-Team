@@ -58,4 +58,6 @@ public interface dbConnectorRemote {
     
     public byte[] getResourceFile(int idResources);
     
+    public String deleteDelivery(int idModul, String userName);
+    
 }

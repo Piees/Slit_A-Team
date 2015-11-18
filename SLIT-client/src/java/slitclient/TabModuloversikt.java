@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTaskPane;
@@ -144,9 +145,11 @@ public class TabModuloversikt {
                 //if the arraylist is not empty, that means this student has 
                 //delivered something for this module. Then we get the status of
                 //this delivery and add it to the header of the module-pane
+                String evaluationStatus = "";
                 if (deliveryStatus.size() > 0) {
                     modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
                             + "     " + deliveryStatus.get(0).get("deliveryStatus"));
+                    evaluationStatus = deliveryStatus.get(0).get("deliveryStatus").toString();
                 } //if the arraylist is empty, this student has not made a delivery 
                 //for this module. We can then add "Not delivered" to the module-pane header
                 else {
@@ -156,9 +159,10 @@ public class TabModuloversikt {
                 modulPane.setCollapsed(true);
                 //get the number of deliveries this student has for this module
                 int numberOfDeliveries = deliveryStatus.size();
-                //display the content for this module, and one of two buttons 
-                //depending on whether a student-user has made a delivery or not
-                addModulContentStudent(moduls, modulPane, i, numberOfDeliveries);
+                //add the content for this module, and one of three buttons 
+                //depending on whether a student-user has made a delivery, or it's
+                //been evaluated, or it's not seen
+                addModulContentStudent(moduls, modulPane, i, numberOfDeliveries, evaluationStatus);
                 modulListContainer.add(modulPane);
                 i++;
             } else {
@@ -192,7 +196,7 @@ public class TabModuloversikt {
      * @param i the idModul of the current module
      */
     public void addModulContentStudent(ArrayList<LinkedHashMap> content,
-            JXTaskPane modulPane, int i, int numberOfDeliveries) {
+            JXTaskPane modulPane, int i, int numberOfDeliveries, String evaluationStatus) {
         //for each HashMap(containing a module) in the content-list, 
         for (LinkedHashMap map : content) {
             //for each value in the current HashMap, display values
@@ -200,8 +204,10 @@ public class TabModuloversikt {
                 //we do not wish to display the idModul-value, so we check if the
                 //length of the value is longer than 1 character
                 if (value.toString().length() > 1) {
-                    JLabel label = new JLabel(value.toString());
-                    modulPane.add(label);
+                    JTextArea textArea = new JTextArea(value.toString());
+                    textArea.setEditable(false);
+                    textArea.setWrapStyleWord(true);
+                    modulPane.add(textArea);
                 }
             }
             //if the user has made a delivery, make a button for downloading this 
@@ -216,6 +222,27 @@ public class TabModuloversikt {
                         readEvaluationDialog(frame, i, userInfo.get("userName"));
                     }
                 });
+                //delete delivery button, only if status of delivery is "not seen"
+                if(evaluationStatus.equals("IKKESETT")) {
+                    JButton deleteModuleButton = new JButton("Slett innlevering");
+                    modulPane.add(deleteModuleButton);
+                    deleteModuleButton.addActionListener(new ActionListener()   {
+                        @Override
+                        public void actionPerformed(ActionEvent e)  {
+                            //array with options for confirmation dialog
+                            Object[] options = {"Ja", "Nei"};
+                            //asks user to confirm action
+                            int answer = JOptionPane.showOptionDialog(frame, ""
+                                    + "Ønsker du å slette innleveringen?",
+                                    "Bekreft sletting", JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+                            //if user chooses yes
+                            if(answer == JOptionPane.YES_OPTION) {
+                                deleteModule(i);
+                            }
+                        }
+                    });
+                }      
             }//if user has not made a delivery, make a button for uploading a delivery 
             else {
                 // UPLOAD DELIVERY BUTTON
@@ -310,6 +337,17 @@ public class TabModuloversikt {
         readEvaluationDialog.setVisible(true);
     }
 
+    /**
+     * Deletes a delivery from the DB, using the given idModul and the userName
+     * of the currently logged in user
+     * @param idModul idModul of the chosen module
+     */
+    public void deleteModule(int idModul)    {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        String confirmationString = dbConnector.deleteDelivery(idModul, userInfo.get("userName"));
+        JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
+    }
     /**
      * Adds the content for each module by looping trhough the arraylist and
      * displaying all results as labels. Adds a button for showing all
