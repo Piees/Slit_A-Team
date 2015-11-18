@@ -5,11 +5,9 @@
  */
 package notification;
 
-import notification.DateLabelFormatter;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import db.dbConnectorRemote;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -60,7 +58,7 @@ public class Notification {
     //private HintTextField notificationTime;
     //private JTextField notificationTime;
     //private String actualTimestamp;
-    JLabel displayedTimestamp;
+    private JLabel displayedTimestamp;
     private JTextField notificationText;
     private JButton createNotificationButton;
     
@@ -68,6 +66,7 @@ public class Notification {
     private HashMap<String, String> dateMap;
     
     
+    private ArrayList<HashMap> unseenNotifications;
     private ArrayList<HashMap> notificationList;
     // This field is for equality checks, so we dont end up with redudant Timer threads.
     private ArrayList<HashMap> futureNotifications;
@@ -78,6 +77,7 @@ public class Notification {
         this.frame = frame;
         this.userInfo = userInfo;
         this.mainGUINotificationButton = mainGUINotificationButton;
+        unseenNotifications = new ArrayList<>();
         timers = new ArrayList<>();
         userName = this.userInfo.get("userName");
         dateMap = new HashMap<>();
@@ -89,47 +89,12 @@ public class Notification {
         frameAddWindowListener();
         
         createNotificationTimers();
-    }    
-    
-    /**
-     * The first Notification GUI that is represented to the user. The user 
-     * can here choose to create or see notifications.
-     */
-    @Deprecated
-    public void notificationDialog() {
-        JButton createNotificationBtn = new JButton("Nytt varsel");
-        seeNotificationButton = new JButton("Se varsler");
-        JDialog dialog = new JDialog();
-        JPanel panel = new JPanel();
-        //panel.setLayout(new GridLayout(0, 2));
-        panel.add(createNotificationBtn);
-        panel.add(seeNotificationButton);
-        dialog.add(panel);
-        
-        panel.repaint();
-        dialog.setVisible(true);
-        dialog.pack();
-        dialog.repaint();
-        
-        createNotificationBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createNotification();
-            }
-        });
-        
-        //seeNotificationButton.setVisible(false);
-        seeNotificationButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seeNotifications();
-            }
-        });
-
+        //checkForNotifications();
     }
     
     /**
-     * GUI for create notifications
+     * GUI containing a "see notification button" and possibility for 
+     * creating new notifications
      */
     public void createNotification() {
         // Bit of a hack
@@ -194,10 +159,12 @@ public class Notification {
         ArrayList<HashMap> newFutureNotifications;
         if (futureNotifications != null) {    
             newFutureNotifications = connector.getUserNotifications(futureNotificationQuery, userName);
+            ArrayList<HashMap> tempList = newFutureNotifications;
             //System.out.println("futureNotifications.size(): " + this.futureNotifications.size());
             //System.out.println("newList.size(): " + newFutureNotifications.size());
             // calls a method that check for notification equality so there wont be redundant Timer threads.
-            newFutureNotifications = removeRegisteredNotification(newFutureNotifications);
+            newFutureNotifications = getUniqueNotification(newFutureNotifications);
+            futureNotifications = tempList;
             //System.out.println("newList.size(): " + newFutureNotifications.size());
             
         }
@@ -209,25 +176,31 @@ public class Notification {
         
         if (newFutureNotifications.size() > 0) {
             
-            // Can a timer have multiple scheduled timers?
-
             Date date;
             //Timer timer = new Timer();
             for (HashMap notification : newFutureNotifications) {
+                
+
+                Timer timer = new Timer();
+                int idNotification = (Integer) notification.get("idNotification");  
+                Timestamp stamp = (Timestamp) notification.get("timestamp");
+                
                 TimerTask task = new TimerTask() {
                     @Override
                     public void run() {
-                        checkForNotifications();
+                        //checkForNotifications();
+                        markNotificationAsReady(idNotification);
+                        // PUT Notification in a form of ready to view list.
                     }
                 };
                 
-                Timer timer = new Timer();
-                Timestamp stamp = (Timestamp) notification.get("timestamp");
+                       
                 SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
                 try {
                     date = SDF.parse(stamp.toString());
                     //System.out.println(date.toString());
                     timer.schedule(task, date);
+                    // Adds the timer to a list to avoid rogue threads after System.exit
                     timers.add(timer);
 
                 } catch (ParseException ex) {
@@ -241,39 +214,76 @@ public class Notification {
     }
     
     /**
-     * This method compares the old futureNotification list with the new list
-     * and returns an ArrayList containing only the unique elements.
-     * It also updates the futureNotifactions list
-     * 
-     * (metoden bor kanskje skifte navn til noe mer beskrivende)
+     * This method compares the futureNotifications list with another list
+     * and returns an ArrayList containing only the none overlapping unique elements.
      */
-    private ArrayList<HashMap> removeRegisteredNotification(ArrayList<HashMap> newFutureNotifications) {
-        Set newSet = new HashSet(newFutureNotifications);
+    private ArrayList<HashMap> getUniqueNotification(ArrayList<HashMap> unseenNotifications) {
+        Set newSet = new HashSet(unseenNotifications);
         Set oldSet = new HashSet(this.futureNotifications);
         // returns a SetView that only contains the elements that are unique for one Set. 
         SetView setView = Sets.symmetricDifference(newSet, oldSet); 
-        this.futureNotifications = newFutureNotifications;
-        newFutureNotifications = new ArrayList(setView);
+        unseenNotifications = new ArrayList(setView);
         
-        return newFutureNotifications;
+        return unseenNotifications;
     }
     
+    /**
+     * Checks the database for unseen notifications that match the current timestamp.
+     * If there are unseen notifications that got a timestamp less or equal to current time 
+     * The notification buttons will be renamed so that the user will see the amount of unseen notifications.
+     * 
+     */
     private void checkForNotifications() {
-        String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
-        notificationList = connector.getUserNotifications(currentUnseenNotificationQuery, userName);
+        //String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+        // Gets all unseen notifications for the current user.
+        ArrayList<HashMap> notificationList = connector.getUserNotifications("", userName);
+        // Removes the notifications already registered by the Timers
+        notificationList = getUniqueNotification(notificationList);
+        // adds the old unseen notifications to the unseenNotifications list
+        unseenNotifications.addAll(notificationList);
         //System.out.println("unseen notificationList.size(): " + notificationList.size());
-        if (notificationList.size() > 0) {
-            seeNotificationButton.setText(notificationList.size() + " nye varsler");
-            mainGUINotificationButton.setText("Varsler(" + notificationList.size() + ")");
+        if (unseenNotifications.size() > 0) {
+            seeNotificationButton.setText(unseenNotifications.size() + " nye varsler");
+            mainGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
             panel.repaint();
         }
     }
     
-    @Deprecated
-    private void setNBVisibility(boolean flag) {
-        seeNotificationButton.setVisible(flag);
-        panel.repaint();
+//    /**
+//     * 
+//     */
+//    private ArrayList<HashMap> removeRegisteredNotification2(ArrayList<HashMap> oldUnseenNotifications) {
+//        Set newSet = new HashSet(oldUnseenNotifications);
+//        Set oldSet = new HashSet(this.futureNotifications);
+//        // returns a SetView that only contains the elements that are unique for one Set. 
+//        SetView setView = Sets.difference(newSet, oldSet); 
+//        //this.futureNotifications = newFutureNotifications;
+//        newFutureNotifications = new ArrayList(setView);
+//        
+//        return newFutureNotifications;       
+//    }
+    
+    
+    
+    /**
+     * Gets a notification with the id specified by the parameter .
+     * @param idNotification the identifier of the notification that will be returned by the database
+     */
+    private void markNotificationAsReady(int idNotification) {
+        for (HashMap notification: futureNotifications) {
+            if ((int)notification.get("idNotification") == idNotification) {
+                unseenNotifications.add(notification);
+            }
+        }
+        if (unseenNotifications.size() > 0) {
+            seeNotificationButton.setText(unseenNotifications.size() + " nye varsler");
+            mainGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
+            panel.repaint();
+        }           
+        
     }
+
+
     
     /**
      * Action listener for the CreateNotificationButton
@@ -337,12 +347,12 @@ public class Notification {
         // This must be the first thing that happens, incase a new notification sets it to true;
         //seeNotificationButton.setVisible(false);
 
-        String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
-        notificationList = connector.getUserNotifications(currentUnseenNotificationQuery, userName);
-        if (notificationList.size() == 0) {
-            JOptionPane.showMessageDialog(frame,
-            "Ingen varsler");
-            dialog.dispose();
+       // String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+       // notificationList = connector.getUserNotifications(currentUnseenNotificationQuery, userName);
+        if (unseenNotifications.size() == 0) {
+//            JOptionPane.showMessageDialog(frame,
+//            "Ingen varsler");
+//            dialog.dispose();
             return;
         }
 
@@ -353,7 +363,7 @@ public class Notification {
         //frame.repaint();
 
         ArrayList<Integer> seenNotifications = new ArrayList<>();
-        for (HashMap notification : notificationList) {
+        for (HashMap notification : unseenNotifications) {
             String timestamp = notification.get("timestamp").toString();
             String notificationText = (String) notification.get("notificationText");
             String viewFormat = timestamp + ": \n" + notificationText;
@@ -370,6 +380,7 @@ public class Notification {
             @Override
             public void actionPerformed(ActionEvent e) { 
                 connector.markNotificationsAsSeen(seenNotifications);
+                unseenNotifications.clear();
                 // This is probably an ugly hack.
                 //dialog.removeAll();
                 //dialog.setVisible(false);
@@ -382,6 +393,11 @@ public class Notification {
         panel.repaint();
     }
     
+    /**
+     * Adds a windowListener to the frame that will close down all
+     * timer threads made by the Notification object.
+     * 
+     */
     public void frameAddWindowListener() {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
@@ -399,6 +415,9 @@ public class Notification {
         });   
     }
     
+    /**
+     * GUI for choosing a date and time when creating new notifications
+     */
     private void datepicker() {
         System.out.println("Datepicker button clicked");
         UtilDateModel model = new UtilDateModel();
@@ -468,6 +487,55 @@ public class Notification {
         dateDialog.setVisible(true);
         //java.sql.Date selectedDate = (java.sql.Date) datePicker.getModel().getValue();
 
+
+    }
+    
+
+    /**
+     * Changes the visible state of the seeNotificationButton
+     * @param flag sets the visible state of the seeNotificationButton
+     * @deprecated
+     */
+    @Deprecated
+    private void setNBVisibility(boolean flag) {
+        seeNotificationButton.setVisible(flag);
+        panel.repaint();
+    }
+    
+    /**
+     * The first Notification GUI that is represented to the user. The user 
+     * can here choose to create or see notifications.
+     */
+    @Deprecated
+    public void notificationDialog() {
+        JButton createNotificationBtn = new JButton("Nytt varsel");
+        seeNotificationButton = new JButton("Se varsler");
+        JDialog dialog = new JDialog();
+        JPanel panel = new JPanel();
+        //panel.setLayout(new GridLayout(0, 2));
+        panel.add(createNotificationBtn);
+        panel.add(seeNotificationButton);
+        dialog.add(panel);
+        
+        panel.repaint();
+        dialog.setVisible(true);
+        dialog.pack();
+        dialog.repaint();
+        
+        createNotificationBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createNotification();
+            }
+        });
+        
+        //seeNotificationButton.setVisible(false);
+        seeNotificationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                seeNotifications();
+            }
+        });
 
     }
 
