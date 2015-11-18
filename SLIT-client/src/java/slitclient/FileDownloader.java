@@ -59,7 +59,7 @@ public class FileDownloader {
      */
     public String downloadDeliveryFile(String userName, int idModul) {
         // Hente fra database : dbConnector.getFileFromDelivery();
-        // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
+        // Enten Ã¥pne filutforsker for Ã¥ velge mappe hvor det skal lagres, eller 
         // automatisk lagre i default download mappe.
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();

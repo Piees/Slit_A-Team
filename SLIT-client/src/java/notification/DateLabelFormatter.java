@@ -54,7 +54,7 @@ public class DateLabelFormatter extends AbstractFormatter {
     public String chechTimeFormat(String time) {
         if (time.length() != 5) {
             // Needs to be a return that mark it as faulty input
-            return "Klokkeslett skal være i format: hh:mm";
+            return "Klokkeslett skal vÃ¦re i format: hh:mm";
         }
         String[] time1 = time.split(":");
         
@@ -65,13 +65,13 @@ public class DateLabelFormatter extends AbstractFormatter {
             minute = Integer.parseInt(time1[1]);
         }  catch (NumberFormatException ex) {
 
-            return "Klokkeslett skal være i format: hh:mm";
+            return "Klokkeslett skal vÃ¦re i format: hh:mm";
         }
         if (hour >=0 && hour < 24 && minute >= 0 && minute < 60 ) {
             return "correct input";
         }
         else {
-            return "Klokkeslett må være mellom: 00:00 - 23:59";
+            return "Klokkeslett mÃ¥ vÃ¦re mellom: 00:00 - 23:59";
         }
                     
     }
