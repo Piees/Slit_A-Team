@@ -91,19 +91,8 @@ public class Login {
         HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
 
         if (loginResult.size() > 1) {
-            if (loginResult.get("userType").equals("student")) {
-                //create StudentGUI object with the list
-                StudentGUI studentGUI = new StudentGUI(loginResult);
+                UserGUI userGUI = new UserGUI(loginResult);
                 frame.setVisible(false);
-            } else if (loginResult.get("userType").equals("teacher")
-                    || loginResult.get("userType").equals("helpTeacher")) {
-                //create TeacherGUI object with the list
-                TeacherGUI teacherGUI = new TeacherGUI(loginResult);
-                frame.setVisible(false);
-            } else {
-                JOptionPane.showMessageDialog(null, "userType invalid, "
-                        + "contact the database manager");
-            }
         } else {
             JOptionPane.showMessageDialog(null, loginResult.get("error1"));
         }

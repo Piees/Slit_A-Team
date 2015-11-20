@@ -31,7 +31,7 @@ import javax.swing.JTabbedPane;
  *
  * @author Arild
  */
-public class StudentGUI {
+public class UserGUI {
 
     private JFrame frame;
     private TabForside tabForside;
@@ -58,7 +58,7 @@ public class StudentGUI {
      * Constructor for MakeGUI. Oppretter objekter av alle tab-klassene, og
      * kaller makeFrame()
      */
-    public StudentGUI(HashMap<String, String> userInfo) {
+    public UserGUI(HashMap<String, String> userInfo) {
         
         this.userInfo = userInfo;
         tabForside = new TabForside();

@@ -9,6 +9,7 @@ import db.dbConnectorRemote;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -63,6 +64,7 @@ public class TabModuloversikt {
      */
     public JPanel makeModuloversiktTab() {
         JPanel tab2Panel = new JPanel();
+        tab2Panel.setLayout(new BoxLayout(tab2Panel, BoxLayout.Y_AXIS));
 
         if (userInfo.get("userType").equals("teacher")) {
             JButton createModulButton = new JButton("Opprett modul");
@@ -75,6 +77,8 @@ public class TabModuloversikt {
             tab2Panel.add(createModulButton);
         }
         Component accordion = makeAccordion();
+        accordion.setPreferredSize(new Dimension(700, 900));
+        accordion.setMaximumSize(new Dimension(700, 900));
         tab2Panel.add(accordion);
         return tab2Panel;
     }
@@ -365,8 +369,10 @@ public class TabModuloversikt {
                 //we do not want to display the idModul-value, so we check if the
                 //length of values is longer than 1 character
                 if (value.toString().length() > 1) {
-                    JLabel label = new JLabel(value.toString());
-                    modulPane.add(label);
+                    JTextArea textArea = new JTextArea(value.toString());
+                    textArea.setEditable(false);
+                    textArea.setWrapStyleWord(true);
+                    modulPane.add(textArea);
                 }
             }
             //adds a button for opening a dialog showing list of deliveries for this module
