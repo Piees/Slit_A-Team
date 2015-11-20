@@ -246,6 +246,7 @@ public class Notification {
             seeNotificationButton.setText(unseenNotifications.size() + " nye varsler");
             mainGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
             panel.repaint();
+            frame.pack();
         }
     }
     
