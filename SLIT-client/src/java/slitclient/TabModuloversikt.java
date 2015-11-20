@@ -43,6 +43,7 @@ public class TabModuloversikt {
 
     private HashMap<String, String> userInfo;
     private JFrame frame;
+    private JPanel tab2Panel;
 
     /**
      * Constructor for class TabModuloversikt. Stores the containing
@@ -64,7 +65,7 @@ public class TabModuloversikt {
      * @return JPanel containing the components created
      */
     public JPanel makeModuloversiktTab() {
-        JPanel tab2Panel = new JPanel();
+        tab2Panel = new JPanel();
         tab2Panel.setLayout(new BoxLayout(tab2Panel, BoxLayout.Y_AXIS));
 
         if (userInfo.get("userType").equals("teacher")) {
@@ -551,11 +552,14 @@ public class TabModuloversikt {
                         openEvaluationDialog.dispose();
                         NotificationCreater nc = new NotificationCreater();
                         nc.createNewNotification(userName, "modul " + i + ": " + evaluationStatusEnum.toString());
+                        deliveryListDialog.dispose();
+                        openDeliveryListDialog(i);
                     }
                     
                 } //if comment was left empty, inform user that comment is too short
                 else {
-                    JOptionPane.showMessageDialog(openEvaluationDialog, "Du m� skrive en tilbakemelding", "Du m� skrive en tilbakemelding", 1);
+                    JOptionPane.showMessageDialog(openEvaluationDialog,
+                            "Du må skrive en tilbakemelding", "Skriv tilbakemelding", 1);
                 }
             }
         });
@@ -752,4 +756,5 @@ public class TabModuloversikt {
         createModulDialog.pack();
         createModulDialog.setVisible(true);
     }
+    
 }
