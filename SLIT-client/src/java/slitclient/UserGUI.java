@@ -98,7 +98,6 @@ public class UserGUI {
         GridBagLayout gblContent = new GridBagLayout();
         contentPane.setLayout(gblContent);
        
-        notificationButton = new JButton("Varsler");
         JPanel commonContent =  makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
@@ -153,11 +152,16 @@ public class UserGUI {
                 return 25;
             }
         };
+        notificationButton = new JButton("Varsler"){
+            @Override
+            public int getHeight()  {
+                return 25;
+            }
+        };
 
-        //content.add(nameButton, BorderLayout.EAST);
         JPanel eastContent = new JPanel();
-        eastContent.add(nameButton, BorderLayout.WEST);
-        eastContent.add(notificationButton, BorderLayout.LINE_END);
+        eastContent.add(nameButton, BorderLayout.CENTER);
+        eastContent.add(notificationButton, BorderLayout.EAST);
         content.add(eastContent, BorderLayout.EAST);
         
         notificationButton.addActionListener(new ActionListener() {
