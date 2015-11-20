@@ -158,8 +158,9 @@ public class TabFagstoff {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         FileDownloader downloader = new FileDownloader();
-                        downloader.downloadResourceFile(fileData, filename);
-                    }
+                        //downloader.downloadResourceFile(fileData, filename);
+                        JOptionPane.showMessageDialog(tab3Panel, 
+                                downloader.downloadResourceFile(fileData, filename));                       }
                 });
                 tab3Panel.add(downloadFileButton);
             }
