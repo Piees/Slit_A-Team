@@ -98,8 +98,9 @@ public class Notification {
      */
     public void createNotification() {
         // Bit of a hack
-        panel.removeAll();
-        
+        //panel.removeAll();
+        dialog = new JDialog();
+        panel = new JPanel();
         
         displayedTimestamp = new JLabel(" ");
         notificationText = new JTextField(20);
@@ -129,7 +130,12 @@ public class Notification {
         createNotificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createNewNotification();
+                String status = createNewNotification();
+                if (status.equals("Opplastning vellykket!")) {
+                    JOptionPane.showMessageDialog(null, "Varsel opprettet");
+                }
+                else JOptionPane.showMessageDialog(null, "Mistet kontakt med server, varsel ikke opprettet");
+                dialog.dispose();
             }
         });
 
@@ -243,10 +249,11 @@ public class Notification {
         unseenNotifications.addAll(notificationList);
         //System.out.println("unseen notificationList.size(): " + notificationList.size());
         if (unseenNotifications.size() > 0) {
-            seeNotificationButton.setText(unseenNotifications.size() + " nye varsler");
             mainGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
-            panel.repaint();
             frame.pack();
+            seeNotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
+            panel.repaint();
+            
         }
     }
     
@@ -292,7 +299,7 @@ public class Notification {
      * Needs to call createNotificationTimers() with just the new Notification 
      * data, so there wont be redundant Timer threads.
      */
-    private void createNewNotification() { 
+    private String createNewNotification() { 
         // time might be wrong format
         String time = dateMap.get("year") + "-" + dateMap.get("month") + "-" + dateMap.get("day") + " " + dateMap.get("time");
         String text = notificationText.getText();
@@ -306,9 +313,10 @@ public class Notification {
         try {
             timestamp = Timestamp.valueOf(time);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "provide a valid "
-                    + "notification date and text");                
+            JOptionPane.showMessageDialog(null, "Oppgi en gyldig "
+                    + "varsel dato og tid.");                
         }
+        String uploadNotificationStatus = "";
         if (timestamp != null) {
 
             EJBConnector ejbConnector = EJBConnector.getInstance();
@@ -324,7 +332,7 @@ public class Notification {
             values.add(false);
             values.add(time);
             values.add(text);
-            System.out.println(dbConnector.insertIntoDB("Notification", columns, values));
+            uploadNotificationStatus = dbConnector.insertIntoDB("Notification", columns, values);
 //            System.out.println("ugly hack inc!");
 //            // DETTE FoR PROGRAMMET TIL å STOPPE OPP I 1 sekund, 
 //            // SLIK AT DB MEST SANSYNLIGVIS REKKER å OPPDATERE SEG(INGEN GARANTI), 
@@ -335,8 +343,9 @@ public class Notification {
 //                Logger.getLogger(Notification.class.getName()).log(Level.SEVERE, null, ex);
 //            }
             createNotificationTimers();
+            
         }
-        
+        return uploadNotificationStatus;
     }
     
     
@@ -373,7 +382,7 @@ public class Notification {
             JLabel label = new JLabel(viewFormat);
             panel.add(label);
         }
-        JButton goBack = new JButton("Go back");
+        JButton goBack = new JButton("Gå tilbake");
         panel.add(goBack);
         panel.validate();
 
@@ -405,7 +414,8 @@ public class Notification {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Closing down all Time threads
+                // Closing down all Timer threads
+                System.out.println("Closing down all Timer threads");
                 for (Timer timer: timers) {
                     timer.purge();
                     timer.cancel();
@@ -437,8 +447,8 @@ public class Notification {
         JDialog dateDialog = new JDialog();
         JPanel datePanel2 = new JPanel();
         
-        JLabel timeLabel = new JLabel("Klokkeslett: \"hh:mm\"");
-        HintTextField timeTextField = new HintTextField("hh:mm");
+        JLabel timeLabel = new JLabel("Klokkeslett: \"tt:mm\"");
+        HintTextField timeTextField = new HintTextField("tt:mm");
         JButton approveDateButton = new JButton("Enter dato");
         approveDateButton.addActionListener(new ActionListener() {
             @Override
