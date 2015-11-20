@@ -67,7 +67,7 @@ public class Notification {
     
     
     private ArrayList<HashMap> unseenNotifications;
-    private ArrayList<HashMap> notificationList;
+    //private ArrayList<HashMap> notificationList;
     // This field is for equality checks, so we dont end up with redudant Timer threads.
     private ArrayList<HashMap> futureNotifications;
     // This should be a sort of collection of Time objects, so there wont be "collisions".
@@ -89,6 +89,7 @@ public class Notification {
         frameAddWindowListener();
         
         createNotificationTimers();
+        initiateNotificationUpdateLoop();
         //checkForNotifications();
     }
     
@@ -501,6 +502,23 @@ public class Notification {
 
     }
     
+
+    /**
+     * This method initiate the notification "update loop".
+     * a Timer that checks for notifications at fixed intervals
+     */
+    private void initiateNotificationUpdateLoop() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                checkForNotifications();
+            }
+        };
+        Timer timer = new Timer();        
+        // Will currently check for updates every 10 minutes
+        timer.scheduleAtFixedRate(task, 600000, 600000);
+        timers.add(timer);
+    }
 
     /**
      * Changes the visible state of the seeNotificationButton
