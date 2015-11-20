@@ -43,12 +43,12 @@ public class FileDownloader {
             FileOutputStream out = new FileOutputStream(filepath);
             out.write(fileData);
             out.close();
-            return fullFilename + " successfully downloaded";
+            return fullFilename + " nedlasting fullført.";
         } catch (IOException ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }   
         
-        return "Downloading " + fullFilename + " failed";
+        return fullFilename + " nedlasting mislykkes.";
     }   
     
     /**
@@ -76,11 +76,11 @@ public class FileDownloader {
             FileOutputStream out = new FileOutputStream(filepath);
             out.write(byteData);
             out.close();
-            return filename + " ble lastet ned.";
+            return filename + " nedlasting fullført.";
         } catch (Exception ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Nedlastning av " + filename + " feilet.";         
+        return filename + " nedlasting mislykkes.";         
     }
     
     /**
