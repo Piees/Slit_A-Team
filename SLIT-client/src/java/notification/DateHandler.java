@@ -34,7 +34,7 @@ public class DateHandler {
     public String checkTimeFormat(String time) {
         if (time.length() != 5) {
             // Needs to be a return that mark it as faulty input
-            return "Klokkeslett skal være i format: hh:mm";
+            return "Klokkeslett skal være i format: tt:mm";
         }
         String[] time1 = time.split(":");
         
@@ -45,7 +45,7 @@ public class DateHandler {
             minute = Integer.parseInt(time1[1]);
         }  catch (NumberFormatException ex) {
 
-            return "Klokkeslett skal være i format: hh:mm";
+            return "Klokkeslett skal være i format: tt:mm";
         }
         if (hour >=0 && hour < 24 && minute >= 0 && minute < 60 ) {
             return "correct input";
@@ -137,6 +137,10 @@ public class DateHandler {
         return monthNumber;
     }
     
+    /**
+     * Gets the current timestamp yyyy-MM-dd hh:mm:ss
+     * @return timestamp of current time.
+     */
     public Timestamp getCurrentTimestamp() {
         // 1) create a java calendar instance
         Calendar calendar = Calendar.getInstance();

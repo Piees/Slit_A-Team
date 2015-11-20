@@ -8,7 +8,8 @@ package notification;
 import db.dbConnectorRemote;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import slitclient.EJBConnector;
 
 /**
@@ -34,7 +35,8 @@ public class NotificationCreater {
      * Creates new notifications
      * 
      * @param userName userName of the receiver of the notification. 
-     * @param time in format yyyy-[m]m-[d]d hh:mm:ss[.f...]. 
+     * @param time when the user will receive the notification. 
+     *   The format should be in yyyy-[m]m-[d]d hh:mm:ss[.f...]. 
      *   The fractional seconds may be omitted. The leading zero 
      *   for mm and dd may also be omitted. 
      * @param text what the notification is about.
@@ -70,5 +72,52 @@ public class NotificationCreater {
         }
         return uploadNotificationStatus;
     }
-  
+    
+    /**
+     * Creates a notification to all users of the specified userType 
+     * using the current time as timestamp
+     * 
+     * @param userType userType of the receivers of the notification. 
+     * @param text what the notification is about.
+     * @return a string regarding upload status of the notification
+     */
+    public String notificationToUserType(String userType, String text) {
+        DateHandler dh = new DateHandler();
+        return notificationToUserType(userType, dh.getCurrentTimestamp().toString(), text);
+    }
+    
+    /**
+     * Creates a notification to all users of the specified userType 
+     * 
+     * @param userType userType of the receivers of the notification. 
+     * @param time when the user will receive the notification. 
+     *   The format should be in yyyy-[m]m-[d]d hh:mm:ss[.f...]. 
+     *   The fractional seconds may be omitted. The leading zero 
+     *   for mm and dd may also be omitted. 
+     * @param text what the notification is about.
+     * 
+     * @return a string regarding upload status of the notification
+     */
+    public String notificationToUserType(String userType, String time, String text) {
+        ArrayList<String> columns = new ArrayList<>();
+        ArrayList<String> tables = new ArrayList<>();
+        ArrayList<String> where = new ArrayList<>();
+        columns.add("userName");
+        tables.add("User");
+        where.add("userType = " + "\"" + userType + "\"");
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        ArrayList<LinkedHashMap> allUsersOfUserType = dbConnector.multiQueryHash(columns, tables, where);
+        System.out.println("allUsersOfUserType.size() " + allUsersOfUserType.size());
+        String notifySuccess = "Alle brukere av typen " + userType + " ble varslet";
+        for (LinkedHashMap user: allUsersOfUserType) {
+            System.out.println(user.get("userName").toString() + " " + time + " " + text);
+            String status = createNewNotification(user.get("userName").toString(), time, text);
+            if (!status.equals("Opplastning vellykket!")) {
+                notifySuccess = "Ikke alle " + userType + " ble varselet";
+            }
+        }
+        System.out.println(notifySuccess);
+        return notifySuccess;
+    }
 }

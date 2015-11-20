@@ -93,7 +93,8 @@ public class NotificationGUI {
         
         dialog.add(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));  
-
+        
+        // The setSize doesnt seem to do anything
         panel.setSize(650, 450);
         dialog.setSize(650, 450);
         panel.repaint();
@@ -185,6 +186,8 @@ public class NotificationGUI {
         this.seeNotificationButton.setText("Ingen varsler");
         this.mainGUINotificationButton.setText("Varsler");
         panel.repaint();
+        dialog.pack();
+
     }
      
     /**

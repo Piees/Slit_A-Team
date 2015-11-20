@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import notification.NotificationCreater;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -548,6 +549,8 @@ public class TabModuloversikt {
                     //if the uploading was successful, this dialog can be closed
                     if (returnString.equals("Lagret i database.")) {
                         openEvaluationDialog.dispose();
+                        NotificationCreater nc = new NotificationCreater();
+                        nc.createNewNotification(userName, "modul " + i + ": " + evaluationStatusEnum.toString());
                     }
                     
                 } //if comment was left empty, inform user that comment is too short
@@ -642,6 +645,8 @@ public class TabModuloversikt {
                     //if confirmation string equals "Upload successful", close this dialog
                     if (confirmationString.equals("Opplastning vellykket!")) {
                         addDeliveryDialog.dispose();
+                        NotificationCreater nc = new NotificationCreater();
+                        nc.notificationToUserType("teacher", userInfo.get("fName") + " "+ userInfo.get("lName") + " levert modul " + i);
                     }
                 }
             }
