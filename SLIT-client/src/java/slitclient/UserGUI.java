@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import notification.NotificationGUI;
 
 
 
@@ -66,6 +67,8 @@ public class UserGUI {
         tabModuloversikt = new TabModuloversikt(userInfo, frame);
         tabFagstoff = new TabFagstoff(userInfo, frame);
         makeFrame();
+        notification = new Notification(frame, userInfo, notificationButton);
+        
     }
     public String getUserInfo(String key)   {
         return userInfo.get(key);
@@ -117,7 +120,7 @@ public class UserGUI {
         frame.setResizable(false);
         frame.setVisible(true);
         
-        notification = new Notification(frame, userInfo, notificationButton);
+        
     }
     
     /**
@@ -167,7 +170,8 @@ public class UserGUI {
         notificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                notification.createNotification();
+                NotificationGUI ng = new NotificationGUI(frame, userInfo, notificationButton, notification);
+                
             }
         });
 

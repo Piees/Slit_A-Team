@@ -549,6 +549,7 @@ public class TabModuloversikt {
                     if (returnString.equals("Lagret i database.")) {
                         openEvaluationDialog.dispose();
                     }
+                    
                 } //if comment was left empty, inform user that comment is too short
                 else {
                     JOptionPane.showMessageDialog(openEvaluationDialog, "Du m� skrive en tilbakemelding", "Du m� skrive en tilbakemelding", 1);

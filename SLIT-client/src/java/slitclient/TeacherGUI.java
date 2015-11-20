@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import notification.NotificationGUI;
 
 
 
@@ -121,7 +122,7 @@ public class TeacherGUI {
         notificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                notification.createNotification();
+                NotificationGUI ng = new NotificationGUI(frame, userInfo, notificationButton, notification);
             }
         });
         
