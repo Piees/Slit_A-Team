@@ -85,7 +85,7 @@ public class TabModuloversikt {
                 public void actionPerformed(ActionEvent e) {
                     //ask the user to choose an existing module to edit, and save 
                     //the user's choice
-                    Integer i = selectModulEdit();
+                    Integer i = selectModul("Velg modulen du vil endre:", "Endre modul");
                     //if there is a number, create the editModulDialog for this modul
                     //if i is null, then the user cancelled/closed the choose-existing-module-dialog
                     if (i != null) {
@@ -94,6 +94,19 @@ public class TabModuloversikt {
                 }
             });
             buttonsPanel.add(editModulButton);
+
+            //button for deleting a modul. Follows same principles as editModulButton
+            JButton deleteModulButton = new JButton("Slett modul");
+            deleteModulButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Integer i = selectModul("Velg modulen du vil slette:", "Slett modul");
+                    if (i != null) {
+                        deleteModul(i);
+                    }
+                }
+            });
+            buttonsPanel.add(deleteModulButton);
             tab2Panel.add(buttonsPanel);
         }
         Component accordion = makeAccordion();
@@ -795,7 +808,7 @@ public class TabModuloversikt {
      *
      * @return the idModul of the module that was chosen from the list
      */
-    private Integer selectModulEdit() {
+    private Integer selectModul(String message, String dialogTitle) {
         //count all rows in the DB table Modul
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
@@ -811,7 +824,7 @@ public class TabModuloversikt {
         Integer[] chooseModul = moduls.toArray(new Integer[moduls.size()]);
 
         Integer chosenModul = (Integer) JOptionPane.showInputDialog(frame,
-                "Velg modulen du vil endre:", "Velg modul", JOptionPane.PLAIN_MESSAGE,
+                message, dialogTitle, JOptionPane.PLAIN_MESSAGE,
                 null, chooseModul, 1);
         //return the chosen number. If user cancels inputDialog, returns null
         return chosenModul;
@@ -884,4 +897,65 @@ public class TabModuloversikt {
 
     }
 
+    /**
+     * Shows a confirmation message, asking user to confirm choice to delete the
+     * modul with this idModul
+     *
+     * @param idModul id of the modul to be deleted
+     */
+    private void deleteModul(int idModul) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        ArrayList<String> columns = new ArrayList(Arrays.asList("title"));
+        ArrayList<String> table = new ArrayList(Arrays.asList("Modul"));
+        ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
+
+        ArrayList<LinkedHashMap> result = dbConnector.multiQueryHash(columns, table, where);
+        //check how many moduls there are
+        //we need to delete the last modul, otherwise the creation of GUI will not
+        //work the next time the system is launched
+        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        //we also need to check if the modul to be deleted has any deliveries
+        //if it does, we cannot delete it 
+        columns.clear();
+        columns.add("*");
+        table.clear();
+        table.add("Delivery");
+        
+        ArrayList<LinkedHashMap> deliveries = dbConnector.multiQueryHash(columns, table, where);
+        if (idModul == numberOfModuls && deliveries.isEmpty()) {
+            //get the title of the modul, so we can show it to the user
+            String title = result.get(0).get("title").toString();
+            //the choices the user can pick
+            Object[] options = {"Ja", "Nei"};
+            //show a message, asking user to confirm wish to delete this modul
+            //we print the id and the title of the modul
+            int answer = JOptionPane.showOptionDialog(frame, "Ønsker du å slette modul:"
+                    + " \"Modul " + idModul + ": " + title + "\"?", "Bekreft sletting",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            if (answer == JOptionPane.YES_OPTION) {
+                deleteModulInDB(idModul);
+            }
+        } else if (idModul != numberOfModuls) {
+            JOptionPane.showMessageDialog(frame, "Du må slette den siste modulen",
+                    "Ugyldig valg", 1);
+        }
+        else    {
+            JOptionPane.showMessageDialog(frame, "Du kan ikke slette en modul som har innleveringer",
+                    "Ugyldig valg", 1);
+        }
+    }
+
+    /**
+     * Deletes a modul from the DB, using the given idModul Shows a confirmation
+     * string telling user whether operation was successful
+     *
+     * @param idModul the id of the modul to be deleted
+     */
+    private void deleteModulInDB(int idModul) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        String confirmationString = dbConnector.deleteModul(idModul);
+        JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
+    }
 }

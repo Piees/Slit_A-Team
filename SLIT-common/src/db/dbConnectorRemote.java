@@ -63,4 +63,6 @@ public interface dbConnectorRemote {
     
     public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul);
     
+    public String deleteModul(int idModul);
+    
 }

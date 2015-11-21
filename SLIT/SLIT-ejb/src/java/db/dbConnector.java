@@ -628,4 +628,25 @@ public class dbConnector implements dbConnectorRemote {
             return "Feil! Modul ble ikke endret.";
         }
     }
+    
+    /**
+     * Method for deleting a modul from the DB. Shows a confirmation string telling
+     * user whether operation was successful
+     * @param idModul id of the module to be deleted
+     * @return confirmation string with result of operation
+     */
+    @Override
+    public String deleteModul(int idModul)  {
+        Connection dbConnection = dbConnection();
+        String delete = "DELETE FROM Modul WHERE idModul = " + idModul + ";";
+        try {
+            PreparedStatement ps = dbConnection.prepareStatement(delete);
+            ps.executeUpdate(delete);
+            return "Modul slettet.";
+        }
+        catch (SQLException e)  {
+            System.out.println(e);
+            return "Feil! Modul ble ikke slettet.";
+        }
+    }
 }
