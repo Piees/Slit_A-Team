@@ -69,6 +69,7 @@ public class TabModuloversikt {
         tab2Panel.setLayout(new BoxLayout(tab2Panel, BoxLayout.Y_AXIS));
 
         if (userInfo.get("userType").equals("teacher")) {
+            JPanel buttonsPanel = new JPanel();
             JButton createModulButton = new JButton("Opprett modul");
             createModulButton.addActionListener(new ActionListener() {
                 @Override
@@ -76,7 +77,16 @@ public class TabModuloversikt {
                     createModul();
                 }
             });
-            tab2Panel.add(createModulButton);
+            buttonsPanel.add(createModulButton);
+            JButton editModulButton = new JButton("Endre modul");
+            editModulButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    editModul(selectModulEdit());
+                }
+            });
+            buttonsPanel.add(editModulButton);
+            tab2Panel.add(buttonsPanel);
         }
         Component accordion = makeAccordion();
         accordion.setPreferredSize(new Dimension(700, 900));
@@ -115,7 +125,7 @@ public class TabModuloversikt {
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
-    public JXTaskPaneContainer makeModulList(int numberOfModuls) {
+    private JXTaskPaneContainer makeModulList(int numberOfModuls) {
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
         int i = 1;
         while (i <= numberOfModuls) {
@@ -201,21 +211,12 @@ public class TabModuloversikt {
      * @param modulPane the modulPane component labels should be added to
      * @param i the idModul of the current module
      */
-    public void addModulContentStudent(ArrayList<LinkedHashMap> content,
+    private void addModulContentStudent(ArrayList<LinkedHashMap> content,
             JXTaskPane modulPane, int i, int numberOfDeliveries, String evaluationStatus) {
         //for each HashMap(containing a module) in the content-list, 
         for (LinkedHashMap map : content) {
-            //for each value in the current HashMap, display values
-            for (Object value : map.values()) {
-                //we do not wish to display the idModul-value, so we check if the
-                //length of the value is longer than 1 character
-                if (value.toString().length() > 1) {
-                    JTextArea textArea = new JTextArea(value.toString());
-                    textArea.setEditable(false);
-                    textArea.setWrapStyleWord(true);
-                    modulPane.add(textArea);
-                }
-            }
+            //call method for displaying the text content of this module
+            displayModulText(map, modulPane);
             //if the user has made a delivery, make a button for downloading this 
             //and reading the evaluation of the delivery
             if (numberOfDeliveries > 0) {
@@ -229,12 +230,12 @@ public class TabModuloversikt {
                     }
                 });
                 //delete delivery button, only if status of delivery is "not seen"
-                if(evaluationStatus.equals("IKKESETT")) {
+                if (evaluationStatus.equals("IKKESETT")) {
                     JButton deleteModuleButton = new JButton("Slett innlevering");
                     modulPane.add(deleteModuleButton);
-                    deleteModuleButton.addActionListener(new ActionListener()   {
+                    deleteModuleButton.addActionListener(new ActionListener() {
                         @Override
-                        public void actionPerformed(ActionEvent e)  {
+                        public void actionPerformed(ActionEvent e) {
                             //array with options for confirmation dialog
                             Object[] options = {"Ja", "Nei"};
                             //asks user to confirm action
@@ -243,12 +244,12 @@ public class TabModuloversikt {
                                     "Bekreft sletting", JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
                             //if user chooses yes
-                            if(answer == JOptionPane.YES_OPTION) {
-                                deleteModule(i);
+                            if (answer == JOptionPane.YES_OPTION) {
+                                deleteDelivery(i);
                             }
                         }
                     });
-                }      
+                }
             }//if user has not made a delivery, make a button for uploading a delivery 
             else {
                 // UPLOAD DELIVERY BUTTON
@@ -273,7 +274,7 @@ public class TabModuloversikt {
      * belongs to
      * @param userName the userName of the currently logged in user
      */
-    public void readEvaluationDialog(JFrame frame, int i, String userName) {
+    private void readEvaluationDialog(JFrame frame, int i, String userName) {
         JDialog readEvaluationDialog = new JDialog(frame, "Les tilbakemelding", true);
         JPanel contentPane = (JPanel) readEvaluationDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -346,14 +347,30 @@ public class TabModuloversikt {
     /**
      * Deletes a delivery from the DB, using the given idModul and the userName
      * of the currently logged in user
+     *
      * @param idModul idModul of the chosen module
      */
-    public void deleteModule(int idModul)    {
+    private void deleteDelivery(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
         String confirmationString = dbConnector.deleteDelivery(idModul, userInfo.get("userName"));
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
     }
+
+    private void displayModulText(LinkedHashMap map, JXTaskPane modulPane)   {
+            //for each value in the current HashMap, display values
+            for (Object value : map.values()) {
+                //we do not wish to display the idModul-value, so we check if the
+                //length of the value is longer than 1 character
+                if (value.toString().length() > 1) {
+                    JTextArea textArea = new JTextArea(value.toString());
+                    textArea.setEditable(false);
+                    textArea.setWrapStyleWord(true);
+                    modulPane.add(textArea);
+                }
+            }
+    }
+    
     /**
      * Adds the content for each module by looping trhough the arraylist and
      * displaying all results as labels. Adds a button for showing all
@@ -363,20 +380,11 @@ public class TabModuloversikt {
      * @param modulPane the modulPane component labels should be added to
      * @param i the idModul of the current module
      */
-    public void addModulContentTeacher(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
+    private void addModulContentTeacher(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
         //for each map in the content-list,
         for (LinkedHashMap map : content) {
-            //for each value in the current map, display values as labels
-            for (Object value : map.values()) {
-                //we do not want to display the idModul-value, so we check if the
-                //length of values is longer than 1 character
-                if (value.toString().length() > 1) {
-                    JTextArea textArea = new JTextArea(value.toString());
-                    textArea.setEditable(false);
-                    textArea.setWrapStyleWord(true);
-                    modulPane.add(textArea);
-                }
-            }
+            //call method for displaying the text content of this module
+            displayModulText(map, modulPane);
             //adds a button for opening a dialog showing list of deliveries for this module
             JButton openDeliveryListButton = new JButton("Se innleveringer");
             modulPane.add(openDeliveryListButton);
@@ -662,7 +670,7 @@ public class TabModuloversikt {
      * showing the user a confirmation message. If stored successfully, window
      * is closed.
      */
-    public void createModul() {
+    private void createModul() {
         JDialog createModulDialog = new JDialog(frame, "Opprett ny modul", true);
         JPanel contentPane = (JPanel) createModulDialog.getContentPane();
 
@@ -756,5 +764,67 @@ public class TabModuloversikt {
         createModulDialog.pack();
         createModulDialog.setVisible(true);
     }
+
+    private int selectModulEdit() {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        ArrayList<Integer> moduls = new ArrayList<>();
+        int i = 1;
+        while (i <= numberOfModuls)  {
+            moduls.add(i);
+            i++;
+        }
+        Integer[] chooseModul = moduls.toArray(new Integer[moduls.size()]);
+        int chosenModul = (Integer)JOptionPane.showInputDialog(frame, 
+                "Velg modulen du vil endre:", "Velg modul", JOptionPane.PLAIN_MESSAGE,
+                null, chooseModul, 1);
+        return chosenModul;
+    }
+
+    private void editModul(int idModul) {
+        JDialog editModulDialog = new JDialog(frame, "Endre modul", true);
+        JPanel contentPane = (JPanel) editModulDialog.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        
+        ArrayList<String> columns = new ArrayList(Arrays.asList("*"));
+        ArrayList<String> table = new ArrayList(Arrays.asList("Modul"));
+        ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
+        ArrayList<LinkedHashMap> content = dbConnector.multiQueryHash(columns, table, where);
+        
+        ArrayList<JTextArea> listOfEdits = new ArrayList();
+        for(LinkedHashMap map : content)    {
+            for(Object value : map.values())    {
+                if(value.toString().length() > 1)   {
+                    JTextArea textArea = new JTextArea(value.toString());
+                    textArea.setEditable(true);
+                    textArea.setWrapStyleWord(true);
+                    contentPane.add(textArea);
+                    listOfEdits.add(textArea);
+                }
+            }
+        }
+        
+        JButton editModulButton = new JButton("Lagre endringer");
+        contentPane.add(editModulButton);
+        editModulButton.addActionListener(new ActionListener()  {
+            @Override
+            public void actionPerformed(ActionEvent e)  {
+                String confirmationString = dbConnector.updateModul(listOfEdits, idModul);
+                JOptionPane.showMessageDialog(editModulDialog, confirmationString, 
+                            confirmationString, 1);
+                if(confirmationString.equals("Modul ble endret."))  {
+                    editModulDialog.dispose();
+                }
+                
+            }
+        });
+        editModulDialog.pack();
+        editModulDialog.setVisible(true);
+
+    }
     
 }
+

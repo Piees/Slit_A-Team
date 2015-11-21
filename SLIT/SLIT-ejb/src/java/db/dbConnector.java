@@ -28,6 +28,7 @@ import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -582,14 +583,15 @@ public class dbConnector implements dbConnectorRemote {
     /**
      * Deletes a delivery from the Delivery-table in the DB, if it fits the
      * given idModul and userName
+     *
      * @param idModul the idModul attribute of this delivery
      * @param userName the deliveredBy attribute of this delivery
      * @return confirmation string telling whether operation was successful
      */
     @Override
-    public String deleteDelivery(int idModul, String userName)  {
+    public String deleteDelivery(int idModul, String userName) {
         Connection dbConnection = dbConnection();
-        String delete = "DELETE FROM Delivery WHERE idModul="+ idModul +" AND deliveredBy='"+userName+"';";
+        String delete = "DELETE FROM Delivery WHERE idModul=" + idModul + " AND deliveredBy='" + userName + "';";
         try {
             PreparedStatement ps = dbConnection.prepareStatement(delete);
             //this should be used to make it inejction-proof, but I can't get it to work
@@ -599,10 +601,31 @@ public class dbConnector implements dbConnectorRemote {
             System.out.print(ps);
             ps.executeUpdate(delete);
             return "Innlevering slettet.";
-        }
-        catch (SQLException e)  {
+        } catch (SQLException e) {
             System.out.println(e);
             return "Feil! Innlevering ble ikke slettet.";
-        }  
+        }
+    }
+
+    @Override
+    public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul) {
+        Connection dbConnection = dbConnection();
+        String update = "UPDATE Modul SET title =?, description=?, learningObj=?,"
+                + "resources=?, excercise=?, evalForm=? WHERE idModul = " + idModul + ";";
+        try {
+            System.out.println("TRYYYYYYYYYYYYY HER");
+            PreparedStatement ps = dbConnection.prepareStatement(update);
+            int i = 1;
+            for (JTextArea textArea : listOfEdits) {
+                ps.setString(i, textArea.getText());
+                i++;
+            }
+            System.out.println(ps);
+            ps.executeUpdate();
+            return "Modul ble endret.";
+        } catch (SQLException e) {
+            System.out.println(e);
+            return "Feil! Modul ble ikke endret.";
+        }
     }
 }

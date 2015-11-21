@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.ejb.Remote;
+import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
@@ -59,5 +60,7 @@ public interface dbConnectorRemote {
     public byte[] getResourceFile(int idResources);
     
     public String deleteDelivery(int idModul, String userName);
+    
+    public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul);
     
 }
