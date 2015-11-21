@@ -155,23 +155,37 @@ public class UserGUI {
                 return 25;
             }
         };
-        notificationButton = new JButton("Varsler"){
+        notificationButton = new JButton("Varsler") {
             @Override
             public int getHeight()  {
                 return 25;
             }
         };
 
+        JButton updateButton = new JButton("Oppdater") {
+            @Override
+            public int getHeight()  {
+                return 25;
+            }
+        };
+        
         JPanel eastContent = new JPanel();
+        eastContent.add(updateButton, BorderLayout.WEST);
         eastContent.add(nameButton, BorderLayout.CENTER);
         eastContent.add(notificationButton, BorderLayout.EAST);
         content.add(eastContent, BorderLayout.EAST);
+        
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateContent();
+            }
+        });
         
         notificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 NotificationGUI ng = new NotificationGUI(frame, userInfo, notificationButton, notification);
-                
             }
         });
 
@@ -187,7 +201,6 @@ public class UserGUI {
      */  
     public JTabbedPane makeTabs()  {
         JTabbedPane tabbedPane = new TabPane();
-       
         JComponent tab1 = tabForside.makeForsideTab();
         tabbedPane.addTab("Forside", null, tab1, null);
         
@@ -198,5 +211,14 @@ public class UserGUI {
         tabbedPane.addTab("Fagstoff", null, tab3, null);
         return tabbedPane;
     }
-        
+    
+    /**
+     * A crude method to update tabForside, tabModuloversikt, tabFagstoff
+     * and notifications.
+     */
+     private void updateContent() {
+         notification.removeNotificationThreads();
+         frame.dispose();
+         new UserGUI(userInfo);
+     }   
 }

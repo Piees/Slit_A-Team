@@ -147,7 +147,7 @@ public class Notification {
      * The notification buttons will be renamed so that the user will see the amount of unseen notifications.
      * 
      */
-    private void checkForNotifications() {
+    public void checkForNotifications() {
         //String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
         // Gets all unseen notifications for the current user.
         ArrayList<HashMap> notificationList = connector.getUserNotifications("", userName);
@@ -208,17 +208,25 @@ public class Notification {
             @Override
             public void windowClosing(WindowEvent e) {
                 // Closing down all Timer threads
-                System.out.println("Closing down all Timer threads");
-                for (Timer timer: timers) {
-                    timer.purge();
-                    timer.cancel();
-                }
+                removeNotificationThreads();
                 frame.dispose();
                 System.exit(0);
             }
         });   
     }
     
+    /**
+     * Cancels all notification timer threads, only use this if you are 100% sure its a 
+     * good idea.
+     */
+    public void removeNotificationThreads() {
+        // Closing down all Timer threads
+        System.out.println("Closing down all Timer threads");
+        for (Timer timer: timers) {
+            timer.purge();
+            timer.cancel();
+        }       
+    }
 
     /**
      * This method initiate the notification "update loop".
@@ -232,8 +240,8 @@ public class Notification {
             }
         };
         Timer timer = new Timer();        
-        // Will currently check for updates every 10 minutes
-        timer.scheduleAtFixedRate(task, 600000, 600000);
+        // Will currently check for updates every 5 minutes
+        timer.scheduleAtFixedRate(task, 300000, 300000);
         timers.add(timer);
     }
 
