@@ -44,6 +44,7 @@ public class TabModuloversikt {
     private HashMap<String, String> userInfo;
     private JFrame frame;
     private JPanel tab2Panel;
+    ArrayList<Integer> modulesArrayList = new ArrayList(Arrays.asList(1, 2, 3, 4, 5));
 
     /**
      * Constructor for class TabModuloversikt. Stores the containing
@@ -82,7 +83,14 @@ public class TabModuloversikt {
             editModulButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    editModul(selectModulEdit());
+                    //ask the user to choose an existing module to edit, and save 
+                    //the user's choice
+                    Integer i = selectModulEdit();
+                    //if there is a number, create the editModulDialog for this modul
+                    //if i is null, then the user cancelled/closed the choose-existing-module-dialog
+                    if (i != null) {
+                        editModul(i);
+                    }
                 }
             });
             buttonsPanel.add(editModulButton);
@@ -294,23 +302,23 @@ public class TabModuloversikt {
         });
 
         //creates all the headers and the lines with the evaluation details for this delivery
-        JLabel deliveryDateLabelHeader = new JLabel("Besvarelse levert:");
+        JLabel deliveryDateLabelHeader = new JLabel("<html><b>Besvarelse levert:</b></html>");
         contentPane.add(deliveryDateLabelHeader);
         JLabel deliveryDateLabel = new JLabel();
         contentPane.add(deliveryDateLabel);
-        JLabel evaluatedByLabelHeader = new JLabel("Vurdert av:");
+        JLabel evaluatedByLabelHeader = new JLabel("<html><b>Vurdert av:</b></html>");
         contentPane.add(evaluatedByLabelHeader);
         JLabel evaluatedByLabel = new JLabel();
         contentPane.add(evaluatedByLabel);
-        JLabel evaluatedDateLabelHeader = new JLabel("Vurdert:");
+        JLabel evaluatedDateLabelHeader = new JLabel("<html><b>Vurdert:</b></html>");
         contentPane.add(evaluatedDateLabelHeader);
         JLabel evaluatedDateLabel = new JLabel();
         contentPane.add(evaluatedDateLabel);
-        JLabel deliveryStatusLabelHeader = new JLabel("Vurdering:");
+        JLabel deliveryStatusLabelHeader = new JLabel("<html><b>Vurdering:</b></html>");
         contentPane.add(deliveryStatusLabelHeader);
         JLabel deliveryStatusLabel = new JLabel();
         contentPane.add(deliveryStatusLabel);
-        JLabel evaluationCommentLabelHeader = new JLabel("Kommentarer:");
+        JLabel evaluationCommentLabelHeader = new JLabel("<html><b>Kommentarer:</b></html>");
         contentPane.add(evaluationCommentLabelHeader);
         JLabel evaluationCommentLabel = new JLabel();
         contentPane.add(evaluationCommentLabel);
@@ -357,20 +365,20 @@ public class TabModuloversikt {
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
     }
 
-    private void displayModulText(LinkedHashMap map, JXTaskPane modulPane)   {
-            //for each value in the current HashMap, display values
-            for (Object value : map.values()) {
-                //we do not wish to display the idModul-value, so we check if the
-                //length of the value is longer than 1 character
-                if (value.toString().length() > 1) {
-                    JTextArea textArea = new JTextArea(value.toString());
-                    textArea.setEditable(false);
-                    textArea.setWrapStyleWord(true);
-                    modulPane.add(textArea);
-                }
+    private void displayModulText(LinkedHashMap map, JXTaskPane modulPane) {
+        //for each value in the current HashMap, display values
+        for (Object value : map.values()) {
+            //we do not wish to display the idModul-value, so we check if the
+            //length of the value is longer than 1 character
+            if (value.toString().length() > 1) {
+                JTextArea textArea = new JTextArea(value.toString());
+                textArea.setEditable(false);
+                textArea.setWrapStyleWord(true);
+                modulPane.add(textArea);
             }
+        }
     }
-    
+
     /**
      * Adds the content for each module by looping trhough the arraylist and
      * displaying all results as labels. Adds a button for showing all
@@ -563,7 +571,7 @@ public class TabModuloversikt {
                         deliveryListDialog.dispose();
                         openDeliveryListDialog(i);
                     }
-                    
+
                 } //if comment was left empty, inform user that comment is too short
                 else {
                     JOptionPane.showMessageDialog(openEvaluationDialog,
@@ -658,7 +666,7 @@ public class TabModuloversikt {
                     if (confirmationString.equals("Opplastning vellykket!")) {
                         addDeliveryDialog.dispose();
                         NotificationCreater nc = new NotificationCreater();
-                        nc.notificationToUserType("teacher", userInfo.get("fName") + " "+ userInfo.get("lName") + " levert modul " + i);
+                        nc.notificationToUserType("teacher", userInfo.get("fName") + " " + userInfo.get("lName") + " levert modul " + i);
                     }
                 }
             }
@@ -677,7 +685,7 @@ public class TabModuloversikt {
         //create header for drop-down-list of which modul to create
         JLabel idModulLabel = new JLabel("Velg hvilken modul du ønsker å opprette:");
         //create array of idModuls which specifies which module to create
-        Integer[] modules = {1, 2, 3, 4, 5};
+        Integer[] modules = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         //create drop-down-list of given array
         JComboBox modulesList = new JComboBox(modules);
 
@@ -727,32 +735,48 @@ public class TabModuloversikt {
         createModulButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //create insert-statement for DB, with the given columns, table and values
-                ArrayList<String> columns = new ArrayList(Arrays.asList("idModul",
-                        "title", "description", "learningObj", "resources",
-                        "excercise", "evalForm"));
-                String modul = "Modul";
-                ArrayList<Object> values = new ArrayList();
-
-                int i = (Integer) modulesList.getSelectedItem();
-                values.add(i);
-                values.add(createModulTitle.getText());
-                values.add(createModulDesc.getText());
-                values.add(createModulLearningObj.getText());
-                values.add(createModulRes.getText());
-                values.add(createModulEx.getText());
-                values.add(createModulEval.getText());
-
-                //call the method for inserting into the specified table in the DB
+                //we need to check that the chosen idModul does not already exist
                 EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                //call method and store the returned confirmation string
-                String confirmationString = dbConnector.insertIntoDB(modul, columns, values);
-                //show confirmation string in messageDialog
-                JOptionPane.showMessageDialog(createModulDialog, confirmationString, confirmationString, 1);
-                //if confirmation string equals "Upload successful", close this dialog.
-                if (confirmationString.equals("Opplastning vellykket!")) {
-                    createModulDialog.dispose();
+                //get the number the user chose in the drop-down-list
+                int i = (Integer) modulesList.getSelectedItem();
+
+                //count rows in the Modul-table in the DB with the idModul 
+                //atribute equalling the users choice
+                int numberOfModuls = dbConnector.countRows("*", "Modul WHERE idModul = " + i);
+                //if there is no row with this idModul, this means the modul does not exist
+                if (numberOfModuls == 0) {
+                    //create insert-statement for DB, with the given columns, table and values
+                    ArrayList<String> columns = new ArrayList(Arrays.asList("idModul",
+                            "title", "description", "learningObj", "resources",
+                            "excercise", "evalForm"));
+                    String modul = "Modul";
+                    ArrayList<Object> values = new ArrayList();
+
+                    //get all values from the textAreas and add them to the values-list
+                    values.add(i);
+                    values.add(createModulTitle.getText());
+                    values.add(createModulDesc.getText());
+                    values.add(createModulLearningObj.getText());
+                    values.add(createModulRes.getText());
+                    values.add(createModulEx.getText());
+                    values.add(createModulEval.getText());
+
+                    //call the method for inserting into the specified table in the DB
+                    //call method and store the returned confirmation string
+                    String confirmationString = dbConnector.insertIntoDB(modul, columns, values);
+                    //show confirmation string in messageDialog
+                    JOptionPane.showMessageDialog(createModulDialog, confirmationString, confirmationString, 1);
+                    //if confirmation string equals "Upload successful", close this dialog.
+                    if (confirmationString.equals("Opplastning vellykket!")) {
+                        createModulDialog.dispose();
+                    }
+                    //if there is a row with this idModul, this module already exists. 
+                    //we tell user to use the editModulButton instead
+                } else {
+                    JOptionPane.showMessageDialog(createModulDialog, "Denne modulen "
+                            + "finnes allerede. Bruk knappen \n \"Endre modul\" for å "
+                            + "endre den.", "Modul finnes allerede", 1);
                 }
             }
         });
@@ -765,66 +789,99 @@ public class TabModuloversikt {
         createModulDialog.setVisible(true);
     }
 
-    private int selectModulEdit() {
+    /**
+     * This method shows a list of all modules stored in the DB. User chooses
+     * one module, and this number is returned
+     *
+     * @return the idModul of the module that was chosen from the list
+     */
+    private Integer selectModulEdit() {
+        //count all rows in the DB table Modul
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
         int numberOfModuls = dbConnector.countRows("*", "Modul");
+        //make a list containing same amount of numbers as rows in the DB-table
         ArrayList<Integer> moduls = new ArrayList<>();
         int i = 1;
-        while (i <= numberOfModuls)  {
+        while (i <= numberOfModuls) {
             moduls.add(i);
             i++;
         }
+        //add every number in the list to an array, which the user can choose from
         Integer[] chooseModul = moduls.toArray(new Integer[moduls.size()]);
-        int chosenModul = (Integer)JOptionPane.showInputDialog(frame, 
+
+        Integer chosenModul = (Integer) JOptionPane.showInputDialog(frame,
                 "Velg modulen du vil endre:", "Velg modul", JOptionPane.PLAIN_MESSAGE,
                 null, chooseModul, 1);
+        //return the chosen number. If user cancels inputDialog, returns null
         return chosenModul;
     }
 
+    /**
+     * Edits a module in the DB. Gets the idModul of the module to be edited,
+     * and creates a dialog displaying all of this Moduls content (text). User
+     * can edit this text, and click the "Save changes" button to save the
+     * changes to the DB.
+     *
+     * @param idModul the id of the module to be displayed and edited
+     */
     private void editModul(int idModul) {
         JDialog editModulDialog = new JDialog(frame, "Endre modul", true);
         JPanel contentPane = (JPanel) editModulDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        
+
+        //get all attributes of the module we wish to edit
         ArrayList<String> columns = new ArrayList(Arrays.asList("*"));
         ArrayList<String> table = new ArrayList(Arrays.asList("Modul"));
         ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
         ArrayList<LinkedHashMap> content = dbConnector.multiQueryHash(columns, table, where);
-        
+
+        //make a map storing a textarea for each attribute of the modul
         ArrayList<JTextArea> listOfEdits = new ArrayList();
-        for(LinkedHashMap map : content)    {
-            for(Object value : map.values())    {
-                if(value.toString().length() > 1)   {
+        //for each map (can only be one), loop through all values
+        for (LinkedHashMap map : content) {
+            //for each value in map, do the following:
+            for (Object value : map.values()) {
+                //check that its length is longer than 1 (to exclude idModul)
+                if (value.toString().length() > 1) {
+                    //create a new textArea with the given value
                     JTextArea textArea = new JTextArea(value.toString());
+                    //make this textArea editable
                     textArea.setEditable(true);
+                    //make this textArea break lines at whole words, so a word isn't split
                     textArea.setWrapStyleWord(true);
+                    //add this textArea to the contentPane
                     contentPane.add(textArea);
+                    //and to the arrayList of textAreas the user can edit
                     listOfEdits.add(textArea);
                 }
             }
         }
-        
+
+        //button for saving edit to DB
         JButton editModulButton = new JButton("Lagre endringer");
         contentPane.add(editModulButton);
-        editModulButton.addActionListener(new ActionListener()  {
+        editModulButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e)  {
+            public void actionPerformed(ActionEvent e) {
+                //save edits to DB, and store confirmation string
                 String confirmationString = dbConnector.updateModul(listOfEdits, idModul);
-                JOptionPane.showMessageDialog(editModulDialog, confirmationString, 
-                            confirmationString, 1);
-                if(confirmationString.equals("Modul ble endret."))  {
+                //display confirmation string to user
+                JOptionPane.showMessageDialog(editModulDialog, confirmationString,
+                        confirmationString, 1);
+                //if edit was saved successfully to DB, close the editModulDialog
+                if (confirmationString.equals("Modul ble endret.")) {
                     editModulDialog.dispose();
                 }
-                
+
             }
         });
         editModulDialog.pack();
         editModulDialog.setVisible(true);
 
     }
-    
-}
 
+}
