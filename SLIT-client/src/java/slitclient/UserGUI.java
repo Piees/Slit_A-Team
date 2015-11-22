@@ -7,11 +7,18 @@ package slitclient;
 
 import notification.Notification;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +29,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import notification.NotificationGUI;
 
@@ -41,8 +50,134 @@ public class UserGUI {
     private HashMap<String, String> userInfo;
     private static final String LOGO_PATH = "src/img/slit_logo.png";
     private JButton notificationButton;
+//    private JPopupMenu logoutMenu;
+//    boolean logoutMenuShowing;
     // Its very important that the below field do not go out of scope.
     private Notification notification;
+    
+//    public void makeLogoutMenu() {
+//        logoutMenu = new JPopupMenu();
+//        
+//        JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
+//        logoutMenu.add(logoutMenuItem);
+//        logoutMenuItem.addFocusListener(new FocusListener() {
+//        @Override
+//        public void focusLost(FocusEvent e) {
+//            System.out.println("LOST FOCUS");
+//            logoutMenuShowing = false;
+//        }
+//
+//        @Override
+//        public void focusGained(FocusEvent e) {
+//            System.out.println("GAINED FOCUS");
+//            logoutMenuShowing = true;
+//        }
+//    });  
+//    }
+    
+    public class logoutMenuButton extends JButton {
+
+    // Icon.
+//    private static final ImageIcon ARROW_SOUTH = new ImageIcon("ArrowSouth.png");
+
+    // Unit popup menu.
+    private final JPopupMenu menu;
+
+    // Is the popup showing or not?
+    private boolean isShowingPopup = false;
+    private boolean showPopup = true;
+
+    public logoutMenuButton(String text) {
+        super(text);
+        menu = new JPopupMenu(); // menu is populated somewhere else
+        JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
+        menu.add(logoutMenuItem);
+        
+        logoutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Attempting to logout..");
+                new Login();
+                frame.dispose();
+                System.out.println("Succesfully logged out");
+            }
+        });
+
+        // FocusListener on the JPopupMenu
+        menu.addFocusListener(new FocusListener() {
+         @Override
+            public void focusLost(FocusEvent e) {
+                System.out.println("LOST FOCUS");
+                isShowingPopup = false;
+            }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            System.out.println("GAINED FOCUS");
+            isShowingPopup = true;
+        }
+    });
+
+        // ComponentListener on the JPopupMenu
+        menu.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                System.out.println("SHOWN");
+            }
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                System.out.println("RESIZED");
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                System.out.println("MOVED");
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                System.out.println("HIDDEN");
+            }
+        });
+
+        // ActionListener on the JButton
+        addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("isShowingPopup: " + isShowingPopup);
+            if (showPopup) {
+                Component c = (Component) e.getSource();
+                menu.show(c, -1, c.getHeight());
+//                menu.setVisible(true);
+                menu.requestFocus();
+            } else {
+                showPopup = true;
+            }
+        }
+    });
+        
+        addMouseListener(new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            System.out.println("ispopup?: " + isShowingPopup);
+            if (isShowingPopup) {
+                showPopup = false;
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            showPopup = true;
+        }
+    });
+
+        // Skip when navigating with TAB.
+        setFocusable(true); // Was false first and should be false in the end.
+
+        menu.setFocusable(true);
+    }
+    }
     
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
@@ -63,6 +198,7 @@ public class UserGUI {
         
         this.userInfo = userInfo;
         tabForside = new TabForside();
+//        makeLogoutMenu();
         //create the moduloversikt-tab for the given userType
         tabModuloversikt = new TabModuloversikt(userInfo, frame);
         tabFagstoff = new TabFagstoff(userInfo, frame);
@@ -133,7 +269,7 @@ public class UserGUI {
     public JPanel makeCommon() {
 
         JPanel content = new JPanel();
-        content.setLayout(new BorderLayout(400, 25));
+        content.setLayout(new BorderLayout(330, 25));
         
         JButton menuButton = new JButton("Meny"){
             @Override
@@ -149,7 +285,8 @@ public class UserGUI {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
 
-        JButton nameButton = new JButton(fName + " " + lName){
+        JButton nameButton = new logoutMenuButton(fName + " " + lName){
+//        JButton nameButton = new JButton(fName + " " + lName){
             @Override
             public int getHeight() {
                 return 25;
