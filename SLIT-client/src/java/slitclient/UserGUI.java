@@ -50,102 +50,47 @@ public class UserGUI {
     private HashMap<String, String> userInfo;
     private static final String LOGO_PATH = "src/img/slit_logo.png";
     private JButton notificationButton;
-//    private JPopupMenu logoutMenu;
-//    boolean logoutMenuShowing;
     // Its very important that the below field do not go out of scope.
     private Notification notification;
     
-//    public void makeLogoutMenu() {
-//        logoutMenu = new JPopupMenu();
-//        
-//        JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
-//        logoutMenu.add(logoutMenuItem);
-//        logoutMenuItem.addFocusListener(new FocusListener() {
-//        @Override
-//        public void focusLost(FocusEvent e) {
-//            System.out.println("LOST FOCUS");
-//            logoutMenuShowing = false;
-//        }
-//
-//        @Override
-//        public void focusGained(FocusEvent e) {
-//            System.out.println("GAINED FOCUS");
-//            logoutMenuShowing = true;
-//        }
-//    });  
-//    }
     
     public class logoutMenuButton extends JButton {
-
-    // Icon.
-//    private static final ImageIcon ARROW_SOUTH = new ImageIcon("ArrowSouth.png");
-
-    // Unit popup menu.
+        
     private final JPopupMenu menu;
-
-    // Is the popup showing or not?
     private boolean isShowingPopup = false;
     private boolean showPopup = true;
 
     public logoutMenuButton(String text) {
+        
         super(text);
-        menu = new JPopupMenu(); // menu is populated somewhere else
+        menu = new JPopupMenu();
         JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
         menu.add(logoutMenuItem);
         
         logoutMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Attempting to logout..");
                 new Login();
                 frame.dispose();
-                System.out.println("Succesfully logged out");
             }
         });
 
-        // FocusListener on the JPopupMenu
         menu.addFocusListener(new FocusListener() {
-         @Override
+            
+            @Override
             public void focusLost(FocusEvent e) {
-                System.out.println("LOST FOCUS");
                 isShowingPopup = false;
             }
 
-        @Override
-        public void focusGained(FocusEvent e) {
-            System.out.println("GAINED FOCUS");
-            isShowingPopup = true;
-        }
-    });
-
-        // ComponentListener on the JPopupMenu
-        menu.addComponentListener(new ComponentListener() {
             @Override
-            public void componentShown(ComponentEvent e) {
-                System.out.println("SHOWN");
-            }
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                System.out.println("RESIZED");
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                System.out.println("MOVED");
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                System.out.println("HIDDEN");
+            public void focusGained(FocusEvent e) {
+                isShowingPopup = true;
             }
         });
 
-        // ActionListener on the JButton
         addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("isShowingPopup: " + isShowingPopup);
             if (showPopup) {
                 Component c = (Component) e.getSource();
                 menu.show(c, -1, c.getHeight());
@@ -160,7 +105,6 @@ public class UserGUI {
         addMouseListener(new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
-            System.out.println("ispopup?: " + isShowingPopup);
             if (isShowingPopup) {
                 showPopup = false;
             }
@@ -173,12 +117,15 @@ public class UserGUI {
     });
 
         // Skip when navigating with TAB.
-        setFocusable(true); // Was false first and should be false in the end.
+        setFocusable(true); 
 
         menu.setFocusable(true);
     }
     }
     
+    /**
+     * @return logo for header
+     */
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
       try {
