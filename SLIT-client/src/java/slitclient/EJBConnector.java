@@ -1,4 +1,13 @@
-/*
+
+package slitclient;
+
+import db.dbConnectorRemote;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+/**
  * THIS CLASS IS USING A NOT THREAD SAFE SINGLETON PATTERN.
  *
  * The purpose of this class is to connect to the EJB dbConnectorRemote, and provide 
@@ -9,16 +18,6 @@
  *
  * TO USE THIS CLASS WRITE:
  * EJBConnector ejbConnector = EJBConnector.getInstance();
- */
-package slitclient;
-
-import db.dbConnectorRemote;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-/**
  *
  * @author Viktor Setervang
  */

@@ -13,19 +13,31 @@ import javax.swing.*;
 import slitclient.EJBConnector;
  
 /**
- *
+ * This class handles all the logic of the file uploading from SLIT-client to
+ * the SLIT server application. 
+ * 
  * @author Viktor Setervang
  */
 public class GUIFileUploader {
     private File file;
   
+    /**
+     * starts the file explorer GUI. Where the user can select a file to upload
+     * 
+     * @return the name of the file selected by the user
+     */
     public String startFileExplorer() {
         JFrame frame = new JFrame("File Explorer");
         frame.setVisible(true);  
         return startFileExplorer(frame);
     }
-    
-    
+   
+    /**
+     * starts the file explorer GUI. Where the user can select a file to upload
+     * 
+     * @param frame the frame used by the file explorer GUI.
+     * @return the name of the file selected by the user
+     */
     public String startFileExplorer(JFrame frame) {
         System.out.println("start file explorer started");
         final JFileChooser fileDialog = new JFileChooser();
@@ -39,6 +51,19 @@ public class GUIFileUploader {
         }
     }
     
+    /**
+     * Uploads a resource that will be displayed in TabFagstoff.
+     * If the user has provided a file using the method startFileExplorer this
+     * will also be uploaded to the server.
+     * 
+     * @param userName the userName of the uploader
+     * @param title the title of the resource
+     * @param resourceText the text content of the resource
+     * @param url to a beneficial web page.
+     * @return a string regarding the upload success, 
+     * if successful: "Opplastning vellykket!",  
+     * if not successful: "Opplastning feilet!"
+     */
     public String uploadResource(String userName, String title, 
             String resourceText, String url) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
@@ -75,6 +100,16 @@ public class GUIFileUploader {
         return uploader.insertIntoDB("Resources", columns, values);
 
     }
+    
+    /**
+     * Uploads a module assignment.
+     * 
+     * @param userName of the student delivering the assignment
+     * @param idModul the id (PK) of the module whose the assignment belongs  
+     * @return a string regarding the upload success, 
+     * if successful: "Opplastning vellykket!",  
+     * if not successful: "Opplastning feilet!"
+     */
     public String uploadDelivery(String userName, int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote uploader = ejbConnector.getEjbRemote();

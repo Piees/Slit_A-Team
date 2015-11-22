@@ -15,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +26,10 @@ import java.util.Set;
 import slitclient.EJBConnector;
 
 /**
- *
+ * This is the core notification class.
+ * Its main purpose is to check for new notifications and register seen notifications
+ * It also handles the threads used to display new notifications, 
+ * 
  * @author Viktor Setervang
  */
 public class Notification {
@@ -60,12 +62,7 @@ public class Notification {
         
         createNotificationTimers();
         initiateNotificationUpdateLoop();
-    }
-    
-    public void setSeeNotificationGUIButton(JButton notificationGUIButton) {
-        this.notificationGUIButton = notificationGUIButton;
-    }
-            
+    }            
     
     /**
      * This method puts future notification timestamps into a timer.
@@ -111,10 +108,9 @@ public class Notification {
                         // PUT Notification in a form of ready to view list.
                     }
                 };
-                        
-                SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+                DateHandler dateHandler = new DateHandler();
                 try {
-                    date = SDF.parse(stamp.toString());
+                    date = dateHandler.timestampToDate(stamp);
                     //System.out.println(date.toString());
                     timer.schedule(task, date);
                     // Adds the timer to a list to avoid rogue threads after System.exit
@@ -129,23 +125,35 @@ public class Notification {
     }
     
     /**
-     * This method compares the futureNotifications list with another list
-     * and returns an ArrayList containing only the none overlapping unique elements.
+     * This method compares the list futureNotifications with the list provided 
+     * as parameter. It then extracts elements unique for one of those two lists. 
+     * 
+     * @param unseenNotifications the list to be compared with futureNotifications
+     * @return an ArrayList containing unique elements
      */
     private ArrayList<HashMap> getUniqueNotification(ArrayList<HashMap> unseenNotifications) {
         Set newSet = new HashSet(unseenNotifications);
         Set oldSet = new HashSet(this.futureNotifications);
         // returns a SetView that only contains the elements that are unique for one Set. 
         SetView setView = Sets.symmetricDifference(newSet, oldSet); 
-        unseenNotifications = new ArrayList(setView);
-        return unseenNotifications;
+        ArrayList<HashMap> uniqueElements = new ArrayList(setView);
+        return uniqueElements;
+    }
+    
+    /**
+     * Sets the notificationGUIButton to be the same as the seeNotificationButton
+     * used in NotificationGUI.
+     * 
+     * @param notificationGUIButton 
+     */
+    public void setSeeNotificationGUIButton(JButton notificationGUIButton) {
+        this.notificationGUIButton = notificationGUIButton;
     }
     
     /**
      * Checks the database for unseen notifications that match the current timestamp.
      * If there are unseen notifications that got a timestamp less or equal to current time 
-     * The notification buttons will be renamed so that the user will see the amount of unseen notifications.
-     * 
+     * the notification buttons will be renamed so that the user will see the amount of unseen notifications.
      */
     public void checkForNotifications() {
         //String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
@@ -166,14 +174,15 @@ public class Notification {
             catch (NullPointerException np) {
                System.out.println("No active notificationGUI"); 
             }
-            //panel.repaint();
-            
+            //panel.repaint();     
         }
     }    
     
     /**
-     * Gets a notification with the id specified by the parameter .
-     * @param idNotification the identifier of the notification that will be returned by the database
+     * Marks the notification specified by the parameter as ready to be viewed
+     * 
+     * @param idNotification the identifier (PK) of the notification that is 
+     * ready to be viewed.
      */
     private void markNotificationAsReady(int idNotification) {
         for (HashMap notification: futureNotifications) {
@@ -192,14 +201,12 @@ public class Notification {
                System.out.println("No active notificationGUI"); 
             }
             //panel.repaint();
-        }     
-        
+        }          
     }
 
     /**
      * Adds a windowListener to the frame that will close down all
      * timer threads made by the Notification object.
-     * 
      */
     public void frameAddWindowListener() {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -240,13 +247,16 @@ public class Notification {
             }
         };
         Timer timer = new Timer();        
+        // 1 sec = 1000, 1 minute = 60000 
         // Will currently check for updates every 5 minutes
+        // task, first time before intervals, fixed interval time.
         timer.scheduleAtFixedRate(task, 300000, 300000);
         timers.add(timer);
     }
-
-
-
+    
+    /**
+     * @return all unseen notifications. 
+     */
     public ArrayList<HashMap> getUnseenNotifications() {
         return unseenNotifications;
     }
@@ -261,5 +271,4 @@ public class Notification {
         unseenNotifications.clear();
 
     }
-
 }

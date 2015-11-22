@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.util.Arrays;
 import javax.swing.BoxLayout;
+import notification.DateHandler;
 
 /**
  *
@@ -55,6 +56,10 @@ public class TabFagstoff {
         return tab3Panel;
     }    
     
+    /**
+     * Opens a dialog window where the teacher can add a new resource that will
+     * be displayed in TabFagstoff
+     */
     private void addResourceDialog() {
         GUIFileUploader fileUploader = new GUIFileUploader();
         
@@ -132,7 +137,8 @@ public class TabFagstoff {
             String filename = resources.get(i).get("fileName").toString();
             String userName = resources.get(i).get("userName").toString();
             String timestamp = resources.get(i).get("resourceDate").toString();
-            timestamp = removeFractionalSeconds(timestamp);
+            DateHandler dh = new DateHandler();
+            timestamp = dh.removeFractionalSeconds(timestamp);
             byte[] fileData = dbConnector.getResourceFile(idResources);
 
             ArrayList<String> checkStrings = new ArrayList<>(Arrays.asList(title, resourceText, url));
@@ -169,13 +175,5 @@ public class TabFagstoff {
         }
         return tab3Panel;
     }    
-     
-    /**
-     * This method removes fractional seconds from timestamps, use this to give 
-     * cleaner timestamp output in GUI.
-     */
-    private String removeFractionalSeconds(String timestamp) {
-        return timestamp.substring(0, timestamp.length() -5);
-    }
 }
 

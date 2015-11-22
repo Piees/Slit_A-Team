@@ -1,12 +1,3 @@
-/**
- * 
- * This class is used to instead of TextField if we want the field to provide
- * a hint to the user of what should write into the text field.
- * 
- * This class is made by Adam Gawne-Cain: 
- * http://stackoverflow.com/questions/1738966/java-jtextfield-with-input-hint
- *
- */
 
 package notification;
 
@@ -17,6 +8,15 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import javax.swing.JTextField;
+
+/**
+ * This class can be used instead of TextField if is useful to provide
+ * a hint to the user of what should be written into the text field.
+ * 
+ * This class is made by Adam Gawne-Cain: 
+ * http://stackoverflow.com/questions/1738966/java-jtextfield-with-input-hint
+ *
+ */
 
 public class HintTextField extends JTextField {
     public HintTextField(String hint) {

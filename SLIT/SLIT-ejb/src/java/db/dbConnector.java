@@ -71,13 +71,12 @@ public class dbConnector implements dbConnectorRemote {
      * This method is used by the Login class to check if the user has supplied
      * a correct userName and password combination.
      *
-     * This method should later on contain some kind of encryption mechanism
-     * like salt?
+     * This method should later on implement some kind of encryption mechanism
      *
-     * @param userName
-     * @param pwd
-     * @return the result of the login query
-     *
+     * @param userName username provided by the user
+     * @param pwd password provided by the user
+     * @return the result of the login query, if the HashMap is empty then the
+     * login was unsuccessful
      */
     @Override
     public HashMap<String, String> login(String userName, String pwd) {
@@ -378,6 +377,14 @@ public class dbConnector implements dbConnectorRemote {
         return queryResults;
     }
 
+    /**
+     * Gets the unseen notifications of user specified by parameter userName.
+     * 
+     * @param queryPart2 extra query logic, 
+     * typically regarding before or after current_timestamp()
+     * @param userName the username used by the query.
+     * @return list containing all the queried notifications.
+     */
     @Override
     public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName) {
         String query = "SELECT * "
@@ -386,10 +393,8 @@ public class dbConnector implements dbConnectorRemote {
                 + "AND Notification.seen=? ";
 
         query += queryPart2;
-        //               "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
+        // "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
 
-        // TRENGER 2 forskjellige resultat sett, ett med før og ett mer etter CURRENT_TIMESTAMP()
-        // DET ETTER CURRENT_TIMESTAMP() SKAL PUTTES INN I ASYNC NOTIFICATION METODEN.
         Connection dbConnection = dbConnection();
         ArrayList<HashMap> notifications = new ArrayList<>();
         try {
@@ -417,6 +422,11 @@ public class dbConnector implements dbConnectorRemote {
         return notifications;
     }
 
+    /**
+     * Marks notifications as seen.
+     * @param idNotification a list of all notifications that will be marked 
+     * as seen
+     */
     @Override
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification) {
         String updateNotification = "UPDATE Notification set seen=? WHERE idNotification=?";
@@ -467,6 +477,13 @@ public class dbConnector implements dbConnectorRemote {
         return allUsersHashMap;
     }
 
+    /**
+     * Gets a delivered "module assignment" file.
+     * 
+     * @param userName the username of the user that delivered the assignment
+     * @param idModul the id (PK) of the module that the assignment was for. 
+     * @return the assignment file
+     */
     @Override
     public byte[] getDeliveryFile(String userName, int idModul) {
         String query = "SELECT deliveryFile, fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
@@ -500,6 +517,12 @@ public class dbConnector implements dbConnectorRemote {
         return null;
     }
 
+    /**
+     * Gets the filename of a delivered assignment
+     * @param userName the username of the user that delivered the assignment
+     * @param idModul the id (PK) of the module that the assignment was for. 
+     * @return the assignment's filename
+     */
     @Override
     public String getDeliveryFilename(String userName, int idModul) {
         String query = "SELECT fileName FROM Delivery WHERE deliveredBy =? AND idModul=?";
@@ -525,6 +548,9 @@ public class dbConnector implements dbConnectorRemote {
         return null;
     }
 
+    /**
+     * @return all resources from the Resource table. 
+     */
     @Override
     public ArrayList<HashMap> getResources() {
         String query = "SELECT * FROM Resources";
@@ -553,6 +579,12 @@ public class dbConnector implements dbConnectorRemote {
         return resources;
     }
 
+    /**
+     * Gets the specified resource file
+     * 
+     * @param idResources the id (PK) of the resource that will be returned. 
+     * @return the resource file
+     */
     @Override
     public byte[] getResourceFile(int idResources) {
         String query = "SELECT resourceFile FROM Resources WHERE idResource=?";

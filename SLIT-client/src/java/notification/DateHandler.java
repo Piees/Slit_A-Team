@@ -7,29 +7,24 @@ package notification;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
- *
+ * This class handles data conversions related to Date and Timestamps.
+ * 
+ * 
  * @author Viktor Setervang
  */
 public class DateHandler {
     
-    public HashMap<String, String> valueToDateString(Object value) throws ParseException {
-        if (value != null) {
-            Date date = (Date) value;
-            HashMap dateFormat = parseToDateFormat(date);
-            return dateFormat;
-        }
-        return null;
-    }
-    
     /**
      * Checks if the time provided by the user is in a valid format.
-     * @param time
-     * @return 
+     * 
+     * @param time the string to be checked
+     * @return a string explaining the validity of the time format.
      */
     public String checkTimeFormat(String time) {
         if (time.length() != 5) {
@@ -57,10 +52,72 @@ public class DateHandler {
     }
     
     /**
-     * Puts the relevant date data into a HashMap. 
+     * Gets the current timestamp.
+     * 
+     * @return timestamp of current time.
+     */
+    public Timestamp getCurrentTimestamp() {
+        // 1) create a java calendar instance
+        Calendar calendar = Calendar.getInstance();
+        // 2) get a java.util.Date from the calendar instance.
+        //    this date will represent the current instant, or "now".
+        Date now = calendar.getTime();
+        // 3) a java current time (now) instance
+        Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
+        return currentTimestamp;
+    }
+ 
+    /**
+     * Parses a Timestamp to Date using the SimpleDateFormat class.
+     * 
+     * @param stamp to be parsed
+     * @return a Date parsed from the stamp
+     * @throws ParseException if the stamp cannot be parsed
+     */
+    public Date timestampToDate(Timestamp stamp) throws ParseException {
+        SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+        Date date = SDF.parse(stamp.toString());
+        return date;
+    }
+    
+    /**
+     * This method removes fractional seconds from timestamps, use this to give 
+     * cleaner timestamp output in GUI.
+     */
+    public String removeFractionalSeconds(String timestamp) {
+        return timestamp.substring(0, timestamp.length() -5);
+    }
+    
+    /**
+     * Splits a Date value into its respective pieces. Converts the pieces into
+     * a format that fits with Timestamp and puts them in a HashMap.
+     * 
+     * @param value the date to be split 
+     * @return HashMap containing the relevant date data. 
+     * HashMap keys: "day", "month", "year" and "dow"
+     * @throws ParseException 
+     */
+    public HashMap<String, String> splitDateIntoHashMap(Object value) throws ParseException {
+        if (value != null) {
+            Date date = (Date) value;
+            HashMap dateFormat = parseToDateFormat(date);
+            return dateFormat;
+        }
+        return null;
+    }
+    
+    /**
+     * Splits the date into its respective pieces.
+     * Parses the month name into a number and puts the relevant date data 
+     * into a HashMap. 
+     * 
+     * @param date value to be parsed
+     * @return HashMap containing the relevant date data, keys: "day", "month", 
+     * "year" and "dow" (day of week).
      */
     private HashMap<String, String> parseToDateFormat(Date date) {
         String datePreparsed = date.toString();
+        // day of week
         String dow = datePreparsed.substring(0, 3);
         String removedDow = datePreparsed.substring(4);
         String month = removedDow.split(" ")[0];
@@ -136,20 +193,4 @@ public class DateHandler {
         }
         return monthNumber;
     }
-    
-    /**
-     * Gets the current timestamp yyyy-MM-dd hh:mm:ss
-     * @return timestamp of current time.
-     */
-    public Timestamp getCurrentTimestamp() {
-        // 1) create a java calendar instance
-        Calendar calendar = Calendar.getInstance();
-        // 2) get a java.util.Date from the calendar instance.
-        //    this date will represent the current instant, or "now".
-        Date now = calendar.getTime();
-        // 3) a java current time (now) instance
-        Timestamp currentTimestamp = new java.sql.Timestamp(now.getTime());
-        return currentTimestamp;
-    }
- 
 }

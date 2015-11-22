@@ -30,7 +30,9 @@ import prototypes.CreateUser;
 import prototypes.EditUser;
 
 /**
- *
+ * This class handles the client-side login logic necessary for login into the
+ * SLIT system.
+ * 
  * @author Viktor Setervang
  */
 public class Login {
@@ -84,6 +86,13 @@ public class Login {
         }
     }
 
+    /**
+     * The method called upon when the user tries to log into the system.
+     * If username and password is a match the main user GUI will open. 
+     * 
+     * @param userName provided by the user
+     * @param pwd password provided by the user.
+     */
     public void login(String userName, String pwd) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
@@ -98,6 +107,10 @@ public class Login {
         }
     }
 
+    /**
+     * Places the component of the Login GUI
+     * @param frame were the components are held.
+     */
     private void placeComponents(JFrame frame) {
         frame.setLayout(null);
         frame.getContentPane().setBackground(Color.WHITE);

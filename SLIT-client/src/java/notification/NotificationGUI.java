@@ -26,7 +26,9 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 /**
- *
+ * This class contains all the logic of the Notification GUI
+ * in the project SLIT-client.
+ * 
  * @author Viktor Setervang
  */
 public class NotificationGUI {
@@ -78,7 +80,7 @@ public class NotificationGUI {
         displayedTimestamp = new JLabel(" ");
         notificationText = new JTextField(20);
 
-        JButton setNotificationTimeButton = new JButton("Sett dato");
+        JButton setNotificationTimeButton = new JButton("Sett tidspunkt");
         JLabel alertTextLabel = new JLabel("<html><b>Varsel tekst</b></html>");
         createNotificationButton = new JButton("Opprett varsel");
 
@@ -194,8 +196,8 @@ public class NotificationGUI {
      * GUI for choosing a date and time when creating new notifications
      */
     private void datepicker() {
-        System.out.println("Datepicker button clicked");
         UtilDateModel model = new UtilDateModel();
+        
         //model.setDate(20,04,2014);
         // Need this...
         Properties p = new Properties();
@@ -203,17 +205,23 @@ public class NotificationGUI {
         p.put("text.month", "Month");
         p.put("text.year", "Year");
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-        // Don't know about the formatter, but there it is...
+        datePanel.setName("test2");
+        datePanel.setToolTipText("Trykk her");
+        datePanel.repaint();
+
+        
         DateLabelFormatter DLF = new DateLabelFormatter();
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, DLF);
-        //datePicker.repaint();
-        //datePicker.setVisible(true);
+        datePicker.setName("Test");
+        datePicker.setToolTipText("Trykk her for å åpne kalender");
+        datePicker.repaint();
+
         JDialog dateDialog = new JDialog();
         JPanel datePanel2 = new JPanel();
         
-        JLabel timeLabel = new JLabel("Klokkeslett: \"tt:mm\"");
+        JLabel timeLabel = new JLabel("<html><b>Sett varsel tid i format; \"tt:mm\"</b></html>");
         HintTextField timeTextField = new HintTextField("tt:mm");
-        JButton approveDateButton = new JButton("Enter dato");
+        JButton approveDateButton = new JButton("Bekreft tidspunkt");
         
         DateHandler dateHandler = new DateHandler();
         
@@ -221,7 +229,6 @@ public class NotificationGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    //actualTimestamp = (datePicker.getModel().getValue().toString());
                     String checkTimeFormat = dateHandler.checkTimeFormat(timeTextField.getText());
                     if (!checkTimeFormat.equals("correct input")) {
                         JOptionPane.showMessageDialog(frame,
@@ -230,7 +237,7 @@ public class NotificationGUI {
                         JOptionPane.ERROR_MESSAGE);
                     }
                     else {
-                        dateMap = (dateHandler.valueToDateString(datePicker.getModel().getValue()));
+                        dateMap = (dateHandler.splitDateIntoHashMap(datePicker.getModel().getValue()));
                         dateMap.put("time", timeTextField.getText() + ":00");
                         dateMap.put("timeDisplay", timeTextField.getText());
                         if (dateMap != null) {
@@ -254,14 +261,17 @@ public class NotificationGUI {
                 
             }
         });
+        
         dateDialog.add(datePanel2);
         datePanel2.setLayout(new BoxLayout(datePanel2, BoxLayout.Y_AXIS));
+        datePanel2.add(new JLabel("<html><b>Trykk på knappen [...] for å sette dato</b></html>"));
         datePanel2.add(datePicker);             
         datePanel2.add(timeLabel);
         datePanel2.add(timeTextField);
         datePanel2.add(approveDateButton);
-        dateDialog.setSize(200, 150);
+        //dateDialog.setSize(200, 150);
         datePanel2.repaint();
+        dateDialog.pack();
         dateDialog.setVisible(true);
         //java.sql.Date selectedDate = (java.sql.Date) datePicker.getModel().getValue();
     }

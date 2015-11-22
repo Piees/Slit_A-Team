@@ -13,11 +13,12 @@ import java.util.LinkedHashMap;
 import slitclient.EJBConnector;
 
 /**
- *
+ * This class contains all the logic needed on client-side to create 
+ * new notifications.
+ * 
  * @author Viktor Setervang
  */
 public class NotificationCreater {
-    
     
     /**
      * This method creates a new notification using the current time as timestamp

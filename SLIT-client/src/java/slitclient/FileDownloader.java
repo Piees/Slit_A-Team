@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- *
+ * This class is for handles all the logic regarding downloading files to the
+ * clients computer
+ * 
  * @author Viktor Setervang
  */
 public class FileDownloader {
@@ -21,49 +23,21 @@ public class FileDownloader {
     public FileDownloader() {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote(); 
+        // Path to the user's desktop directory
         filepath = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath();
-        // Alternate filepath
+        // Alternate filepath, path to the user's default document folder. 
+        // On windows: C:\Users\Username\Documents  On linux: On mac: 
         //System.out.println(javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory());
     }
-    
     /**
-     * The name of this class is a bit misleading, it doesnt download the file,
-     * but works more like a file writer.
+     * Downloads a file from the DB and saves it to the user's desktop-directory.
      * 
-     * @param fileData
-     * @param filename
-     * @return 
-     */
-    public String downloadResourceFile(byte[] fileData, String fullFilename) {
-        try {
-            String[] fileMetadata = getFileMetaData(fullFilename);
-            String filename = fileMetadata[0];
-            String filetype = fileMetadata[1];
-            String filepath = checkIfFileAlreadyExists(filename, filetype);
-            FileOutputStream out = new FileOutputStream(filepath);
-            out.write(fileData);
-            out.close();
-            return fullFilename + " nedlasting fullført.";
-        } catch (IOException ex) {
-            Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-        
-        return fullFilename + " nedlasting mislykkes.";
-    }   
-    
-    /**
-     * Downloads a file from the DB and saves it to desktop-directory of users system
-     * 
-     * @param userName the user name of the user that has delivered this file
-     * @param idModul the id of the modul we're downloading the delivered file for
+     * @param userName the user name of the user that has delivered this file.
+     * @param idModul the id of the module that the file was assigned to.
      */
     public String downloadDeliveryFile(String userName, int idModul) {
-        // Hente fra database : dbConnector.getFileFromDelivery();
-        // Enten åpne filutforsker for å velge mappe hvor det skal lagres, eller 
-        // automatisk lagre i default download mappe.
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        
         String filename = "modul" + idModul + "_" + userName;
                
         byte[] byteData = dbConnector.getDeliveryFile(userName, idModul);
@@ -80,14 +54,43 @@ public class FileDownloader {
         } catch (Exception ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return filename + " nedlasting mislykkes.";         
     }
     
     /**
-     * This method checks if a file with the same name already exists in the 
-     * in the designated filepath. If it already exist the new file will be 
-     * given a unique name.
-     */     
+     * Writes the file content to a new file on the user's desktop directory.
+     * 
+     * @param fileData the content of the file
+     * @param fullFilename the name of the file including its file type.
+     * @return a string with the download success status
+     */
+    public String downloadResourceFile(byte[] fileData, String fullFilename) {
+        try {
+            String[] fileMetadata = getFileMetaData(fullFilename);
+            String filename = fileMetadata[0];
+            String filetype = fileMetadata[1];
+            String filepath = checkIfFileAlreadyExists(filename, filetype);
+            FileOutputStream out = new FileOutputStream(filepath);
+            out.write(fileData);
+            out.close();
+            return fullFilename + " nedlasting fullført.";
+        } catch (IOException ex) {
+            Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+        
+        return fullFilename + " nedlasting mislykkes.";
+    }
+    
+    /**
+     * To prevent overwriting old files this method checks if a file with the 
+     * same name already exists in the in the designated filepath. 
+     * If it already exist the new file will be given a unique name.
+     * 
+     * @param filename the name of the file to check for
+     * @param filetype the filetype of the file
+     * @return a unique path name
+     */
      private String checkIfFileAlreadyExists(String filename, String filetype) {
         boolean uniqueFile = false;
         String path = filepath + "/" + filename + "." + filetype;
@@ -111,7 +114,8 @@ public class FileDownloader {
     /**
      * Splits a filename into filename and filetype
      * 
-     * return index 0 is filename, index 1 is filetype
+     * @param filename to be split
+     * @return array containing filename and filetype (MIME-type).
      */
     private String[] getFileMetaData(String filename) {
         return filename.split(Pattern.quote("."));       
