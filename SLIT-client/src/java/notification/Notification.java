@@ -166,8 +166,8 @@ public class Notification {
         //System.out.println("unseen notificationList.size(): " + notificationList.size());
         if (unseenNotifications.size() > 0) {
             userGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
-            frame.pack();
             frame.repaint();
+            frame.pack();
             try {
                 notificationGUIButton.setText("Varsler(" + unseenNotifications.size() + ")");
             } 
@@ -192,8 +192,8 @@ public class Notification {
         }
         if (unseenNotifications.size() > 0) {
             userGUINotificationButton.setText("Varsler(" + unseenNotifications.size() + ")");
-            frame.pack();
             frame.repaint();
+            frame.pack();
             try {
                 notificationGUIButton.setText("Varsler(" + unseenNotifications.size() + ")");
             } 

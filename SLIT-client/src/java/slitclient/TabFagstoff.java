@@ -23,8 +23,9 @@ import javax.swing.BoxLayout;
 import notification.DateHandler;
 
 /**
- *
- * @author Arild
+ * @author Arild Høyland
+ * @author Viktor Setervang 
+ * @author Håkon Gilje
  */
 public class TabFagstoff {
     HashMap<String, String> userInfo;

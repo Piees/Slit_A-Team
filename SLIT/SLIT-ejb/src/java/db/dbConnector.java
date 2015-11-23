@@ -31,8 +31,10 @@ import java.util.LinkedHashMap;
 import javax.swing.JTextArea;
 
 /**
- *
- * @author piees
+ * @author Yngve Ranestad
+ * @author Viktor Setervang 
+ * @author Håkon Gilje
+ * @author Arild Høyland
  */
 @Stateless
 public class dbConnector implements dbConnectorRemote {

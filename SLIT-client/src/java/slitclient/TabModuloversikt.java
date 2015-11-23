@@ -36,8 +36,9 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 import slitcommon.DeliveryStatus;
 
 /**
- *
- * @author Arild, Viktor, H�kon
+ * @author Arild Høyland
+ * @author Viktor Setervang 
+ * @author Håkon Gilje
  */
 public class TabModuloversikt {
 

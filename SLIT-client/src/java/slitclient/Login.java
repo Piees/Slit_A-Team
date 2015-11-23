@@ -33,7 +33,10 @@ import prototypes.EditUser;
  * This class handles the client-side login logic necessary for login into the
  * SLIT system.
  * 
- * @author Viktor Setervang
+ * @author Viktor Setervang 
+ * @author Yngve Ranestad
+ * @author Steffen Sande
+ * @author Arild Høyland
  */
 public class Login {
 
@@ -96,9 +99,13 @@ public class Login {
     public void login(String userName, String pwd) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        dbConnector.updateUsersHashMap();
-        HashMap<String, String> loginResult = dbConnector.login(userName, pwd);
-
+        HashMap<String, String> loginResult = new HashMap<>();
+        try {
+            dbConnector.updateUsersHashMap();
+            loginResult = dbConnector.login(userName, pwd);
+        } catch (Exception e) {
+            loginResult.put("error1", "Serveren er nede, vennligst prøv igjen seinere");
+        }
         if (loginResult.size() > 1) {
                 UserGUI userGUI = new UserGUI(loginResult);
                 frame.setVisible(false);

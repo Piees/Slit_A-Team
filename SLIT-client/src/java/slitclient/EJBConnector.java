@@ -13,13 +13,14 @@ import javax.naming.NamingException;
  * The purpose of this class is to connect to the EJB dbConnectorRemote, and provide 
  * this connection to other classes thats needs it by using a simple getMethod.
  *  
- * This way we will only need to change the adress one place if we ever need
- * to change the lookup adress.
+ * This way we will only need to change the address one place if we ever need
+ * to change the lookup address.
  *
  * TO USE THIS CLASS WRITE:
  * EJBConnector ejbConnector = EJBConnector.getInstance();
  *
  * @author Viktor Setervang
+ * @author Yngve Ranestad
  */
 public class EJBConnector {
     private static dbConnectorRemote ejbRemote;

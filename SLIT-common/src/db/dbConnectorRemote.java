@@ -17,8 +17,10 @@ import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
- *
- * @author piees
+ * @author Yngve Ranestad
+ * @author Viktor Setervang 
+ * @author Håkon Gilje
+ * @author Arild Høyland
  */
 @Remote
 public interface dbConnectorRemote {

@@ -208,7 +208,6 @@ public class NotificationGUI {
         datePanel.setName("test2");
         datePanel.setToolTipText("Trykk her");
         datePanel.repaint();
-
         
         DateLabelFormatter DLF = new DateLabelFormatter();
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, DLF);
@@ -257,8 +256,6 @@ public class NotificationGUI {
                     Logger.getLogger(Notification.class.getName()).log(Level.SEVERE, null, ex);
                     dateDialog.dispose();
                 }
-                
-                
             }
         });
         

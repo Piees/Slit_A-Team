@@ -38,8 +38,9 @@ import notification.NotificationGUI;
 
 
 /**
- *
- * @author Arild
+ * @author Yngve Ranestad
+ * @author Arild Høyland
+ * @author Viktor Setervang 
  */
 public class UserGUI {
 
@@ -71,6 +72,7 @@ public class UserGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new Login();
+                notification.removeNotificationThreads();
                 frame.dispose();
             }
         });
