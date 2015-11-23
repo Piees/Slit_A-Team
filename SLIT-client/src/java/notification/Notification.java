@@ -7,6 +7,7 @@ package notification;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import db.DBQuerierRemote;
 import db.DBUpdaterRemote;
 import db.dbConnectorRemote;
 import java.awt.event.WindowAdapter;
@@ -40,6 +41,7 @@ public class Notification {
     private String userName;
     private final EJBConnector ejbConnector = EJBConnector.getInstance();
     private final dbConnectorRemote connector = ejbConnector.getEjbRemote();    
+    private final DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
    
     private JFrame frame;
     private JButton notificationGUIButton;   
@@ -75,7 +77,7 @@ public class Notification {
         // Gets the notifications from the database.
         ArrayList<HashMap> newFutureNotifications;
         if (futureNotifications != null) {    
-            newFutureNotifications = connector.getUserNotifications(futureNotificationQuery, userName);
+            newFutureNotifications = dbQuerier.getUserNotifications(futureNotificationQuery, userName);
             ArrayList<HashMap> tempList = newFutureNotifications;
             //System.out.println("futureNotifications.size(): " + this.futureNotifications.size());
             //System.out.println("newList.size(): " + newFutureNotifications.size());
@@ -86,7 +88,7 @@ public class Notification {
             
         }
         else {
-            futureNotifications = connector.getUserNotifications(futureNotificationQuery, userName);  
+            futureNotifications = dbQuerier.getUserNotifications(futureNotificationQuery, userName);  
             newFutureNotifications = futureNotifications;
             //System.out.println("this.futureNotifications.size(): " + this.futureNotifications.size());
         }
@@ -159,7 +161,7 @@ public class Notification {
     public void checkForNotifications() {
         //String currentUnseenNotificationQuery = "AND Notification.notificationTime <= CURRENT_TIMESTAMP()";
         // Gets all unseen notifications for the current user.
-        ArrayList<HashMap> notificationList = connector.getUserNotifications("", userName);
+        ArrayList<HashMap> notificationList = dbQuerier.getUserNotifications("", userName);
         // Removes the notifications already registered by the Timers
         notificationList = getUniqueNotification(notificationList);
         // adds the old unseen notifications to the unseenNotifications list

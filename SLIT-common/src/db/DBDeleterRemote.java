@@ -9,7 +9,7 @@ import java.sql.Connection;
 import javax.ejb.Remote;
 
 /**
- *
+ * @author Arild Høyland
  * @author Viktor Setervang
  */
 @Remote

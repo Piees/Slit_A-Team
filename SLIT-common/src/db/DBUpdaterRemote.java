@@ -7,13 +7,14 @@ package db;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.ejb.Remote;
 import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
- *
  * @author Viktor Setervang
+ * @author Arild Høyland
  */
 @Remote
 public interface DBUpdaterRemote {
@@ -24,6 +25,6 @@ public interface DBUpdaterRemote {
         int whereValue1, String whereValue2, DeliveryStatus evaluationStatus); 
     
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
-    
+
     public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul);
 }

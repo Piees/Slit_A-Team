@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 /**
- *
+ * @author Arild Høyland
+ * @author Håkon Gilje
  * @author Viktor Setervang
  */
 @Remote

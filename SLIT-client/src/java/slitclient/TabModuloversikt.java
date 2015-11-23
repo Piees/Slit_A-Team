@@ -7,8 +7,9 @@ package slitclient;
 
 import db.DBDeleterRemote;
 import db.DBInserterRemote;
+import db.DBQuerierRemote;
 import db.DBUpdaterRemote;
-import db.dbConnectorRemote;
+import db.DBUtilRemote;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -132,8 +133,8 @@ public class TabModuloversikt {
         panel.setLayout(new BorderLayout());
         //check number of modules in the DB
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+        int numberOfModuls = dbUtil.countRows("*", "Modul");
         //creates a list witht the given number of modules
         panel.add(makeModulList(numberOfModuls));
         return panel;
@@ -166,8 +167,9 @@ public class TabModuloversikt {
 
             //execute the query
             EJBConnector ejbConnector = EJBConnector.getInstance();
-            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-            ArrayList<LinkedHashMap> moduls = dbConnector.multiQueryHash(columns, tables, where);
+            DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+            DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+            ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, tables, where);
 
             //check userType of the currently logged in user, so we know what
             //kind of header to make for each module
@@ -182,7 +184,7 @@ public class TabModuloversikt {
                 columns.add("deliveryStatus");
                 tables.add("Delivery");
                 where.add("idModul = " + i + " AND deliveredBy = '" + userInfo.get("userName") + "';");
-                ArrayList<LinkedHashMap> deliveryStatus = dbConnector.multiQueryHash(columns, tables, where);
+                ArrayList<LinkedHashMap> deliveryStatus = dbQuerier.multiQueryHash(columns, tables, where);
                 //if the arraylist is not empty, that means this student has 
                 //delivered something for this module. Then we get the status of
                 //this delivery and add it to the header of the module-pane
@@ -209,8 +211,8 @@ public class TabModuloversikt {
             } else {
                 //if user is teacher, we want to know how many deliveries there are
                 //for this module, divided on the total number of students in the DB
-                int numberOfDeliveries = dbConnector.countRows("*", "Delivery WHERE idModul = " + moduls.get(0).get("idModul"));
-                int numberOfStudents = dbConnector.countRows("*", "User WHERE userType = 'student'");
+                int numberOfDeliveries = dbUtil.countRows("*", "Delivery WHERE idModul = " + moduls.get(0).get("idModul"));
+                int numberOfStudents = dbUtil.countRows("*", "User WHERE userType = 'student'");
                 //create the modul-pane header using the given data
                 modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
                         + "    " + numberOfDeliveries + "/"
@@ -342,7 +344,8 @@ public class TabModuloversikt {
 
         //get the evaluation data for this delivery from the DB
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+
 
         //arraylists with the columns, tables and where-condition for this query
         ArrayList<String> columns = new ArrayList(Arrays.asList("deliveryDate",
@@ -352,7 +355,7 @@ public class TabModuloversikt {
                 + userName + "' AND idModul = " + i));
 
         //execute the query, get the results in a list of hashmaps
-        ArrayList<LinkedHashMap> deliveryList = dbConnector.multiQueryHash(columns, table, where);
+        ArrayList<LinkedHashMap> deliveryList = dbQuerier.multiQueryHash(columns, table, where);
         //this list will only have one entry, so we can safely get the first one
         LinkedHashMap<String, String> deliveryMap = deliveryList.get(0);
 
@@ -462,7 +465,7 @@ public class TabModuloversikt {
 
         //get all deliveries for the current module from the DB
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
         //arraylists with columns, tables and where-conditions for this query
         ArrayList<String> columns = new ArrayList(Arrays.asList("deliveryDate", "evaluationDate", "deliveryStatus", "deliveredBy", "evaluatedBy"));
@@ -472,7 +475,7 @@ public class TabModuloversikt {
         where.add("idModul = " + i);
 
         //execute the query, storing result in a list of HashMaps
-        ArrayList<LinkedHashMap> deliveryList = dbConnector.multiQueryHash(columns, tables, where);
+        ArrayList<LinkedHashMap> deliveryList = dbQuerier.multiQueryHash(columns, tables, where);
         //this counts the current row in the GridBagLayout
         int gridBagYCounter = 1;
         //for each map in the list of deliveries
@@ -754,14 +757,14 @@ public class TabModuloversikt {
             public void actionPerformed(ActionEvent e) {
                 //we need to check that the chosen idModul does not already exist
                 EJBConnector ejbConnector = EJBConnector.getInstance();
-                dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                DBUtilRemote dbUtil = ejbConnector.getDBUtil();
                 DBInserterRemote dbInserter = ejbConnector.getDBInserter();
                 //get the number the user chose in the drop-down-list
                 int i = (Integer) modulesList.getSelectedItem();
 
                 //count rows in the Modul-table in the DB with the idModul 
                 //atribute equalling the users choice
-                int numberOfModuls = dbConnector.countRows("*", "Modul WHERE idModul = " + i);
+                int numberOfModuls = dbUtil.countRows("*", "Modul WHERE idModul = " + i);
                 //if there is no row with this idModul, this means the modul does not exist
                 if (numberOfModuls == 0) {
                     //create insert-statement for DB, with the given columns, table and values
@@ -816,8 +819,8 @@ public class TabModuloversikt {
     private Integer selectModul(String message, String dialogTitle) {
         //count all rows in the DB table Modul
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+        int numberOfModuls = dbUtil.countRows("*", "Modul");
         //make a list containing same amount of numbers as rows in the DB-table
         ArrayList<Integer> moduls = new ArrayList<>();
         int i = 1;
@@ -849,13 +852,13 @@ public class TabModuloversikt {
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
         //get all attributes of the module we wish to edit
         ArrayList<String> columns = new ArrayList(Arrays.asList("*"));
         ArrayList<String> table = new ArrayList(Arrays.asList("Modul"));
         ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
-        ArrayList<LinkedHashMap> content = dbConnector.multiQueryHash(columns, table, where);
+        ArrayList<LinkedHashMap> content = dbQuerier.multiQueryHash(columns, table, where);
 
         //make a map storing a textarea for each attribute of the modul
         ArrayList<JTextArea> listOfEdits = new ArrayList();
@@ -911,16 +914,17 @@ public class TabModuloversikt {
      */
     private void deleteModul(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();  
         ArrayList<String> columns = new ArrayList(Arrays.asList("title"));
         ArrayList<String> table = new ArrayList(Arrays.asList("Modul"));
         ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
 
-        ArrayList<LinkedHashMap> result = dbConnector.multiQueryHash(columns, table, where);
+        ArrayList<LinkedHashMap> result = dbQuerier.multiQueryHash(columns, table, where);
         //check how many moduls there are
         //we need to delete the last modul, otherwise the creation of GUI will not
         //work the next time the system is launched
-        int numberOfModuls = dbConnector.countRows("*", "Modul");
+        int numberOfModuls = dbUtil.countRows("*", "Modul");
         //we also need to check if the modul to be deleted has any deliveries
         //if it does, we cannot delete it 
         columns.clear();
@@ -928,7 +932,7 @@ public class TabModuloversikt {
         table.clear();
         table.add("Delivery");
         
-        ArrayList<LinkedHashMap> deliveries = dbConnector.multiQueryHash(columns, table, where);
+        ArrayList<LinkedHashMap> deliveries = dbQuerier.multiQueryHash(columns, table, where);
         if (idModul == numberOfModuls && deliveries.isEmpty()) {
             //get the title of the modul, so we can show it to the user
             String title = result.get(0).get("title").toString();

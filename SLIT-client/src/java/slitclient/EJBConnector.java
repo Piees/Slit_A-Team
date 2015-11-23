@@ -3,7 +3,9 @@ package slitclient;
 
 import db.DBDeleterRemote;
 import db.DBInserterRemote;
+import db.DBQuerierRemote;
 import db.DBUpdaterRemote;
+import db.DBUtilRemote;
 import db.dbConnectorRemote;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,8 @@ public class EJBConnector {
     private static DBInserterRemote dbInserter;
     private static DBUpdaterRemote dbUpdater;
     private static DBDeleterRemote dbDeleter;
+    private static DBQuerierRemote dbQuerier;
+    private static DBUtilRemote dbUtil;
     
     // creates the only instance of EJBConnector.
     private static final EJBConnector INSTANCE = new EJBConnector();
@@ -47,6 +51,8 @@ public class EJBConnector {
             dbInserter = (DBInserterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBInserter"); 
             dbUpdater = (DBUpdaterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBUpdater"); 
             dbDeleter = (DBDeleterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBDeleter");
+            dbQuerier = (DBQuerierRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBQuerier"); 
+            dbUtil = (DBUtilRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBUtil"); 
         } catch (NamingException ex) {
             Logger.getLogger(EJBConnector.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
@@ -100,6 +106,25 @@ public class EJBConnector {
     public DBDeleterRemote getDBDeleter() {
         return dbDeleter;
     }
+    
+    /**
+     * Use this method to get the EJB that handles database queries.
+     * 
+     * @return 
+     */
+    public DBQuerierRemote getDBQuerier() {
+        return dbQuerier;
+    }
+
+    /**
+     * Use this method to get the EJB that contains utility methods.
+     * 
+     * @return 
+     */
+    public DBUtilRemote getDBUtil() {
+        return dbUtil;
+    }
+    
     
 }
 

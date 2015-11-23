@@ -7,6 +7,8 @@
  */
 package slitclient;
 
+import db.DBQuerierRemote;
+import db.DBUtilRemote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -15,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import db.dbConnectorRemote;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -98,11 +99,13 @@ public class Login {
      */
     public void login(String userName, String pwd) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         HashMap<String, String> loginResult = new HashMap<>();
         try {
-            dbConnector.updateUsersHashMap();
-            loginResult = dbConnector.login(userName, pwd);
+            dbUtil.updateUsersHashMap();
+            loginResult = dbQuerier.login(userName, pwd);
         } catch (Exception e) {
             loginResult.put("error1", "Serveren er nede, vennligst prøv igjen seinere");
         }

@@ -6,8 +6,8 @@
 package slitclient;
 
 import db.DBInserterRemote;
+import db.DBUtilRemote;
 import slitcommon.DeliveryStatus;
-import db.dbConnectorRemote;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -112,7 +112,7 @@ public class GUIFileUploader {
      */
     public String uploadDelivery(String userName, int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbconnector = ejbConnector.getEjbRemote();
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         DBInserterRemote uploader = ejbConnector.getDBInserter();
         String table = "Delivery";
         ArrayList<String> columns = new ArrayList<>();
@@ -129,7 +129,7 @@ public class GUIFileUploader {
         values.add(idModul);
         columns.add("deliveryStatus");
         values.add(DeliveryStatus.IKKESETT);
-        if(0 < dbconnector.countRows("*", "Delivery WHERE idModul = " + idModul + " AND deliveredBy = '" + userName +"';"))   {
+        if(0 < dbUtil.countRows("*", "Delivery WHERE idModul = " + idModul + " AND deliveredBy = '" + userName +"';"))   {
             return "Du har allerede levert inn.";
         }
         else    {

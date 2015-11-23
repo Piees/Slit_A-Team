@@ -6,7 +6,7 @@
 package notification;
 
 import db.DBInserterRemote;
-import db.dbConnectorRemote;
+import db.DBQuerierRemote;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -107,8 +107,8 @@ public class NotificationCreater {
         tables.add("User");
         where.add("userType = " + "\"" + userType + "\"");
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        ArrayList<LinkedHashMap> allUsersOfUserType = dbConnector.multiQueryHash(columns, tables, where);
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+        ArrayList<LinkedHashMap> allUsersOfUserType = dbQuerier.multiQueryHash(columns, tables, where);
         System.out.println("allUsersOfUserType.size() " + allUsersOfUserType.size());
         String notifySuccess = "Alle brukere av typen " + userType + " ble varslet";
         for (LinkedHashMap user: allUsersOfUserType) {

@@ -5,19 +5,17 @@
  */
 package prototypes;
 
-import db.dbConnectorRemote;
+import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,14 +26,15 @@ import slitclient.Login;
 
 public class EditUser {
 
-    dbConnectorRemote dbConnector;
+    DBUtilRemote dbUtil;
 
     public EditUser() {
 
         EJBConnector ejbConnector = EJBConnector.getInstance();
-
-        this.dbConnector = ejbConnector.getEjbRemote();
-        dbConnector.updateUsersHashMap();
+        this.dbUtil = ejbConnector.getDBUtil();
+        System.out.println("EditUser class, before calling dbUtil.updateUsersHashMap();");
+        dbUtil.updateUsersHashMap();
+        System.out.println("EditUser class, after calling dbUtil.updateUsersHashMap();");
 
         JFrame frame = new JFrame();
 
@@ -108,7 +107,7 @@ public class EditUser {
         Object[] row = new Object[5];
 
         int index = 0;
-        for (Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
+        for (Map.Entry<String, Map> entry : dbUtil.getAllUsersHashMap().entrySet()) {
             row[0] = entry.getValue().get("userName");
             row[1] = entry.getValue().get("fname");
             row[2] = entry.getValue().get("lname");

@@ -1,6 +1,7 @@
 
 package slitclient;
 
+import db.DBQuerierRemote;
 import db.dbConnectorRemote;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,11 +38,11 @@ public class FileDownloader {
      */
     public String downloadDeliveryFile(String userName, int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         String filename = "modul" + idModul + "_" + userName;
                
-        byte[] byteData = dbConnector.getDeliveryFile(userName, idModul);
-        String oldFileName = dbConnector.getDeliveryFilename(userName, idModul);
+        byte[] byteData = dbQuerier.getDeliveryFile(userName, idModul);
+        String oldFileName = dbQuerier.getDeliveryFilename(userName, idModul);
         
         try {
             String[] fileMetadata = getFileMetaData(oldFileName);

@@ -7,7 +7,9 @@ package slitcommon;
 
 /**
  *
- * @author hg_9__000
+ * @author Håkon
+ * @author Arild
+ * @author Viktor
  */
 public enum DeliveryStatus {
     

@@ -17,8 +17,8 @@ import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
- *
  * @author Viktor Setervang
+ * @author Arild Høyland
  */
 @Stateless
 public class DBUpdater implements DBUpdaterRemote {

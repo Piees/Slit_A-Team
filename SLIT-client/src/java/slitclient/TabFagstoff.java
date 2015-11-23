@@ -5,7 +5,7 @@
  */
 package slitclient;
 
-import db.dbConnectorRemote;
+import db.DBQuerierRemote;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -127,8 +127,8 @@ public class TabFagstoff {
         
     private JPanel makeContent(JPanel tab3Panel) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        ArrayList<HashMap> resources = dbConnector.getResources();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+        ArrayList<HashMap> resources = dbQuerier.getResources();
 
         for (int i = resources.size()-1; i >= 0; i--) {
             String title = resources.get(i).get("title").toString(); 
@@ -140,7 +140,7 @@ public class TabFagstoff {
             String timestamp = resources.get(i).get("resourceDate").toString();
             DateHandler dh = new DateHandler();
             timestamp = dh.removeFractionalSeconds(timestamp);
-            byte[] fileData = dbConnector.getResourceFile(idResources);
+            byte[] fileData = dbQuerier.getResourceFile(idResources);
 
             ArrayList<String> checkStrings = new ArrayList<>(Arrays.asList(title, resourceText, url));
             String resourcePresentation = "<html>";

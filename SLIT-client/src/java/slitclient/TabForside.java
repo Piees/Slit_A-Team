@@ -5,7 +5,7 @@
  */
 package slitclient;
 
-import db.dbConnectorRemote;
+import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -43,19 +43,19 @@ import javax.swing.border.TitledBorder;
  */
 public class TabForside {
     
-    dbConnectorRemote dbConnector;
-    JTextField searchField;
-    JPanel contactPanel;
-    GridBagLayout tab1Layout;
-    JPanel tab1Panel;
-    JScrollPane scrollContactPanel;
-    boolean initialRun = true;
+    private DBUtilRemote dbUtil;
+    private JTextField searchField;
+    private JPanel contactPanel;
+    private GridBagLayout tab1Layout;
+    private JPanel tab1Panel;
+    private JScrollPane scrollContactPanel;
+    private boolean initialRun = true;
     
     public TabForside() {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         
-        this.dbConnector = ejbConnector.getEjbRemote();
-        dbConnector.updateUsersHashMap();
+        this.dbUtil = ejbConnector.getDBUtil();
+        dbUtil.updateUsersHashMap();
     }
     
     /**
@@ -247,10 +247,10 @@ public class TabForside {
         }
         try {
             if(searchField.getText().length() <= 0) {
-            allUsersLimitedHashMap = dbConnector.getAllUsersHashMap();
+            allUsersLimitedHashMap = dbUtil.getAllUsersHashMap();
             } 
             else {
-                for(Map.Entry<String, Map> entry : dbConnector.getAllUsersHashMap().entrySet()) {
+                for(Map.Entry<String, Map> entry : dbUtil.getAllUsersHashMap().entrySet()) {
                     if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", 
                             entry.getValue().get("fname").toString().toUpperCase() + " " 
                             + entry.getValue().get("lname").toString().toUpperCase())) {
@@ -383,3 +383,4 @@ public class TabForside {
         }
     }
 }
+

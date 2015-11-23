@@ -20,7 +20,8 @@ import javax.ejb.Stateless;
 import slitcommon.DeliveryStatus;
 
 /**
- *
+ * @author Arild Høyland
+ * @author Håkon Gilje
  * @author Viktor Setervang
  */
 @Stateless

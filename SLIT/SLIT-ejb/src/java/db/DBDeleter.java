@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 
 /**
- *
+ * @author Arild Høyland
  * @author Viktor Setervang
  */
 @Stateless
