@@ -5,7 +5,9 @@
  */
 package slitclient;
 
+import db.DBDeleterRemote;
 import db.DBInserterRemote;
+import db.DBUpdaterRemote;
 import db.dbConnectorRemote;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -375,8 +377,8 @@ public class TabModuloversikt {
      */
     private void deleteDelivery(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        String confirmationString = dbConnector.deleteDelivery(idModul, userInfo.get("userName"));
+        DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
+        String confirmationString = dbDeleter.deleteDelivery(idModul, userInfo.get("userName"));
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
     }
 
@@ -614,9 +616,9 @@ public class TabModuloversikt {
             String userName) {
         //call the addDeliveryEvaluation of dbConnector with the specified values 
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+        DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
         //calls the method and returns the confirmation string
-        return dbConnector.addDeliveryEvaluation(evaluation, userInfo.get("userName"),
+        return dbUpdater.addDeliveryEvaluation(evaluation, userInfo.get("userName"),
                 i, userName, evaluationStatus);
 
     }
@@ -884,7 +886,8 @@ public class TabModuloversikt {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //save edits to DB, and store confirmation string
-                String confirmationString = dbConnector.updateModul(listOfEdits, idModul);
+                DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
+                String confirmationString = dbUpdater.updateModul(listOfEdits, idModul);
                 //display confirmation string to user
                 JOptionPane.showMessageDialog(editModulDialog, confirmationString,
                         confirmationString, 1);
@@ -957,8 +960,8 @@ public class TabModuloversikt {
      */
     private void deleteModulInDB(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-        String confirmationString = dbConnector.deleteModul(idModul);
+        DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
+        String confirmationString = dbDeleter.deleteModul(idModul);
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
     }
 }

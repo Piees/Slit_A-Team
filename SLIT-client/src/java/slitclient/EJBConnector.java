@@ -1,7 +1,9 @@
 
 package slitclient;
 
+import db.DBDeleterRemote;
 import db.DBInserterRemote;
+import db.DBUpdaterRemote;
 import db.dbConnectorRemote;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,11 +28,13 @@ import javax.naming.NamingException;
 public class EJBConnector {
     private static dbConnectorRemote ejbRemote;
     private static DBInserterRemote dbInserter;
+    private static DBUpdaterRemote dbUpdater;
+    private static DBDeleterRemote dbDeleter;
     
     // creates the only instance of EJBConnector.
     private static final EJBConnector INSTANCE = new EJBConnector();
     
-    /**t
+    /**
      * The constructor is private so no class other then itself can call it.
      */
     private EJBConnector() {
@@ -41,12 +45,15 @@ public class EJBConnector {
             initialContext = new InitialContext();
             ejbRemote = (dbConnectorRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/dbConnector"); 
             dbInserter = (DBInserterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBInserter"); 
+            dbUpdater = (DBUpdaterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBUpdater"); 
+            dbDeleter = (DBDeleterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBDeleter");
         } catch (NamingException ex) {
             Logger.getLogger(EJBConnector.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
             System.exit(1);
         }    
     }
+    
 
     /**
      * Gets the single instance of the EJBConnector.
@@ -75,7 +82,25 @@ public class EJBConnector {
     public DBInserterRemote getDBInserter() {
         return dbInserter;
     }
-
+    
+    /**
+     * Use this method to get the EJB that handles updating database.
+     * 
+     * @return 
+     */
+    public DBUpdaterRemote getDBUpdater() {
+        return dbUpdater;
+    }
+    
+    /**
+     * Use this method to get the EJB that handles deletion from database.
+     * 
+     * @return 
+     */
+    public DBDeleterRemote getDBDeleter() {
+        return dbDeleter;
+    }
+    
 }
 
 

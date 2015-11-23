@@ -29,9 +29,6 @@ public interface dbConnectorRemote {
     public Connection dbConnection();
     
     public HashMap<String, String> login(String userName, String pwd);
-        
-    public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
-            int whereValue1, String whereValue2, DeliveryStatus evaluationStatus);   
             
     public ArrayList<String> multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
@@ -42,8 +39,6 @@ public interface dbConnectorRemote {
     public int countRows(String column, String tableName);     
     
     public ArrayList<HashMap> getUserNotifications(String queryPart2, String userName);
-    
-    public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
     
     public Map<String, String> eachUserMap(int fromIndex);
     
@@ -58,11 +53,5 @@ public interface dbConnectorRemote {
     public ArrayList<HashMap> getResources();
     
     public byte[] getResourceFile(int idResources);
-    
-    public String deleteDelivery(int idModul, String userName);
-    
-    public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul);
-    
-    public String deleteModul(int idModul);
     
 }

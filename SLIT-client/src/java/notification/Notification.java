@@ -7,6 +7,7 @@ package notification;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+import db.DBUpdaterRemote;
 import db.dbConnectorRemote;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -267,7 +268,8 @@ public class Notification {
      * @param seenNotifications list of notification IDs.
      */
     public void markNotificationsAsSeen(ArrayList<Integer> seenNotifications) {
-        connector.markNotificationsAsSeen(seenNotifications);
+        DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
+        dbUpdater.markNotificationsAsSeen(seenNotifications);
         unseenNotifications.clear();
 
     }
