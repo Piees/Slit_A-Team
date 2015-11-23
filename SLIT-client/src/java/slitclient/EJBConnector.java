@@ -1,6 +1,7 @@
 
 package slitclient;
 
+import db.DBInserterRemote;
 import db.dbConnectorRemote;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,8 @@ import javax.naming.NamingException;
  */
 public class EJBConnector {
     private static dbConnectorRemote ejbRemote;
-   
+    private static DBInserterRemote dbInserter;
+    
     // creates the only instance of EJBConnector.
     private static final EJBConnector INSTANCE = new EJBConnector();
     
@@ -38,6 +40,7 @@ public class EJBConnector {
         try {
             initialContext = new InitialContext();
             ejbRemote = (dbConnectorRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/dbConnector"); 
+            dbInserter = (DBInserterRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBInserter"); 
         } catch (NamingException ex) {
             Logger.getLogger(EJBConnector.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
@@ -64,6 +67,14 @@ public class EJBConnector {
         return ejbRemote;
     }
     
+    /**
+     * Use this method to get the EJB handling database insertion.
+     * 
+     * @return 
+     */
+    public DBInserterRemote getDBInserter() {
+        return dbInserter;
+    }
 
 }
 

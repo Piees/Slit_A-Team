@@ -5,7 +5,7 @@
  */
 package prototypes;
 
-import db.dbConnectorRemote;
+import db.DBInserterRemote;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.MessageDigest;
@@ -139,8 +139,8 @@ public class CreateUser {
                     values.add(salt);//sender salt til dbconnect
                     
                     EJBConnector ejbConnector = EJBConnector.getInstance();
-                    dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
-                    dbConnector.insertIntoDB(newUser, columns, values);
+                    DBInserterRemote dbInserter = ejbConnector.getDBInserter();
+                    dbInserter.insertIntoDB(newUser, columns, values);
                     
                     System.out.println("Ny bruker lagret i databasen.");
                     

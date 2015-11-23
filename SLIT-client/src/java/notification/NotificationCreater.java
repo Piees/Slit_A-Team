@@ -5,10 +5,10 @@
  */
 package notification;
 
+import db.DBInserterRemote;
 import db.dbConnectorRemote;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import slitclient.EJBConnector;
 
@@ -57,7 +57,7 @@ public class NotificationCreater {
         if (timestamp != null) {
 
             EJBConnector ejbConnector = EJBConnector.getInstance();
-            dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+            DBInserterRemote dbInserter = ejbConnector.getDBInserter();
             ArrayList<String> columns = new ArrayList<>();
             ArrayList<Object> values = new ArrayList<>();
             columns.add("userName");
@@ -69,7 +69,7 @@ public class NotificationCreater {
             values.add(false);
             values.add(time);
             values.add(text);
-            uploadNotificationStatus = dbConnector.insertIntoDB("Notification", columns, values);
+            uploadNotificationStatus = dbInserter.insertIntoDB("Notification", columns, values);
         }
         return uploadNotificationStatus;
     }

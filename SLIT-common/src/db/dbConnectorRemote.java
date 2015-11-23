@@ -29,9 +29,7 @@ public interface dbConnectorRemote {
     public Connection dbConnection();
     
     public HashMap<String, String> login(String userName, String pwd);
-    
-    public String insertIntoDB(String table, ArrayList<String> columns, ArrayList<Object> values);
-    
+        
     public String addDeliveryEvaluation(String evaluationValue, String evaluatedByValue, 
             int whereValue1, String whereValue2, DeliveryStatus evaluationStatus);   
             

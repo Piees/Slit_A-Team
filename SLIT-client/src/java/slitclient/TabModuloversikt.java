@@ -5,6 +5,7 @@
  */
 package slitclient;
 
+import db.DBInserterRemote;
 import db.dbConnectorRemote;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -752,6 +753,7 @@ public class TabModuloversikt {
                 //we need to check that the chosen idModul does not already exist
                 EJBConnector ejbConnector = EJBConnector.getInstance();
                 dbConnectorRemote dbConnector = ejbConnector.getEjbRemote();
+                DBInserterRemote dbInserter = ejbConnector.getDBInserter();
                 //get the number the user chose in the drop-down-list
                 int i = (Integer) modulesList.getSelectedItem();
 
@@ -778,7 +780,7 @@ public class TabModuloversikt {
 
                     //call the method for inserting into the specified table in the DB
                     //call method and store the returned confirmation string
-                    String confirmationString = dbConnector.insertIntoDB(modul, columns, values);
+                    String confirmationString = dbInserter.insertIntoDB(modul, columns, values);
                     //show confirmation string in messageDialog
                     JOptionPane.showMessageDialog(createModulDialog, confirmationString, confirmationString, 1);
                     //if confirmation string equals "Upload successful", close this dialog.
