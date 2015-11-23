@@ -56,7 +56,7 @@ public class Login {
     
     public Login() {
         frame = new JFrame("Login");
-        frame.setSize(900, 650);
+        frame.setSize(700, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         placeComponents(frame);
         frame.setVisible(true);
@@ -116,36 +116,36 @@ public class Login {
         frame.getContentPane().setBackground(Color.WHITE);
         
         JLabel logoLabel = new JLabel(loadLogo());
-        logoLabel.setBounds(75, 100, 400, 400);
+        logoLabel.setBounds(20, 40, 300, 300);
         frame.add(logoLabel);
         
         JLabel userLabel = new JLabel("Username");
-        userLabel.setBounds(500, 250, 80, 25);
+        userLabel.setBounds(350, 150, 80, 25);
         frame.add(userLabel);
 
         userText = new JTextField(20);
-        userText.setBounds(590, 250, 160, 25);
+        userText.setBounds(440, 150, 160, 25);
         frame.add(userText);
 
         JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(500, 280, 80, 25);
+        passwordLabel.setBounds(350, 180, 80, 25);
         frame.add(passwordLabel);
 
         passwordText = new JPasswordField(20);
         passwordText.addKeyListener(new LoginKeyAction());
-        passwordText.setBounds(590, 280, 160, 25);
+        passwordText.setBounds(440, 180, 160, 25);
         frame.add(passwordText);
 
         JButton createButton = new JButton("create user");
-        createButton.setBounds(585, 310, 80, 25);
+        createButton.setBounds(435, 210, 80, 25);
         frame.add(createButton);
 
         JButton loginButton = new JButton("login");
-        loginButton.setBounds(500, 310, 80, 25);
+        loginButton.setBounds(350, 210, 80, 25);
         frame.add(loginButton);
 
         JButton forgotPwdButton = new JButton("forgot my password!");
-        forgotPwdButton.setBounds(670, 310, 80, 25);
+        forgotPwdButton.setBounds(520, 210, 80, 25);
         frame.add(forgotPwdButton);
 
 //        loginButton.addActionListener(new LoginAction()); //listener her
