@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.swing.JOptionPane;
 
 /**
  * THIS CLASS IS USING A NOT THREAD SAFE SINGLETON PATTERN.
@@ -55,7 +56,7 @@ public class EJBConnector {
             dbUtil = (DBUtilRemote) initialContext.lookup("java:global/SLIT/SLIT-ejb/DBUtil"); 
         } catch (NamingException ex) {
             Logger.getLogger(EJBConnector.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println(ex);
+            JOptionPane.showMessageDialog(null, "Serveren er nede, vennligst prøv igjen seinere"); 
             System.exit(1);
         }    
     }

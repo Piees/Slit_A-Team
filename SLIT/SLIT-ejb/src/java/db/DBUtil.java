@@ -89,13 +89,11 @@ public class DBUtil implements DBUtilRemote {
         ArrayList<String> where = new ArrayList<>(Arrays.asList("userName != 'null'"));
         DBQuerier dbQuerier = new DBQuerier();
         updateUsersArrayList = dbQuerier.multiQuery(select, from, where);
-        System.out.println("updateUsersHashMap(): updateUsersArrayList.size()" + updateUsersArrayList.size());
         allUsersHashMap = new HashMap<>();
         for (int i = 0; i < updateUsersArrayList.size(); i += 5) {
             Map<String, String> updateUserHashMapHelper = eachUserMap(i);
             allUsersHashMap.put(updateUserHashMapHelper.get("userName"),
                     updateUserHashMapHelper);
-            System.out.println("updateUsersHashMap(): allUsersHashMap.size()" + allUsersHashMap.size());
         }
     }
     
@@ -108,7 +106,6 @@ public class DBUtil implements DBUtilRemote {
                 "lname", updateUsersArrayList.get(fromIndex + 3),
                 "userName", updateUsersArrayList.get(fromIndex + 4)
         );
-        System.out.println("eachUserMap() userMap.size(): " + userMap.size());
         return userMap;
     }
 

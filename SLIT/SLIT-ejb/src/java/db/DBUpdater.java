@@ -110,6 +110,7 @@ public class DBUpdater implements DBUpdaterRemote {
     
     @Override
     public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul) {
+        System.out.println("updateModul()");
         Connection dbConnection = dbConnection();
         String update = "UPDATE Modul SET title =?, description=?, learningObj=?,"
                 + "resources=?, excercise=?, evalForm=? WHERE idModul = " + idModul + ";";
@@ -125,6 +126,7 @@ public class DBUpdater implements DBUpdaterRemote {
             ps.executeUpdate();
             return "Modul ble endret.";
         } catch (SQLException e) {
+            System.out.println("CAATCHED");
             System.out.println(e);
             return "Feil! Modul ble ikke endret.";
         }
