@@ -67,19 +67,6 @@ public class TabForside {
         tab1Layout = new GridBagLayout();
         tab1Panel.setLayout(tab1Layout);
         
-        JPanel nextLecturePanel = makeLecturePanel();
-        JScrollPane scrollLecturePanel = new JScrollPane(nextLecturePanel);
-        GridBagConstraints gbcNLP = new GridBagConstraints();
-        scrollLecturePanel.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        scrollLecturePanel.setHorizontalScrollBarPolicy ( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        gbcNLP.gridx = 0;
-        gbcNLP.gridy = 0;
-        gbcNLP.gridheight = 3;
-        gbcNLP.insets = new Insets(-80, -125, -50, 15);
-        gbcNLP.fill = GridBagConstraints.VERTICAL;
-        tab1Layout.setConstraints(scrollLecturePanel, gbcNLP);
-        tab1Panel.add(scrollLecturePanel);
-
         JPanel messagesPanel = makeMessagesPanel();
         GridBagConstraints gbcMP = new GridBagConstraints();
         gbcMP.gridx = 1;
@@ -108,13 +95,6 @@ public class TabForside {
         tab1Layout.setConstraints(scrollContactPanel, gbcCP);
         tab1Panel.add(scrollContactPanel);
 
-        JPanel activityPanel = makeActivityPanel();
-        GridBagConstraints gbcAP = new GridBagConstraints();
-        gbcAP.gridx = 2;
-        gbcAP.gridy = 3;
-        gbcAP.fill = GridBagConstraints.VERTICAL;
-        tab1Layout.setConstraints(activityPanel, gbcAP);
-        tab1Panel.add(activityPanel);
     return tab1Panel;
     }    
     
@@ -156,42 +136,7 @@ public class TabForside {
         
         }
     }
-    
-    
-    /**
-     * Lager nextLecturePanelet som er inni forside-taben. Returnerer til makeForsideTab()
-     * @return JPanel nextLecturePanel panelet med neste forelesninger
-     */
-    public class LecturePanel extends JPanel   {
        
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension(250, 500);
-        }
-        
-        public LecturePanel() {
-            setBorder(new TitledBorder (new EtchedBorder(), 
-                "Neste Forelesning"));
-        }
-    }
-            
-    public JPanel makeLecturePanel() {
-        LecturePanel LecturePanel = new LecturePanel();
-        LecturePanel.setLayout(new BoxLayout(LecturePanel, BoxLayout.Y_AXIS));
-
-        /*JLabel nextLectureHeader = new JLabel("Neste forelesning:");
-        LecturePanel.add(nextLectureHeader);*/
-
-        JLabel nextLecture1 = new JLabel("<html><u>Onsdag 23. september,</u><br>08:15-11:00."
-                + "<br>Tema: Abstraksjon</html>");
-        LecturePanel.add(nextLecture1);
-
-        JLabel nextLecture2 = new JLabel("<html><u>Tirsdag 01. oktober,</u><br>08:15-10:00."
-                + "<br>Tema: Modularisering</html>");
-        LecturePanel.add(nextLecture2);
-        return LecturePanel;
-        }
-   
     /**
      * Lager messagesPanel som er inni forside-taben. Returnerer til makeForsideTab()
      * @return JPanel messagesPanel panelet med meldinger
@@ -317,37 +262,6 @@ public class TabForside {
             makeContactPanel();
             contactPanel.revalidate();
         }
-    }
-    
-    /**
-     * Lager activityPanel som er inni forside-taben. Returnerer til makeForsideTab()
-     * @return JPanel activityPanel panelet som viser siste hendelser i systemet
-     */
-    private JPanel makeActivityPanel()  {
-        JPanel activityPanel = new JPanel();
-        activityPanel.setLayout(new BoxLayout(activityPanel, BoxLayout.Y_AXIS));
-
-        JLabel lastActivityHeader = new JLabel("<html><u>Sist aktivitet</u></html>");
-        activityPanel.add(lastActivityHeader);
-
-        JPanel activity1 = new JPanel();
-        activity1.setLayout(new BoxLayout(activity1, BoxLayout.Y_AXIS));
-        JLabel activity1Label = new JLabel("Modul 2 godkjent");
-        JButton modulComment = new JButton("Se tilbakemelding");
-        activity1.add(activity1Label);
-        activity1.add(modulComment);
-
-        activityPanel.add(activity1);
-
-        JPanel activity2 = new JPanel();
-        activity2.setLayout(new BoxLayout(activity2, BoxLayout.Y_AXIS));
-        JLabel activity2Label = new JLabel("Forelesningsplan høst 2015");
-        JButton goToActivity = new JButton("Les mer...");
-        activity2.add(activity2Label);
-        activity2.add(goToActivity);
-
-        activityPanel.add(activity2);
-    return activityPanel;
     }
     
     /**
