@@ -156,7 +156,7 @@ public class DBQuerier implements DBQuerierRemote {
      * result from 2nd row in the DB and so on...
      */
     @Override
-    public ArrayList multiQueryHash(ArrayList<String> columns, ArrayList<String> tables, ArrayList<String> where) {
+    public ArrayList<LinkedHashMap> multiQueryHash(ArrayList<String> columns, ArrayList<String> tables, ArrayList<String> where) {
         String query = "SELECT ";
         ArrayList<LinkedHashMap> queryResults = new ArrayList();
         //the following block adds all columns to the query-string

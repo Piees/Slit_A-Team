@@ -5,6 +5,7 @@
  */
 package tabmoduloversikt;
 
+import db.DBQuerierRemote;
 import db.DBUtilRemote;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -32,7 +33,6 @@ public abstract class TabModuloversikt {
     protected HashMap<String, String> userInfo;
     protected JFrame frame;
     protected JPanel tab2Panel;
-    protected ArrayList<Integer> modulesArrayList = new ArrayList(Arrays.asList(1, 2, 3, 4, 5));
 
     /**
      * Constructor for class TabModuloversikt. Stores the containing
@@ -108,5 +108,30 @@ public abstract class TabModuloversikt {
                 modulPane.add(textArea);
             }
         }
+    }
+
+    /**
+     * Creates the collapsible panes for each module. If student-user logged in,
+     * each module header shows module name and status of current delivery for
+     * this module. If teacher-user logged in, module header shows module name
+     * and number of deliveries for this module divided with total number of
+     * students
+     *
+     * @param numberOfModuls the number of modules to be created
+     * @return JXTaskPaneContainer the container containing all the collapsible
+     * panes with module content
+     */
+    //Get modul content
+    protected ArrayList<LinkedHashMap> getModulContent() {
+        //create the arraylists for this query
+        ArrayList<String> columns = new ArrayList(Arrays.asList("*"));
+        ArrayList<String> tables = new ArrayList(Arrays.asList("Modul"));
+        
+
+        //execute the query
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+        ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, tables, null);
+        return moduls;
     }
 }

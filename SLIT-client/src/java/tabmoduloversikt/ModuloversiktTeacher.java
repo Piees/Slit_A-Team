@@ -114,44 +114,37 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
-    @Override
+    @Override //Get modul content
     protected JXTaskPaneContainer makeModulList(int numberOfModuls) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
-        int i = 1;
-        while (i <= numberOfModuls) {
+
+        ArrayList<LinkedHashMap> moduls = getModulContent();
+
+        for (LinkedHashMap modul : moduls) {
             JXTaskPane modulPane;
-
-            //create the arraylists for this query
-            ArrayList<String> columns = new ArrayList(Arrays.asList("idModul",
-                    "title", "description", "learningObj", "resources",
-                    "excercise", "evalForm"));
-            ArrayList<String> tables = new ArrayList(Arrays.asList("Modul"));
-            ArrayList<String> where = new ArrayList();
-            where.add("idModul = " + i + ";");
-
-            //execute the query
-            EJBConnector ejbConnector = EJBConnector.getInstance();
-            DBUtilRemote dbUtil = ejbConnector.getDBUtil();
-            DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
-            ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, tables, where);
+            int idModul = Integer.parseInt(modul.get("idModul").toString());
 
             //check userType of the currently logged in user, so we know what
             //kind of header to make for each module
             //if user is teacher, we want to know how many deliveries there are
             //for this module, divided on the total number of students in the DB
-            int numberOfDeliveries = dbUtil.countRows("*", "Delivery WHERE idModul = " + moduls.get(0).get("idModul"));
+            int numberOfDeliveries = dbUtil.countRows("*", "Delivery WHERE idModul = " + idModul);
             int numberOfStudents = dbUtil.countRows("*", "User WHERE userType = 'student'");
             //create the modul-pane header using the given data
-            modulPane = new JXTaskPane("Modul " + moduls.get(0).get("idModul")
+            modulPane = new JXTaskPane("Modul " + idModul
                     + "    " + numberOfDeliveries + "/"
                     + numberOfStudents + " har levert");
             //as above, set pane to collapsed from the beginning
             modulPane.setCollapsed(true);
             //display the content for this module. with a button that
             //shows all deliveries made for this module
-            addModulContentTeacher(moduls, modulPane, i);
+            addModulContentTeacher(modul, modulPane, idModul);
             modulListContainer.add(modulPane);
-            i++;
+            idModul++;
 
         }
         return modulListContainer;
@@ -164,23 +157,21 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      *
      * @param content list of content in modules
      * @param modulPane the modulPane component labels should be added to
-     * @param i the idModul of the current module
+     * @param idModul the idModul of the current module
      */
-    private void addModulContentTeacher(ArrayList<LinkedHashMap> content, JXTaskPane modulPane, int i) {
+    private void addModulContentTeacher(LinkedHashMap<String, String> modul, JXTaskPane modulPane, int idModul) {
         //for each map in the content-list,
-        for (LinkedHashMap map : content) {
-            //call method for displaying the text content of this module
-            displayModulText(map, modulPane);
-            //adds a button for opening a dialog showing list of deliveries for this module
-            JButton openDeliveryListButton = new JButton("Se innleveringer");
-            modulPane.add(openDeliveryListButton);
-            openDeliveryListButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    openDeliveryListDialog(i);
-                }
-            });
-        }
+        //call method for displaying the text content of this module
+        displayModulText(modul, modulPane);
+        //adds a button for opening a dialog showing list of deliveries for this module
+        JButton openDeliveryListButton = new JButton("Se innleveringer");
+        modulPane.add(openDeliveryListButton);
+        openDeliveryListButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openDeliveryListDialog(idModul);
+            }
+        });
     }
 
     /**
@@ -190,10 +181,10 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * delivery-file and opens the evaluation window by calling
      * openEvaluationDialog(..)
      *
-     * @param i the idModul of the selected module
+     * @param idModul the idModul of the selected module
      */
-    private void openDeliveryListDialog(int i) {
-        JDialog deliveryListDialog = new JDialog(frame, "Innleveringer i modul " + i, true);
+    private void openDeliveryListDialog(int idModul) {
+        JDialog deliveryListDialog = new JDialog(frame, "Innleveringer i modul " + idModul, true);
         JPanel contentPane = (JPanel) deliveryListDialog.getContentPane();
         //create the GridBagLayout this dialog will use
         contentPane.setLayout(new GridBagLayout());
@@ -230,7 +221,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         ArrayList<String> tables = new ArrayList<>();
         ArrayList<String> where = new ArrayList<>();
         tables.add("Delivery");
-        where.add("idModul = " + i);
+        where.add("idModul = " + idModul);
 
         //execute the query, storing result in a list of HashMaps
         ArrayList<LinkedHashMap> deliveryList = dbQuerier.multiQueryHash(columns, tables, where);
@@ -269,20 +260,11 @@ public class ModuloversiktTeacher extends TabModuloversikt {
             openFileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //int userNameIndex = deliveryList.size()-1;
-                    //int userNameIndex = userNameIndex; 
-                    //                    for (String s : TabModuloversikt.this.deliveryList) {
-                    //                        System.out.println(s);
-                    //                    }
                     String userName = map.get("deliveredBy").toString();
-                    //                    System.out.println(deliveryList.size());
-                    //                    System.out.println(userNameIndex);
-                    //                    System.out.println(userName);
-                    //                    System.out.println(userNameIndex + " " + userName);
-                    FileDownloader downloader = new FileDownloader();
-                    downloader.downloadDeliveryFile(userName, i);
-                    openEvaluationDialog(deliveryListDialog, i, userName);
 
+                    FileDownloader downloader = new FileDownloader();
+                    downloader.downloadDeliveryFile(userName, idModul);
+                    openEvaluationDialog(deliveryListDialog, idModul, userName);
                 }
             });
 
@@ -306,11 +288,11 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * string. If stored successfully in DB, window is closed.
      *
      * @param deliveryListDialog the parent component of this JDialog
-     * @param i the idModul-number of the module that's being evaluated
+     * @param idModul the idModul-number of the module that's being evaluated
      * @param userName the userName of the teacher-user that is evaluating the
      * delivery
      */
-    protected void openEvaluationDialog(JDialog deliveryListDialog, int i, String userName) {
+    protected void openEvaluationDialog(JDialog deliveryListDialog, int idModul, String userName) {
         JDialog openEvaluationDialog = new JDialog(deliveryListDialog, "Gi tilbakemelding", true);
         JPanel contentPane = (JPanel) openEvaluationDialog.getContentPane();
 
@@ -338,16 +320,16 @@ public class ModuloversiktTeacher extends TabModuloversikt {
                 //checks that an evaluation comment is written
                 if (evaluation.getText().length() > 2) {
                     //calls the method for uploading to DB, storing the confirmation string
-                    String returnString = uploadEvaluationToDB(evaluation.getText(), i, evaluationStatusEnum, userName);
+                    String returnString = uploadEvaluationToDB(evaluation.getText(), idModul, evaluationStatusEnum, userName);
                     //displays the confirmation string in a messageDialog
                     JOptionPane.showMessageDialog(openEvaluationDialog, returnString, returnString, 1);
                     //if the uploading was successful, this dialog can be closed
                     if (returnString.equals("Lagret i database.")) {
                         openEvaluationDialog.dispose();
                         NotificationCreater nc = new NotificationCreater();
-                        nc.createNewNotification(userName, "modul " + i + ": " + evaluationStatusEnum.toString());
+                        nc.createNewNotification(userName, "modul " + idModul + ": " + evaluationStatusEnum.toString());
                         deliveryListDialog.dispose();
-                        openDeliveryListDialog(i);
+                        openDeliveryListDialog(idModul);
                     }
 
                 } //if comment was left empty, inform user that comment is too short
@@ -367,20 +349,20 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * confirmation string. This is returned to addEvaluationMethod()
      *
      * @param evaluation the evaluation that should be stored in DB
-     * @param i idModule of the module this delivery belongs to
+     * @param idModul idModule of the module this delivery belongs to
      * @param evaluationStatus the enum-value of the evaluation, either GODKJENT
      * or IKKEGODKJENT
      * @param userName the user name of the student that has made this delivery
      * @return confirmation string showing result of update-statement
      */
-    private String uploadEvaluationToDB(String evaluation, int i, DeliveryStatus evaluationStatus,
+    private String uploadEvaluationToDB(String evaluation, int idModul, DeliveryStatus evaluationStatus,
             String userName) {
         //call the addDeliveryEvaluation of dbConnector with the specified values 
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
         //calls the method and returns the confirmation string
         return dbUpdater.addDeliveryEvaluation(evaluation, userInfo.get("userName"),
-                i, userName, evaluationStatus);
+                idModul, userName, evaluationStatus);
 
     }
 
@@ -510,18 +492,20 @@ public class ModuloversiktTeacher extends TabModuloversikt {
     private Integer selectModul(String message, String dialogTitle) {
         //count all rows in the DB table Modul
         EJBConnector ejbConnector = EJBConnector.getInstance();
-        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
-        int numberOfModuls = dbUtil.countRows("*", "Modul");
-        //make a list containing same amount of numbers as rows in the DB-table
-        ArrayList<Integer> moduls = new ArrayList<>();
-        int i = 1;
-        while (i <= numberOfModuls) {
-            moduls.add(i);
-            i++;
-        }
-        //add every number in the list to an array, which the user can choose from
-        Integer[] chooseModul = moduls.toArray(new Integer[moduls.size()]);
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+        
+        ArrayList<String> columns = new ArrayList<>(Arrays.asList("idModul"));
+        ArrayList<String> table = new ArrayList<>(Arrays.asList("Modul"));
+        ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, table, null);
+        
+        ArrayList<Integer> selectedModuls = new ArrayList<>();
+        for (LinkedHashMap modul: moduls) {
+            int idModul = Integer.parseInt(modul.get("idModul").toString());
+            selectedModuls.add(idModul);
+        }        
 
+        //add every number in the list to an array, which the user can choose from
+        Integer[] chooseModul = selectedModuls.toArray(new Integer[selectedModuls.size()]);
         Integer chosenModul = (Integer) JOptionPane.showInputDialog(frame,
                 message, dialogTitle, JOptionPane.PLAIN_MESSAGE,
                 null, chooseModul, 1);
@@ -537,7 +521,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      *
      * @param idModul the id of the module to be displayed and edited
      */
-    protected void editModul(int idModul) {
+    private void editModul(int idModul) {
         JDialog editModulDialog = new JDialog(frame, "Endre modul", true);
         JPanel contentPane = (JPanel) editModulDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -603,7 +587,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      *
      * @param idModul id of the modul to be deleted
      */
-    protected void deleteModul(int idModul) {
+    private void deleteModul(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
@@ -624,7 +608,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         table.add("Delivery");
 
         ArrayList<LinkedHashMap> deliveries = dbQuerier.multiQueryHash(columns, table, where);
-        if (idModul == numberOfModuls && deliveries.isEmpty()) {
+        if (deliveries.isEmpty()) {
             //get the title of the modul, so we can show it to the user
             String title = result.get(0).get("title").toString();
             //the choices the user can pick
@@ -637,9 +621,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
             if (answer == JOptionPane.YES_OPTION) {
                 deleteModulInDB(idModul);
             }
-        } else if (idModul != numberOfModuls) {
-            JOptionPane.showMessageDialog(frame, "Du må slette den siste modulen",
-                    "Ugyldig valg", 1);
+            
         } else {
             JOptionPane.showMessageDialog(frame, "Du kan ikke slette en modul som har innleveringer",
                     "Ugyldig valg", 1);
@@ -652,7 +634,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      *
      * @param idModul the id of the modul to be deleted
      */
-    protected void deleteModulInDB(int idModul) {
+    private void deleteModulInDB(int idModul) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
         String confirmationString = dbDeleter.deleteModul(idModul);
