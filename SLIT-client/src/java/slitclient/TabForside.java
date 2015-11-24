@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -71,7 +72,7 @@ public class TabForside {
         scrollContactPanel = new JScrollPane(contactPanel){
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(400,200);
+                return new Dimension(410,200);
             }
         };
 //        GridBagConstraints gbcCP = new GridBagConstraints();
@@ -85,9 +86,24 @@ public class TabForside {
 //        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
 //        tab1Panel.add(scrollContactPanel);
         
+        //east panel
+        JPanel tab1PanelEast = new JPanel();
+        tab1PanelEast.setLayout(new BoxLayout(tab1PanelEast, BoxLayout.Y_AXIS));
+        tab1PanelEast.add(scrollContactPanel);
+        tab1PanelEast.add(Box.createRigidArea(new Dimension(0,500)));
+        
+        //west panel
+        JPanel tab1PanelWest = new JPanel();
+        tab1PanelWest.add(Box.createRigidArea(new Dimension(0, 5)));
+        tab1PanelWest.setLayout(new BoxLayout(tab1PanelWest, BoxLayout.Y_AXIS));
+        tab1PanelWest.add(makeMessagesPanel());
+        tab1PanelWest.add(Box.createVerticalGlue());
+        
+        
         tab1Panel.setLayout(new BoxLayout(tab1Panel, BoxLayout.X_AXIS));
-        tab1Panel.add(makeMessagesPanel());
-        tab1Panel.add(scrollContactPanel);
+        tab1PanelWest.add(Box.createRigidArea(new Dimension(5, 0)));
+        tab1Panel.add(tab1PanelWest);
+        tab1Panel.add(tab1PanelEast);
         
     return tab1Panel;
     }    
