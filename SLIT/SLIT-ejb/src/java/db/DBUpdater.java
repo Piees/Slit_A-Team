@@ -133,4 +133,21 @@ public class DBUpdater implements DBUpdaterRemote {
             return "Feil! Modul ble ikke endret.";
         }
     }
+    
+    @Override
+    public String updateUser(String userName) {
+        Connection dbConnection = dbConnection();
+        String update = "UPDATE User SET fName =?, lName =?, mail =?, userType=?,"
+                + "WHERE userName = " + userName + ";";
+        try {
+            System.out.println("TRY HERE");
+            PreparedStatement ps = dbConnection.prepareStatement(update);
+            System.out.println(ps);
+            ps.executeUpdate();
+            return "Brukeren ble endret.";
+        } catch (SQLException e) {
+            System.out.println(e);
+            return "Feil! Brukeren ble ikke endret.";
+        }
+    }
 }

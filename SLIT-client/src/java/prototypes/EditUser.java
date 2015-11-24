@@ -7,6 +7,7 @@ package prototypes;
 
 import db.DBDeleterRemote;
 import db.DBInserterRemote;
+import db.DBUpdaterRemote;
 import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Font;
@@ -240,6 +241,10 @@ public class EditUser {
                     model.setValueAt(roleCombo.getSelectedItem(), i, 3);
                     model.setValueAt(textMail.getText(), i, 4);
                     
+                    EJBConnector ejbConnector = EJBConnector.getInstance();
+                    DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
+                    dbUpdater.updateUser(Integer.toString(i));
+                    
                 } else {
                     System.out.println("Update Error");
                 }
@@ -304,7 +309,7 @@ public class EditUser {
     private void deleteUserDB(String userName) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
-        String confirmationString = dbDeleter.deleteUser(userName);
+        dbDeleter.deleteUser(userName);
     }
     
 }

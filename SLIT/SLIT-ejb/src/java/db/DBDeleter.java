@@ -96,6 +96,7 @@ public class DBDeleter implements DBDeleterRemote {
         }
     }
     
+    @Override
         public String deleteUser(String userName) {
         Connection dbConnection = dbConnection();
         String delete = "DELETE FROM User WHERE userName = " + userName + ";";
