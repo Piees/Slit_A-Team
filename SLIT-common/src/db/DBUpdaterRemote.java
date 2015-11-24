@@ -26,5 +26,5 @@ public interface DBUpdaterRemote {
     
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification);
 
-    public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul);
+    public String updateModul(ArrayList<String> listOfEdits, int idModul);
 }

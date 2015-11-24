@@ -109,8 +109,8 @@ public class DBUpdater implements DBUpdaterRemote {
     }
     
     @Override
-    public String updateModul(ArrayList<JTextArea> listOfEdits, int idModul) {
-        System.out.println("updateModul()");
+    public String updateModul(ArrayList<String> listOfEdits, int idModul) {
+     
         Connection dbConnection = dbConnection();
         String update = "UPDATE Modul SET title =?, description=?, learningObj=?,"
                 + "resources=?, excercise=?, evalForm=? WHERE idModul = " + idModul + ";";
@@ -118,8 +118,8 @@ public class DBUpdater implements DBUpdaterRemote {
             System.out.println("TRYYYYYYYYYYYYY HER");
             PreparedStatement ps = dbConnection.prepareStatement(update);
             int i = 1;
-            for (JTextArea textArea : listOfEdits) {
-                ps.setString(i, textArea.getText());
+            for (String string : listOfEdits) {
+                ps.setString(i, string);
                 i++;
             }
             System.out.println(ps);

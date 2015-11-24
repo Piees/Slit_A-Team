@@ -488,16 +488,16 @@ public class ModuloversiktTeacher extends TabModuloversikt {
     private Integer selectModul(String message, String dialogTitle) {
         //count all rows in the DB table Modul
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
-        
+
         ArrayList<String> columns = new ArrayList<>(Arrays.asList("idModul"));
         ArrayList<String> table = new ArrayList<>(Arrays.asList("Modul"));
         ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, table, null);
-        
+
         ArrayList<Integer> selectedModuls = new ArrayList<>();
-        for (LinkedHashMap modul: moduls) {
+        for (LinkedHashMap modul : moduls) {
             int idModul = Integer.parseInt(modul.get("idModul").toString());
             selectedModuls.add(idModul);
-        }        
+        }
 
         //add every number in the list to an array, which the user can choose from
         Integer[] chooseModul = selectedModuls.toArray(new Integer[selectedModuls.size()]);
@@ -529,27 +529,44 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         ArrayList<String> where = new ArrayList(Arrays.asList("idModul = " + idModul));
         ArrayList<LinkedHashMap> content = dbQuerier.multiQueryHash(columns, table, where);
 
-        //make a map storing a textarea for each attribute of the modul
-        ArrayList<JTextArea> listOfEdits = new ArrayList();
-        //for each map (can only be one), loop through all values
-        for (LinkedHashMap map : content) {
-            //for each value in map, do the following:
-            for (Object value : map.values()) {
-                //check that its length is longer than 1 (to exclude idModul)
-                if (value.toString().length() > 1) {
-                    //create a new textArea with the given value
-                    JTextArea textArea = new JTextArea(value.toString());
-                    //make this textArea editable
-                    textArea.setEditable(true);
-                    //make this textArea break lines at whole words, so a word isn't split
-                    textArea.setWrapStyleWord(true);
-                    //add this textArea to the contentPane
-                    contentPane.add(textArea);
-                    //and to the arrayList of textAreas the user can edit
-                    listOfEdits.add(textArea);
-                }
-            }
-        }
+        LinkedHashMap mapContent = content.get(0);
+        //create headers and labels for all required information for a module
+        JLabel modulTitleLabel = new JLabel("Tittel på modulen:");
+        JTextArea editModulTitle = new JTextArea(mapContent.get("title").toString());
+
+        JLabel modulDescriptionLabel = new JLabel("Beskrivelse av modulen:");
+        JTextArea editModulDesc = new JTextArea(mapContent.get("description").toString());
+
+        JLabel modulLearningObjLabel = new JLabel("Modulens læringsmål:");
+        JTextArea editModulLearningObj = new JTextArea(mapContent.get("learningObj").toString());
+
+        JLabel modulResourcesLabel = new JLabel("Ressurser for denne modulen:");
+        JTextArea editModulRes = new JTextArea(mapContent.get("resources").toString());
+
+        JLabel modulExcerciseLabel = new JLabel("Oppgave:");
+        JTextArea editModulEx = new JTextArea(mapContent.get("excercise").toString());
+
+        JLabel modulEvaluationForm = new JLabel("Godkjenning av modulen/oppgaven:");
+        JTextArea editModulEval = new JTextArea(mapContent.get("evalForm").toString());
+
+        //add headers and labels for all required information to the dialog
+        contentPane.add(modulTitleLabel);
+        contentPane.add(editModulTitle);
+
+        contentPane.add(modulDescriptionLabel);
+        contentPane.add(editModulDesc);
+
+        contentPane.add(modulLearningObjLabel);
+        contentPane.add(editModulLearningObj);
+
+        contentPane.add(modulResourcesLabel);
+        contentPane.add(editModulRes);
+
+        contentPane.add(modulExcerciseLabel);
+        contentPane.add(editModulEx);
+
+        contentPane.add(modulEvaluationForm);
+        contentPane.add(editModulEval);
 
         //button for saving edit to DB
         JButton editModulButton = new JButton("Lagre endringer");
@@ -557,6 +574,10 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         editModulButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ArrayList<String> listOfEdits = new ArrayList(Arrays.asList(editModulTitle.getText(),
+                        editModulDesc.getText(), editModulLearningObj.getText(),
+                        editModulRes.getText(), editModulEx.getText(),
+                        editModulEval.getText()));
                 //save edits to DB, and store confirmation string
                 DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
                 String confirmationString = dbUpdater.updateModul(listOfEdits, idModul);
@@ -614,7 +635,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
             if (answer == JOptionPane.YES_OPTION) {
                 deleteModulInDB(idModul);
             }
-            
+
         } else {
             JOptionPane.showMessageDialog(frame, "Du kan ikke slette en modul som har innleveringer",
                     "Ugyldig valg", 1);
