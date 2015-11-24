@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -92,13 +93,13 @@ public class NotificationGUI {
 	panel.add(alertTextLabel);
         panel.add(notificationText);
 	panel.add(createNotificationButton);
-        
+        //panel.add(new JLabel("                                                                                                                        "));
         dialog.add(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));  
         
         // The setSize doesnt seem to do anything
-        panel.setSize(650, 450);
-        dialog.setSize(650, 450);
+        //panel.setSize(650, 650);
+        //dialog.setSize(650, 650);
         panel.repaint();
         dialog.setVisible(true);
         dialog.pack();
@@ -167,8 +168,10 @@ public class NotificationGUI {
             String viewFormat = timestamp + ": \n" + notificationText;
             // This looks like shit, but it its just an early prototype after all
             seenNotifications.add((Integer) notification.get("idNotification"));
-            JLabel label = new JLabel(viewFormat);
-            panel.add(label);
+            JTextArea nText = new JTextArea(viewFormat);
+            nText.setEditable(false);
+            nText.setWrapStyleWord(true);
+            panel.add(nText);
         }
         JButton goBack = new JButton("Gå tilbake");
         panel.add(goBack);
@@ -188,7 +191,7 @@ public class NotificationGUI {
         this.seeNotificationButton.setText("Ingen varsler");
         this.mainGUINotificationButton.setText("Varsler");
         panel.repaint();
-        dialog.pack();
+        //dialog.pack();
 
     }
      

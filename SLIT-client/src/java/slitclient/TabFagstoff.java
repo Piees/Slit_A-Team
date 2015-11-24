@@ -24,30 +24,33 @@ import notification.DateHandler;
 
 /**
  * @author Arild Høyland
- * @author Viktor Setervang 
+ * @author Viktor Setervang
  * @author Håkon Gilje
  */
 public class TabFagstoff {
+
     HashMap<String, String> userInfo;
     private JFrame frame;
-    
-    public TabFagstoff(HashMap<String, String> userInfo, JFrame frame)    {
+
+    public TabFagstoff(HashMap<String, String> userInfo, JFrame frame) {
         this.userInfo = userInfo;
         this.frame = frame;
     }
+
     /**
      * Dette er taben for fagstoff. Foreløpig er den helt tom.
+     *
      * @return JPanel tab3Panel returnerer panel med innholdet i tab 3
      */
     public JPanel makeFagstoff() {
         JPanel tab3Panel = new JPanel();
-        if(userInfo.get("userType").equals("teacher"))  {
+        if (userInfo.get("userType").equals("teacher")) {
             JButton addResourceButton = new JButton("Last opp ressurs");
             tab3Panel.add(addResourceButton);
             addResourceButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                   addResourceDialog();
+                    addResourceDialog();
                 }
             });
         }
@@ -55,19 +58,19 @@ public class TabFagstoff {
         tab3Panel.setLayout(new BoxLayout(tab3Panel, BoxLayout.PAGE_AXIS));
         tab3Panel.repaint();
         return tab3Panel;
-    }    
-    
+    }
+
     /**
      * Opens a dialog window where the teacher can add a new resource that will
      * be displayed in TabFagstoff
      */
     private void addResourceDialog() {
         FileUploader fileUploader = new FileUploader();
-        
+
         JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");//, true);
         addResourceDialog.setLayout(new GridLayout(0, 1));
         JPanel contentPane = (JPanel) addResourceDialog.getContentPane();
-        
+
         JLabel titleLabel = new JLabel("Gi ressursen en tittel");
         JTextField title = new JTextField();
         JLabel resourceTextLabel = new JLabel("Din melding her:");
@@ -76,10 +79,10 @@ public class TabFagstoff {
         JTextField url = new JTextField();
         JLabel resourceFileLabel = new JLabel("Fil som skal lastes opp:");
         JLabel resourceFile = new JLabel("Ingen fil valgt");
-        
+
         JButton chooseFileButton = new JButton("Velg fil");
         JButton uploadResourceButton = new JButton("Last opp ressurs");
-        
+
         contentPane.add(titleLabel);
         contentPane.add(title);
         contentPane.add(resourceTextLabel);
@@ -90,10 +93,10 @@ public class TabFagstoff {
         contentPane.add(resourceFile);
         contentPane.add(chooseFileButton);
         contentPane.add(uploadResourceButton);
-        
+
         addResourceDialog.pack();
         addResourceDialog.setVisible(true);
-        
+
         chooseFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,80 +104,102 @@ public class TabFagstoff {
                 resourceFile.setText(fileUploader.startFileExplorer(frame));
             }
         });
-        
+
         uploadResourceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (title.getText().length() > 0) {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
-                        JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene må fylles ut", "Et av ressursfeltene må fylles ut", 1); 
-                    }
-                    else {
+                        JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene må fylles ut", "Et av ressursfeltene må fylles ut", 1);
+                    } else {
                         String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText());
                         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
-                        if(confirmationString.equals("Opplastning vellykket!")) {
+                        if (confirmationString.equals("Opplastning vellykket!")) {
                             addResourceDialog.dispose();
                         }
                     }
-                }
-                else { 
-                    JOptionPane.showMessageDialog(addResourceDialog, "Sett ressurstittel!", "Sett ressurstittel!", 1);  
+                } else {
+                    JOptionPane.showMessageDialog(addResourceDialog, "Sett ressurstittel!", "Sett ressurstittel!", 1);
                 }
 
             }
         });
     }
-        
+
     private JPanel makeContent(JPanel tab3Panel) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<HashMap> resources = dbQuerier.getResources();
+        System.out.println(resources.get(0).get("isMessage"));
+        if (!resources.isEmpty()) {
+            for (int i = resources.size() - 1; i >= 0; i--) {
+                System.out.println(Boolean.parseBoolean(resources.get(i).get("isMessage").toString()));
+                if (!Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
+                    ArrayList<String> checkStrings = new ArrayList<>();
+                    try {
+                        String title = resources.get(i).get("title").toString();
+                        checkStrings.add(title);
+                    } catch (NullPointerException e){}
+                    
+                    try {
+                        String resourceText = resources.get(i).get("resourceText").toString();
+                        checkStrings.add(resourceText);
+                    } catch (NullPointerException e){}
+                    
+                    try {
+                        String url = resources.get(i).get("url").toString();
+                        checkStrings.add(url);
+                    } catch (NullPointerException e){}
+                    
 
-        for (int i = resources.size()-1; i >= 0; i--) {
-            String title = resources.get(i).get("title").toString(); 
-            int idResources = (Integer) resources.get(i).get("idResource");
-            String resourceText = resources.get(i).get("resourceText").toString();
-            String url = resources.get(i).get("url").toString();
-            String filename = resources.get(i).get("fileName").toString();
-            String userName = resources.get(i).get("userName").toString();
-            String timestamp = resources.get(i).get("resourceDate").toString();
-            DateHandler dh = new DateHandler();
-            timestamp = dh.removeFractionalSeconds(timestamp);
-            byte[] fileData = dbQuerier.getResourceFile(idResources);
+                    
+                    String userName = resources.get(i).get("userName").toString();
+                    String timestamp = resources.get(i).get("resourceDate").toString();
+                    DateHandler dh = new DateHandler();
+                    timestamp = dh.removeFractionalSeconds(timestamp);
+                    
+                    
 
-            ArrayList<String> checkStrings = new ArrayList<>(Arrays.asList(title, resourceText, url));
-            String resourcePresentation = "<html>";
-            for (int index = 0; index < checkStrings.size(); index++) {
-                if (!checkStrings.get(index).equals("")) {
-                    if (index+1 != checkStrings.size()) {
-                        resourcePresentation += checkStrings.get(index) + "<br>";
+                    
+                    String resourcePresentation = "<html>";
+                    for (int index = 0; index < checkStrings.size(); index++) {
+                        if (!checkStrings.get(index).equals("")) {
+                            if (index + 1 != checkStrings.size()) {
+                                resourcePresentation += checkStrings.get(index) + "<br>";
+                            } else {
+                                resourcePresentation += checkStrings.get(index) + "</html>";
+                            }
+                        }
                     }
-                    else {
-                    resourcePresentation += checkStrings.get(index) + "</html>";
-                    }
+                    
+                    JLabel resourceContentLabel = new JLabel(resourcePresentation);
+                    tab3Panel.add(new JLabel(" "));
+                    tab3Panel.add(resourceContentLabel);
+
+
+                    try {
+                    //if (fileData != null) {
+                        String filename = resources.get(i).get("fileName").toString();
+                        int idResources = (Integer) resources.get(i).get("idResource");
+                        byte[] fileData = dbQuerier.getResourceFile(idResources);
+                        JButton downloadFileButton = new JButton(filename);
+                        downloadFileButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                FileDownloader downloader = new FileDownloader();
+                                //downloader.downloadResourceFile(fileData, filename);
+                                JOptionPane.showMessageDialog(tab3Panel,
+                                        downloader.downloadResourceFile(fileData, filename));
+                            }
+                        });
+                        tab3Panel.add(downloadFileButton);
+                    }   catch (NullPointerException e){}
+                    JLabel resourceSignatureLabel = new JLabel(userName + " " + timestamp);
+                    tab3Panel.add(resourceSignatureLabel);
                 }
             }
-            JLabel resourceContentLabel = new JLabel(resourcePresentation);
-            tab3Panel.add(new JLabel(" "));
-            tab3Panel.add(resourceContentLabel);
 
-
-            if (fileData != null) {
-                JButton downloadFileButton = new JButton(filename);
-                downloadFileButton.addActionListener(new ActionListener() {      
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        FileDownloader downloader = new FileDownloader();
-                        //downloader.downloadResourceFile(fileData, filename);
-                        JOptionPane.showMessageDialog(tab3Panel, 
-                                downloader.downloadResourceFile(fileData, filename));                       }
-                });
-                tab3Panel.add(downloadFileButton);
-            }
-            JLabel resourceSignatureLabel = new JLabel(userName + " " + timestamp);
-            tab3Panel.add(resourceSignatureLabel);
         }
         return tab3Panel;
-    }    
+    }
 }
-

@@ -33,7 +33,6 @@ import javax.swing.JTextField;
 import notification.NotificationCreater;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
-import slitclient.EJBConnector;
 import slitclient.FileDownloader;
 import slitcommon.DeliveryStatus;
 

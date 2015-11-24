@@ -74,6 +74,8 @@ public class FileUploader {
         ArrayList<Object> values = new ArrayList<>();
         columns.add("userName");
         values.add(userName);
+        columns.add("isMessage");
+        values.add(false);
         if (file != null) {
             columns.add("resourceFile");
             values.add(file);

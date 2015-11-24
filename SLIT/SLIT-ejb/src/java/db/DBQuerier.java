@@ -355,6 +355,7 @@ public class DBQuerier implements DBQuerierRemote {
             while (rs.next()) {
                 HashMap<String, Object> resourceMap = new HashMap<>();
                 resourceMap.put("userName", rs.getString("userName"));
+                resourceMap.put("isMessage", rs.getBoolean("isMessage"));
                 resourceMap.put("idResource", rs.getInt("idResource"));
                 resourceMap.put("title", rs.getString("title"));
                 resourceMap.put("resourceText", rs.getString("resourceText"));

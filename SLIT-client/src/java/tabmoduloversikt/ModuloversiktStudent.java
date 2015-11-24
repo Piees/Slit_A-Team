@@ -7,7 +7,6 @@ package tabmoduloversikt;
 
 import db.DBDeleterRemote;
 import db.DBQuerierRemote;
-import db.DBUtilRemote;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,7 +24,6 @@ import javax.swing.JPanel;
 import notification.NotificationCreater;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
-import slitclient.EJBConnector;
 import slitclient.FileDownloader;
 import slitclient.FileUploader;
 
