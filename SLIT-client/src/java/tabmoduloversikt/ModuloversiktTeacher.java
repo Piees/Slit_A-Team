@@ -28,6 +28,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import notification.NotificationCreater;
@@ -115,12 +116,11 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * panes with module content
      */
     @Override //Get modul content
-    protected JXTaskPaneContainer makeModulList(int numberOfModuls) {
+    protected JScrollPane makeModulList(int numberOfModuls) {
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
-        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
-
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
-
+        //we add the container to a scrollPane, so we can scroll in it if necessary
+        JScrollPane scrollPane = new JScrollPane(modulListContainer);
         ArrayList<LinkedHashMap> moduls = getModulContent();
 
         for (LinkedHashMap modul : moduls) {
@@ -146,7 +146,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
             idModul++;
 
         }
-        return modulListContainer;
+        return scrollPane;
     }
 
     /**

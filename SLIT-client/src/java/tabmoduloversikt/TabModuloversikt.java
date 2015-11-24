@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTaskPane;
@@ -94,7 +95,7 @@ public abstract class TabModuloversikt {
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
-    protected abstract JXTaskPaneContainer makeModulList(int numberOfModuls);
+    protected abstract JScrollPane makeModulList(int numberOfModuls);
 
     protected void displayModulText(LinkedHashMap map, JXTaskPane modulPane) {
         //for each value in the current HashMap, display values

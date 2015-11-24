@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import notification.NotificationCreater;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -50,9 +51,11 @@ public class ModuloversiktStudent extends TabModuloversikt {
      * panes with module content
      */
     @Override
-    protected JXTaskPaneContainer makeModulList(int numberOfModuls) {
+    protected JScrollPane makeModulList(int numberOfModuls) {
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
+        //we add the container to a scrollPane, so we can scroll in it if necessary
+        JScrollPane scrollPane = new JScrollPane(modulListContainer);
         ArrayList<LinkedHashMap> moduls = getModulContent();
 
         for (LinkedHashMap modul : moduls) {
@@ -88,7 +91,7 @@ public class ModuloversiktStudent extends TabModuloversikt {
             modulListContainer.add(modulPane);
 
         }
-        return modulListContainer;
+        return scrollPane;
     }
 
     /**
@@ -106,7 +109,7 @@ public class ModuloversiktStudent extends TabModuloversikt {
 
         //call method for displaying the text content of this module
         displayModulText(modul, modulPane);
-            //if the user has made a delivery, make a button for downloading this 
+        //if the user has made a delivery, make a button for downloading this 
         //and reading the evaluation of the delivery
         if (numberOfDeliveries > 0) {
             // READ EVALUATION BUTTON
