@@ -1,6 +1,7 @@
 
 package slitclient;
 
+import tabmoduloversikt.TabModuloversikt;
 import db.DBQuerierRemote;
 import db.dbConnectorRemote;
 import java.io.File;

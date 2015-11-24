@@ -5,6 +5,7 @@
  */
 package slitclient;
 
+import tabmoduloversikt.TabModuloversikt;
 import notification.Notification;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -32,13 +33,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import notification.NotificationGUI;
-
-
+import tabmoduloversikt.ModuloversiktStudent;
+import tabmoduloversikt.ModuloversiktTeacher;
 
 /**
  * @author Yngve Ranestad
  * @author Arild Høyland
- * @author Viktor Setervang 
+ * @author Viktor Setervang
  */
 public class UserGUI {
 
@@ -51,90 +52,89 @@ public class UserGUI {
     private JButton notificationButton;
     // Its very important that the below field do not go out of scope.
     private Notification notification;
-    
-    
+
     public class logoutMenuButton extends JButton {
-        
-    private final JPopupMenu menu;
-    private boolean isShowingPopup = false;
-    private boolean showPopup = true;
 
-    public logoutMenuButton(String text) {
-        
-        super(text);
-        menu = new JPopupMenu();
-        JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
-        menu.add(logoutMenuItem);
-        
-        logoutMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Login();
-                notification.removeNotificationThreads();
-                frame.dispose();
-            }
-        });
+        private final JPopupMenu menu;
+        private boolean isShowingPopup = false;
+        private boolean showPopup = true;
 
-        menu.addFocusListener(new FocusListener() {
-            
-            @Override
-            public void focusLost(FocusEvent e) {
-                isShowingPopup = false;
-            }
+        public logoutMenuButton(String text) {
 
-            @Override
-            public void focusGained(FocusEvent e) {
-                isShowingPopup = true;
-            }
-        });
+            super(text);
+            menu = new JPopupMenu();
+            JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
+            menu.add(logoutMenuItem);
 
-        addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (showPopup) {
-                Component c = (Component) e.getSource();
-                menu.show(c, -1, c.getHeight());
+            logoutMenuItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new Login();
+                    notification.removeNotificationThreads();
+                    frame.dispose();
+                }
+            });
+
+            menu.addFocusListener(new FocusListener() {
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    isShowingPopup = false;
+                }
+
+                @Override
+                public void focusGained(FocusEvent e) {
+                    isShowingPopup = true;
+                }
+            });
+
+            addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (showPopup) {
+                        Component c = (Component) e.getSource();
+                        menu.show(c, -1, c.getHeight());
 //                menu.setVisible(true);
-                menu.requestFocus();
-            } else {
-                showPopup = true;
-            }
-        }
-    });
-        
-        addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (isShowingPopup) {
-                showPopup = false;
-            }
-        }
+                        menu.requestFocus();
+                    } else {
+                        showPopup = true;
+                    }
+                }
+            });
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            showPopup = true;
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (isShowingPopup) {
+                        showPopup = false;
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    showPopup = true;
+                }
+            });
+
+            // Skip when navigating with TAB.
+            setFocusable(true);
+
+            menu.setFocusable(true);
         }
-    });
-
-        // Skip when navigating with TAB.
-        setFocusable(true); 
-
-        menu.setFocusable(true);
     }
-    }
-    
+
     /**
      * @return logo for header
      */
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
-      try {
-         BufferedImage img = ImageIO.read(new File(LOGO_PATH));
-         icon = new ImageIcon(img);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      return icon;
+        try {
+            BufferedImage img = ImageIO.read(new File(LOGO_PATH));
+            icon = new ImageIcon(img);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return icon;
     }
 
     /**
@@ -142,37 +142,41 @@ public class UserGUI {
      * kaller makeFrame()
      */
     public UserGUI(HashMap<String, String> userInfo) {
-        
+
         this.userInfo = userInfo;
         tabForside = new TabForside();
 //        makeLogoutMenu();
         //create the moduloversikt-tab for the given userType
-        tabModuloversikt = new TabModuloversikt(userInfo, frame);
+        if (userInfo.get("userType").equals("student")) {
+            tabModuloversikt = new ModuloversiktStudent(userInfo, frame);
+        } else {
+            tabModuloversikt = new ModuloversiktTeacher(userInfo, frame);
+        }
         tabFagstoff = new TabFagstoff(userInfo, frame);
         makeFrame();
         notification = new Notification(frame, userInfo, notificationButton);
-        
+
     }
-    public String getUserInfo(String key)   {
+
+    public String getUserInfo(String key) {
         return userInfo.get(key);
     }
-    
+
     public class TabPane extends JTabbedPane {
-        
+
         public TabPane() {
-            
+
         }
-        
+
         @Override
         public Dimension getPreferredSize() {
             return new Dimension(1024, 670);
         }
     }
-    
+
     /**
      * Lager vinduet. Vinduet har GridBagLayout (enn så lenge i hvert fall).
-     * Kaller makeCommon(). 
-     * Kaller også makeTabs().
+     * Kaller makeCommon(). Kaller også makeTabs().
      */
     public void makeFrame() {
         String fName = getUserInfo("fName");
@@ -183,13 +187,13 @@ public class UserGUI {
         JPanel contentPane = (JPanel) frame.getContentPane();
         GridBagLayout gblContent = new GridBagLayout();
         contentPane.setLayout(gblContent);
-       
-        JPanel commonContent =  makeCommon();
+
+        JPanel commonContent = makeCommon();
         GridBagConstraints gbcCommon = new GridBagConstraints();
         gbcCommon.gridx = 0;
         gbcCommon.gridy = 0;
         gblContent.setConstraints(commonContent, gbcCommon);
-        
+
         JTabbedPane tabbedPane = makeTabs();
         GridBagConstraints gbcTab = new GridBagConstraints();
         gbcTab.gridx = 0;
@@ -198,27 +202,26 @@ public class UserGUI {
 
         contentPane.add(commonContent);
         contentPane.add(tabbedPane);
-        
+
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
-        
-        
+
     }
-    
+
     /**
-     * Lager elementene som er felles for alle faner 
-     * (kun topplinja med logo og navn på bruker foreløpig).
-     * Har BorderLayout, skal endres. Layout er foreløpig, funker ikke som den
-     * bør gjøre nå.
+     * Lager elementene som er felles for alle faner (kun topplinja med logo og
+     * navn på bruker foreløpig). Har BorderLayout, skal endres. Layout er
+     * foreløpig, funker ikke som den bør gjøre nå.
+     *
      * @return JPanel content panelet med innholdet som er felles for alle faner
-    */
+     */
     public JPanel makeCommon() {
 
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout(330, 25));
-        
-        JButton menuButton = new JButton("Meny"){
+
+        JButton menuButton = new JButton("Meny") {
             @Override
             public int getHeight() {
                 return 25;
@@ -232,7 +235,7 @@ public class UserGUI {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
 
-        JButton nameButton = new logoutMenuButton(fName + " " + lName){
+        JButton nameButton = new logoutMenuButton(fName + " " + lName) {
 //        JButton nameButton = new JButton(fName + " " + lName){
             @Override
             public int getHeight() {
@@ -241,31 +244,31 @@ public class UserGUI {
         };
         notificationButton = new JButton("Varsler") {
             @Override
-            public int getHeight()  {
+            public int getHeight() {
                 return 25;
             }
         };
 
         JButton updateButton = new JButton("Oppdater") {
             @Override
-            public int getHeight()  {
+            public int getHeight() {
                 return 25;
             }
         };
-        
+
         JPanel eastContent = new JPanel();
         eastContent.add(updateButton, BorderLayout.WEST);
         eastContent.add(nameButton, BorderLayout.CENTER);
         eastContent.add(notificationButton, BorderLayout.EAST);
         content.add(eastContent, BorderLayout.EAST);
-        
+
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateContent();
             }
         });
-        
+
         notificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -274,35 +277,35 @@ public class UserGUI {
         });
 
         return content;
-        
+
     }
 
- 
     /**
-     * Lager faner. Kaller de respektive klassene for å lage innholdet, lager 
+     * Lager faner. Kaller de respektive klassene for å lage innholdet, lager
      * fanene med navn (og innhold) og legger de til tabbedPane.
+     *
      * @return JTabbedPane tabbedPane returnerer linja med fanene
-     */  
-    public JTabbedPane makeTabs()  {
+     */
+    public JTabbedPane makeTabs() {
         JTabbedPane tabbedPane = new TabPane();
         JComponent tab1 = tabForside.makeForsideTab();
         tabbedPane.addTab("Forside", null, tab1, null);
-        
+
         JComponent tab2 = tabModuloversikt.makeModuloversiktTab();
         tabbedPane.addTab("Moduloversikt", null, tab2, null);
-        
+
         JComponent tab3 = tabFagstoff.makeFagstoff();
         tabbedPane.addTab("Fagstoff", null, tab3, null);
         return tabbedPane;
     }
-    
+
     /**
-     * A crude method to update tabForside, tabModuloversikt, tabFagstoff
-     * and notifications.
+     * A crude method to update tabForside, tabModuloversikt, tabFagstoff and
+     * notifications.
      */
-     private void updateContent() {
-         notification.removeNotificationThreads();
-         frame.dispose();
-         new UserGUI(userInfo);
-     }   
+    private void updateContent() {
+        notification.removeNotificationThreads();
+        frame.dispose();
+        new UserGUI(userInfo);
+    }
 }
