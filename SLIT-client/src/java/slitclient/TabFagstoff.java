@@ -125,7 +125,14 @@ public class TabFagstoff {
             }
         });
     }
-
+    
+    /**
+     * Gets the resource content from the database and puts it into a panel 
+     * ready for display to the user.
+     * 
+     * @param tab3Panel the panel that the content gets added to.
+     * @return panel with all the resource elements
+     */
     private JPanel makeContent(JPanel tab3Panel) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
@@ -134,11 +141,10 @@ public class TabFagstoff {
             for (int i = resources.size() - 1; i >= 0; i--) {
                 if (!Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
                     ArrayList<String> checkStrings = new ArrayList<>();
-                    try {
-                        String title = resources.get(i).get("title").toString();
-                        checkStrings.add(title);
-                    } catch (NullPointerException e){}
-                    
+                    String title = resources.get(i).get("title").toString();
+                    checkStrings.add(title);
+                  
+                    // Title resourceFile, fileName, resourceText and url can be null
                     try {
                         String resourceText = resources.get(i).get("resourceText").toString();
                         checkStrings.add(resourceText);
@@ -169,9 +175,7 @@ public class TabFagstoff {
                     tab3Panel.add(new JLabel(" "));
                     tab3Panel.add(resourceContentLabel);
 
-
                     try {
-                    //if (fileData != null) {
                         String filename = resources.get(i).get("fileName").toString();
                         int idResources = (Integer) resources.get(i).get("idResource");
                         byte[] fileData = dbQuerier.getResourceFile(idResources);

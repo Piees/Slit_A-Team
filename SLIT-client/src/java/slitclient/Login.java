@@ -170,10 +170,7 @@ public class Login {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new EditUser();
-                frame.dispose();
-//            JButton source = (JButton) e.getSource();
-//            JOptionPane.showMessageDialog(source, source.getText()
-//                        + " button has been pressed");                
+                frame.dispose();               
             }
         });
 

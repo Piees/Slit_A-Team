@@ -51,7 +51,7 @@ public class DBUpdater implements DBUpdaterRemote {
         }
     }
     
-        /**
+    /**
      * Add evaluation to the correct row in the Delivery table in the DB
      *
      * @param evaluationValue the evaluation comment

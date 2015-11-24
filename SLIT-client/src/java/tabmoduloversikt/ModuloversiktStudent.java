@@ -254,7 +254,7 @@ public class ModuloversiktStudent extends TabModuloversikt {
      * information is stored as a new row in the database table Delivery. Show
      * user a confirmation dialog. If stored successfully, window is closed.
      *
-     * @param i which module this delivery belongs to
+     * @param idModul which module this delivery belongs to
      */
     private void addDeliveryDialog(int idModul) {
         //the object responsible for prompting user for file and uploading it to DB

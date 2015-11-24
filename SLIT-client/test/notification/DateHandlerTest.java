@@ -16,7 +16,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Unit tests for the DateHandler class
+ * 
  * @author Viktor Setervang
  */
 public class DateHandlerTest {
@@ -46,7 +47,7 @@ public class DateHandlerTest {
     }
 
     /**
-     * Test of checkTimeFormat method, of class DateHandler.
+     * Boundary Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatLowerBoundary() {
@@ -59,7 +60,7 @@ public class DateHandlerTest {
     }
     
     /**
-     * Test of checkTimeFormat method, of class DateHandler.
+     * Boundary Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatUpperBoundary() {
@@ -72,7 +73,7 @@ public class DateHandlerTest {
     }
     
     /**
-     * Test of checkTimeFormat method, of class DateHandler.
+     * Negative Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatNegativeOver() {
@@ -88,20 +89,24 @@ public class DateHandlerTest {
     }
     
     /**
-     * Test of checkTimeFormat method, of class DateHandler.
+     * Negative Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatNegativeLower() {
         System.out.println("testCheckTimeFormatNegativeLower");
         String time = "-01:00";
         DateHandler instance = new DateHandler();
-        String expResult = "Klokkeslett skal være i format: tt:mm";
+        String wrongResult = "correct input";
+        
         String result = instance.checkTimeFormat(time);
-        assertEquals(expResult, result);
+        assertThat(result, is(not(wrongResult)));
+        time = "-1:00";
+        result = instance.checkTimeFormat(time);
+        assertThat(result, is(not(wrongResult)));
     }
     
-        /**
-     * Test of checkTimeFormat method, of class DateHandler.
+    /**
+     * checkTimeFormat: Tests if the methods breaks if the time string provides is too short.
      */
     @Test
     public void testCheckTimeFormatToShort() {

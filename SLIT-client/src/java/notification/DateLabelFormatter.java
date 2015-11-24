@@ -14,6 +14,7 @@ import java.util.HashMap;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 
 /**
+ * This class is used by the JDatePicker which is used to in NotificationGUI.datepicker()
  * http://stackoverflow.com/questions/26794698/how-do-i-implement-jdatepicker
  * 
  * @author Viktor Setervang

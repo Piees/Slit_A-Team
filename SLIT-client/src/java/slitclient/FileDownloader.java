@@ -30,6 +30,7 @@ public class FileDownloader {
         // Alternate filepath, path to the user's default document folder. 
         // On windows: C:\Users\Username\Documents  On linux: On mac: 
         //System.out.println(javax.swing.filechooser.FileSystemView.getFileSystemView().getDefaultDirectory());
+        
     }
     /**
      * Downloads a file from the DB and saves it to the user's desktop-directory.
@@ -80,7 +81,6 @@ public class FileDownloader {
         } catch (IOException ex) {
             Logger.getLogger(TabModuloversikt.class.getName()).log(Level.SEVERE, null, ex);
         }   
-        
         return fullFilename + " nedlasting mislykkes.";
     }
     
@@ -111,8 +111,7 @@ public class FileDownloader {
         }
         return path;
     }
-
-    
+  
     /**
      * Splits a filename into filename and filetype
      * 

@@ -52,6 +52,14 @@ public class NotificationGUI {
 
     private Notification notification;
     
+    /**
+     * Constructor for the NotificationGUI class.
+     * 
+     * @param frame the frame were most of the information is displayed
+     * @param userInfo a hashmap containing all the useful information about a user.
+     * @param mainGUINotificationButton the "Varsler" button in the main UserGUI
+     * @param notification  the object handling most of the notification logic
+     */
     public NotificationGUI(JFrame frame, HashMap<String, String> userInfo, JButton mainGUINotificationButton, Notification notification) { 
         this.notification = notification;
         this.frame = frame;
@@ -71,8 +79,6 @@ public class NotificationGUI {
      * creating new notifications
      */
     private void createNotificationGUI() {
-        // Bit of a hack
-        //panel.removeAll();
         if (!notification.getUnseenNotifications().isEmpty()) {
             seeNotificationButton.setText("Varsler(" + notification.getUnseenNotifications().size() + ")");
         }
@@ -150,9 +156,6 @@ public class NotificationGUI {
        // notificationList = connector.getUserNotifications(currentUnseenNotificationQuery, userName);
         ArrayList<HashMap> unseenNotifications = notification.getUnseenNotifications();
         if (unseenNotifications.isEmpty()) {
-//            JOptionPane.showMessageDialog(frame,
-//            "Ingen varsler");
-//            dialog.dispose();
             return;
         }
 
@@ -184,9 +187,6 @@ public class NotificationGUI {
             public void actionPerformed(ActionEvent e) { 
                 notification.markNotificationsAsSeen(seenNotifications);
                 unseenNotifications.clear();
-                // This is probably an ugly hack.
-                //dialog.removeAll();
-                //dialog.setVisible(false);
                 dialog.dispose();
             }
         });
@@ -270,11 +270,9 @@ public class NotificationGUI {
         datePanel2.add(timeLabel);
         datePanel2.add(timeTextField);
         datePanel2.add(approveDateButton);
-        //dateDialog.setSize(200, 150);
         datePanel2.repaint();
         dateDialog.pack();
         dateDialog.setVisible(true);
-        //java.sql.Date selectedDate = (java.sql.Date) datePicker.getModel().getValue();
     }
     
     /**

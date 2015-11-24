@@ -125,8 +125,5 @@ public class EJBConnector {
     public DBUtilRemote getDBUtil() {
         return dbUtil;
     }
-    
-    
+
 }
-
-

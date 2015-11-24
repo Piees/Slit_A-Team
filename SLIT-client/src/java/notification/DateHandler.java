@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 /**
  * This class handles data conversions related to Date and Timestamps.
- * 
+ * It also handles some other logic related to date and time.
  * 
  * @author Viktor Setervang
  */
