@@ -67,16 +67,6 @@ public class TabForside {
         tab1Layout = new GridBagLayout();
         tab1Panel.setLayout(tab1Layout);
         
-        JPanel messagesPanel = makeMessagesPanel();
-        GridBagConstraints gbcMP = new GridBagConstraints();
-        gbcMP.gridx = 1;
-        gbcMP.gridy = 1;
-        gbcMP.fill = GridBagConstraints.VERTICAL;
-        gbcMP.insets = new Insets(0, 2, 0, 0);
-        tab1Layout.setConstraints(messagesPanel, gbcMP);
-        tab1Panel.add(messagesPanel);
-
-        
         contactPanel = makeContactPanel();
         scrollContactPanel = new JScrollPane(contactPanel){
             @Override
@@ -84,40 +74,23 @@ public class TabForside {
                 return new Dimension(400,200);
             }
         };
-        GridBagConstraints gbcCP = new GridBagConstraints();
+//        GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        gbcCP.gridx = 2;
-        gbcCP.gridy = 1;
-        gbcCP.gridheight = 2;
-        gbcCP.anchor = GridBagConstraints.EAST;
-        gbcCP.insets = new Insets(-350, 0, 10, -200);
-        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
-        tab1Panel.add(scrollContactPanel);
-
-    return tab1Panel;
-    }    
-    
-    
-//    public void updateContactPanel() {
-//        try {
-//            tab1Panel.remove(scrollContactPanel);
-//        }
-//        catch(Exception e) {
-//            System.out.println(e);
-//        }
-//        contactPanel = makeContactPanel();
-//        scrollContactPanel = new JScrollPane(contactPanel);
-//        GridBagConstraints gbcCP = new GridBagConstraints();
-//        scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-//        scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 //        gbcCP.gridx = 2;
 //        gbcCP.gridy = 1;
 //        gbcCP.gridheight = 2;
+//        gbcCP.anchor = GridBagConstraints.EAST;
 //        gbcCP.insets = new Insets(-350, 0, 10, -200);
 //        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
 //        tab1Panel.add(scrollContactPanel);
-//    }
+        
+        tab1Panel.setLayout(new BoxLayout(tab1Panel, BoxLayout.X_AXIS));
+        tab1Panel.add(makeMessagesPanel());
+        tab1Panel.add(scrollContactPanel);
+        
+    return tab1Panel;
+    }    
     
     
     public class ForsideTab extends JPanel {
