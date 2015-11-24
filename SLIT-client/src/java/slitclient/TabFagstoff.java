@@ -62,7 +62,7 @@ public class TabFagstoff {
      * be displayed in TabFagstoff
      */
     private void addResourceDialog() {
-        GUIFileUploader fileUploader = new GUIFileUploader();
+        FileUploader fileUploader = new FileUploader();
         
         JDialog addResourceDialog = new JDialog(frame, "Last opp ressurs");//, true);
         addResourceDialog.setLayout(new GridLayout(0, 1));

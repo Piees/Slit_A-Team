@@ -18,7 +18,7 @@ import javax.swing.*;
  * 
  * @author Viktor Setervang
  */
-public class GUIFileUploader {
+public class FileUploader {
     private File file;
   
     /**

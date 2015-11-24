@@ -27,7 +27,7 @@ import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 import slitclient.EJBConnector;
 import slitclient.FileDownloader;
-import slitclient.GUIFileUploader;
+import slitclient.FileUploader;
 
 /**
  *
@@ -278,7 +278,7 @@ public class ModuloversiktStudent extends TabModuloversikt {
      */
     private void addDeliveryDialog(int i) {
         //the object responsible for prompting user for file and uploading it to DB
-        GUIFileUploader fileUploader = new GUIFileUploader();
+        FileUploader fileUploader = new FileUploader();
 
         JDialog addDeliveryDialog = new JDialog(frame, "Last opp innlevering");//, true);
         addDeliveryDialog.setLayout(new GridLayout(0, 1));
