@@ -30,8 +30,9 @@ import slitclient.FileDownloader;
 import slitclient.FileUploader;
 
 /**
- *
+ * @author Arild Høyland
  * @author Viktor Setervang
+ * @author Håkon Gilje
  */
 public class ModuloversiktStudent extends TabModuloversikt {
 
@@ -52,7 +53,6 @@ public class ModuloversiktStudent extends TabModuloversikt {
      */
     @Override
     protected JXTaskPaneContainer makeModulList(int numberOfModuls) {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
         ArrayList<LinkedHashMap> moduls = getModulContent();
@@ -206,7 +206,6 @@ public class ModuloversiktStudent extends TabModuloversikt {
         contentPane.add(evaluationCommentLabel);
 
         //get the evaluation data for this delivery from the DB
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
         //arraylists with the columns, tables and where-condition for this query
@@ -241,7 +240,6 @@ public class ModuloversiktStudent extends TabModuloversikt {
      * @param idModul idModul of the chosen module
      */
     private void deleteDelivery(int idModul) {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
         String confirmationString = dbDeleter.deleteDelivery(idModul, userInfo.get("userName"));
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);

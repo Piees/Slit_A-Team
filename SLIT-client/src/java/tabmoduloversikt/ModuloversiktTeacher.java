@@ -38,8 +38,9 @@ import slitclient.FileDownloader;
 import slitcommon.DeliveryStatus;
 
 /**
- *
+ * @author Arild Høyland
  * @author Viktor Setervang
+ * @author Håkon Gilje
  */
 public class ModuloversiktTeacher extends TabModuloversikt {
 
@@ -48,7 +49,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
     }
 
     /**
-     * Creates the tab with with collapsible modul panes. Ff teacher-user logged
+     * Creates the tab with with collapsible modul panes. teacher-user logged
      * in, adds button for creating new modules
      *
      * @return JPanel containing the components created
@@ -116,7 +117,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      */
     @Override //Get modul content
     protected JXTaskPaneContainer makeModulList(int numberOfModuls) {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
@@ -213,7 +213,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         contentPane.add(evaluatedByLabel, gbc);
 
         //get all deliveries for the current module from the DB
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
         //arraylists with columns, tables and where-conditions for this query
@@ -358,7 +357,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
     private String uploadEvaluationToDB(String evaluation, int idModul, DeliveryStatus evaluationStatus,
             String userName) {
         //call the addDeliveryEvaluation of dbConnector with the specified values 
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
         //calls the method and returns the confirmation string
         return dbUpdater.addDeliveryEvaluation(evaluation, userInfo.get("userName"),
@@ -429,7 +427,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //we need to check that the chosen idModul does not already exist
-                EJBConnector ejbConnector = EJBConnector.getInstance();
                 DBUtilRemote dbUtil = ejbConnector.getDBUtil();
                 DBInserterRemote dbInserter = ejbConnector.getDBInserter();
                 //get the number the user chose in the drop-down-list
@@ -491,7 +488,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      */
     private Integer selectModul(String message, String dialogTitle) {
         //count all rows in the DB table Modul
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         
         ArrayList<String> columns = new ArrayList<>(Arrays.asList("idModul"));
@@ -526,7 +522,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
         JPanel contentPane = (JPanel) editModulDialog.getContentPane();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
 
         //get all attributes of the module we wish to edit
@@ -588,7 +583,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * @param idModul id of the modul to be deleted
      */
     private void deleteModul(int idModul) {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<String> columns = new ArrayList(Arrays.asList("title"));
@@ -635,7 +629,6 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * @param idModul the id of the modul to be deleted
      */
     private void deleteModulInDB(int idModul) {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
         String confirmationString = dbDeleter.deleteModul(idModul);
         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);

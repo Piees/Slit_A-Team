@@ -33,6 +33,7 @@ public abstract class TabModuloversikt {
     protected HashMap<String, String> userInfo;
     protected JFrame frame;
     protected JPanel tab2Panel;
+    protected EJBConnector ejbConnector = EJBConnector.getInstance();
 
     /**
      * Constructor for class TabModuloversikt. Stores the containing
@@ -73,7 +74,6 @@ public abstract class TabModuloversikt {
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
         //check number of modules in the DB
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         int numberOfModuls = dbUtil.countRows("*", "Modul");
         //creates a list witht the given number of modules
@@ -126,10 +126,7 @@ public abstract class TabModuloversikt {
         //create the arraylists for this query
         ArrayList<String> columns = new ArrayList(Arrays.asList("*"));
         ArrayList<String> tables = new ArrayList(Arrays.asList("Modul"));
-        
-
         //execute the query
-        EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<LinkedHashMap> moduls = dbQuerier.multiQueryHash(columns, tables, null);
         return moduls;
