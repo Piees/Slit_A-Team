@@ -17,6 +17,8 @@ import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
+ * This EJB handles database updating.
+ * 
  * @author Viktor Setervang
  * @author Arild Høyland
  */

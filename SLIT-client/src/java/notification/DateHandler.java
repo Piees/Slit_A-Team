@@ -85,7 +85,7 @@ public class DateHandler {
      * cleaner timestamp output in GUI.
      */
     public String removeFractionalSeconds(String timestamp) {
-        return timestamp.substring(0, timestamp.length() -5);
+        return timestamp.substring(0, timestamp.length() -5);  
     }
     
     /**
@@ -153,31 +153,31 @@ public class DateHandler {
         String monthNumber = "";
         switch (month) {
         case "Jan":
-             monthNumber = "1";
+             monthNumber = "01";
              break;
         case "Feb":
-             monthNumber = "2";
+             monthNumber = "02";
              break;
         case "Mar":
-             monthNumber = "3";
+             monthNumber = "03";
              break;
         case "Apr":
-             monthNumber = "4";
+             monthNumber = "04";
              break;
         case "May":
-             monthNumber = "5";
+             monthNumber = "05";
              break;
         case "Jun":
-             monthNumber = "6";
+             monthNumber = "06";
              break;
         case "Jul":
-             monthNumber = "7";
+             monthNumber = "07";
              break;
         case "Aug":
-             monthNumber = "8";
+             monthNumber = "08";
              break;  
         case "Sep":
-             monthNumber = "9";
+             monthNumber = "09";
              break;
         case "Oct":
              monthNumber = "10";

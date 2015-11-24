@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 
 /**
+ * This EJB handles deletion from database.
+ * 
  * @author Arild Høyland
  * @author Viktor Setervang
  */

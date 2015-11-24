@@ -20,6 +20,8 @@ import javax.ejb.Stateless;
 import slitcommon.DeliveryStatus;
 
 /**
+ * This EJB handles database insertion.
+ * 
  * @author Arild Høyland
  * @author Håkon Gilje
  * @author Viktor Setervang

@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 import javax.ejb.Stateful;
 
 /**
+ * This EJB handles database utility methods.
+ * 
  * @author Yngve Ranestad
  * @author Arild Høyland
  * @author Viktor Setervang

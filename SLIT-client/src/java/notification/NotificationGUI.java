@@ -162,12 +162,13 @@ public class NotificationGUI {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));  
         //frame.repaint();
 
+        DateHandler dh = new DateHandler();
         ArrayList<Integer> seenNotifications = new ArrayList<>();
         for (HashMap notification : unseenNotifications) {
             String timestamp = notification.get("timestamp").toString();
+            timestamp = dh.removeFractionalSeconds(timestamp);
             String notificationText = (String) notification.get("notificationText");
-            String viewFormat = timestamp + ": \n" + notificationText;
-            // This looks like shit, but it its just an early prototype after all
+            String viewFormat = timestamp + "\n" + notificationText;
             seenNotifications.add((Integer) notification.get("idNotification"));
             JTextArea nText = new JTextArea(viewFormat);
             nText.setEditable(false);

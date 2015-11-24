@@ -130,10 +130,8 @@ public class TabFagstoff {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<HashMap> resources = dbQuerier.getResources();
-        System.out.println(resources.get(0).get("isMessage"));
         if (!resources.isEmpty()) {
             for (int i = resources.size() - 1; i >= 0; i--) {
-                System.out.println(Boolean.parseBoolean(resources.get(i).get("isMessage").toString()));
                 if (!Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
                     ArrayList<String> checkStrings = new ArrayList<>();
                     try {

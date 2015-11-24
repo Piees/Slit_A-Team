@@ -175,7 +175,6 @@ public class Notification {
                 notificationGUIButton.setText("Varsler(" + unseenNotifications.size() + ")");
             } 
             catch (NullPointerException np) {
-               System.out.println("No active notificationGUI"); 
             }
             //panel.repaint();     
         }
@@ -231,7 +230,7 @@ public class Notification {
      */
     public void removeNotificationThreads() {
         // Closing down all Timer threads
-        System.out.println("Closing down all Timer threads");
+        System.out.println("Closing down all Notification Timer threads");
         for (Timer timer: timers) {
             timer.purge();
             timer.cancel();
