@@ -5,6 +5,8 @@
  */
 package prototypes;
 
+import db.DBDeleterRemote;
+import db.DBInserterRemote;
 import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Font;
@@ -12,10 +14,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -65,6 +76,14 @@ public class EditUser {
         JScrollPane pane = new JScrollPane(table);
         pane.setBounds(0, 0, 880, 200);
 
+        JLabel unameLabel = new JLabel("Username");
+        JLabel nameLabel = new JLabel("Name");
+        JLabel snameLabel = new JLabel("Surname");
+        JLabel roleLabel = new JLabel("Choose Role");
+        JLabel mailLabel = new JLabel("Mail");
+        JLabel passwordLabel = new JLabel("Password");
+        
+        
         String[] roles = {"teacher", "student"};
         JComboBox roleCombo = new JComboBox(roles);
         JTextField textId = new JTextField();
@@ -78,20 +97,34 @@ public class EditUser {
         JButton btnUpdate = new JButton("Update");
         JButton btnCancel = new JButton("Cancel");
 
-        roleCombo.setBounds(330, 220, 100, 25);
-        textId.setBounds(330, 250, 100, 25);
-        textFname.setBounds(330, 280, 100, 25);
-        textLname.setBounds(330, 310, 100, 25);
-        textMail.setBounds(330, 340, 100, 25);
-        textPassword.setBounds(330, 370, 100, 25);
+        roleLabel.setBounds(300, 220, 100, 25);
+        unameLabel.setBounds(300, 250, 100, 25);
+        nameLabel.setBounds(300, 280, 100, 25);
+        snameLabel.setBounds(300, 310, 100, 25);
+        mailLabel.setBounds(300, 340, 100, 25);
+        passwordLabel.setBounds(300, 370, 100, 25);
+        
+        roleCombo.setBounds(380, 220, 100, 25);
+        textId.setBounds(380, 250, 100, 25);
+        textFname.setBounds(380, 280, 100, 25);
+        textLname.setBounds(380, 310, 100, 25);
+        textMail.setBounds(380, 340, 100, 25);
+        textPassword.setBounds(380, 370, 100, 25);
 
-        btnAdd.setBounds(440, 220, 100, 25);
-        btnUpdate.setBounds(440, 265, 100, 25);
-        btnDelete.setBounds(440, 310, 100, 25);
-        btnCancel.setBounds(440, 355, 100, 25);
+        btnAdd.setBounds(490, 220, 100, 25);
+        btnUpdate.setBounds(490, 265, 100, 25);
+        btnDelete.setBounds(490, 310, 100, 25);
+        btnCancel.setBounds(490, 355, 100, 25);
 
         FFrame.add(pane);
 
+        FFrame.add(unameLabel);
+        FFrame.add(nameLabel);
+        FFrame.add(snameLabel);
+        FFrame.add(roleLabel);
+        FFrame.add(mailLabel);
+        FFrame.add(passwordLabel);
+        
         FFrame.add(roleCombo);
         FFrame.add(textId);
         FFrame.add(textFname);
@@ -127,25 +160,52 @@ public class EditUser {
                 row[2] = textLname.getText();
                 row[3] = roleCombo.getSelectedItem();
                 row[4] = textMail.getText();
+//                row[5] = textPassword.getText();
 
+                
+                try {
+                    //henter tilfeldig salt
+                    String salt = getSalt();
+                    //setter brukerens passordinput
+                    String preHashPass = (textPassword.getText());
+                    //krypterer passordet med salt
+                    String securePassword = getEncryptedPassword(preHashPass, salt);
+                    
+                    
+                    ArrayList<String> columns = new ArrayList();
+                    ArrayList<Object> values = new ArrayList();
+                    String newUser = "User";
+                    columns.add("userType");
+                    columns.add("userName");
+                    columns.add("lName");
+                    columns.add("fName");
+                    columns.add("pwd");
+                    columns.add("mail");
+                    columns.add("salt");
+                    values.add(roleCombo.getSelectedItem());
+                    values.add(textId.getText());
+                    values.add(textFname.getText());
+                    values.add(textLname.getText());
+                    values.add(securePassword); //sender kryptert passord til dbconnect
+                    values.add(textMail.getText());
+                    values.add(salt);//sender salt til dbconnect
+                    
+                    EJBConnector ejbConnector = EJBConnector.getInstance();
+                    DBInserterRemote dbInserter = ejbConnector.getDBInserter();
+                    dbInserter.insertIntoDB(newUser, columns, values);
+                    
+                    System.out.println("Ny bruker lagret i databasen.");
+                    
+                    System.out.println(roleCombo.getSelectedItem()+ textId.getText()+ textFname.getText()+ textLname.getText()+ securePassword + textMail.getText());
+                    
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 model.addRow(row);
             }
         });
 
-        btnDelete.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                int i = table.getSelectedRow();
-                if (i >= 0) {
-
-                    model.removeRow(i);
-                } else {
-                    System.out.println("Delete Error");
-                }
-            }
-        });
 
         table.addMouseListener(new MouseAdapter() {
 
@@ -159,16 +219,13 @@ public class EditUser {
                 textLname.setText(model.getValueAt(i, 2).toString());
                 roleCombo.setSelectedItem(model.getValueAt(i, 3).toString());
                 textMail.setText(model.getValueAt(i, 4).toString());
+//                Password.setText(model.getValueAt(i, 5).toString());
+                
+                
             }
         });
 
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ev) {
-                new Login();
-                FFrame.dispose();
-            }
-        });
+     
 
         btnUpdate.addActionListener(new ActionListener() {
 
@@ -182,11 +239,72 @@ public class EditUser {
                     model.setValueAt(textLname.getText(), i, 2);
                     model.setValueAt(roleCombo.getSelectedItem(), i, 3);
                     model.setValueAt(textMail.getText(), i, 4);
+                    
                 } else {
                     System.out.println("Update Error");
                 }
             }
         });
+        
+        btnDelete.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int i = table.getSelectedRow();
+                if (i >= 0) {
+
+                    model.removeRow(i);
+                    deleteUserDB(Integer.toString(i));
+                } else {
+                    System.out.println("Delete Error");
+                }
+            }
+        });
+        
+        
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ev) {
+                new Login();
+                FFrame.dispose();
+            }
+        });
     }
+    
+    
+           private static String getEncryptedPassword(String preHashPass, String salt){
+       String generatedPassword = null;
+        try {
+            
+            MessageDigest hashValue = MessageDigest.getInstance("SHA-512");
+            hashValue.update(salt.getBytes()); //legger salt til message digest (verdien som brukes til å hashe)
+            byte[] bytes = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bytes"
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)//konverterer hvert tall i "bytes" fra desimal til hex
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString(); //hele "bytes" er nå konvertert til hex, i stringformat
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            System.out.println(e);
+        }
+    return generatedPassword;
+}
+    
+    private static String getSalt() throws NoSuchAlgorithmException{
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[8];
+        sr.nextBytes(salt);
+        return salt.toString();
+    }
+        
+    private void deleteUserDB(String userName) {
+        EJBConnector ejbConnector = EJBConnector.getInstance();
+        DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
+        String confirmationString = dbDeleter.deleteUser(userName);
+    }
+    
 }

@@ -20,4 +20,6 @@ public interface DBDeleterRemote {
     public String deleteDelivery(int idModul, String userName);
 
     public String deleteModul(int idModul);
+    
+    public String deleteUser(String userName);
 }

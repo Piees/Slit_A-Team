@@ -93,4 +93,18 @@ public class DBDeleter implements DBDeleterRemote {
             return "Feil! Modul ble ikke slettet.";
         }
     }
+    
+        public String deleteUser(String userName) {
+        Connection dbConnection = dbConnection();
+        String delete = "DELETE FROM User WHERE userName = " + userName + ";";
+        try{
+            PreparedStatement us = dbConnection.prepareStatement(delete);
+            us.executeUpdate(delete);
+            return "Brukeren er slettet.";
+        }
+        catch (SQLException e) {
+            System.out.println(e);
+            return "Feil! Brukeren ble ikke slettet.";      
+        }
+    }
 }
