@@ -151,15 +151,10 @@ public class TabFagstoff {
                         checkStrings.add(url);
                     } catch (NullPointerException e){}
                     
-
-                    
                     String userName = resources.get(i).get("userName").toString();
                     String timestamp = resources.get(i).get("resourceDate").toString();
                     DateHandler dh = new DateHandler();
                     timestamp = dh.removeFractionalSeconds(timestamp);
-                    
-                    
-
                     
                     String resourcePresentation = "<html>";
                     for (int index = 0; index < checkStrings.size(); index++) {

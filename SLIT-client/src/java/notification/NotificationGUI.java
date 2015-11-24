@@ -5,6 +5,8 @@
  */
 package notification;
 
+import util.HintTextField;
+import util.JTextFieldLimit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -21,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -42,7 +43,7 @@ public class NotificationGUI {
     private JDialog dialog;   
     private JButton seeNotificationButton;
     private JLabel displayedTimestamp;
-    private JTextField notificationText;
+    private JTextFieldLimit notificationText;
     private JButton createNotificationButton;
     
     private String userName;
@@ -75,14 +76,14 @@ public class NotificationGUI {
         if (!notification.getUnseenNotifications().isEmpty()) {
             seeNotificationButton.setText("Varsler(" + notification.getUnseenNotifications().size() + ")");
         }
-        dialog = new JDialog();
+        dialog = new JDialog(frame, "Varsel");
         panel = new JPanel();
         
         displayedTimestamp = new JLabel(" ");
-        notificationText = new JTextField(20);
+        notificationText = new JTextFieldLimit(45);
 
         JButton setNotificationTimeButton = new JButton("Sett tidspunkt");
-        JLabel alertTextLabel = new JLabel("<html><b>Varsel tekst</b></html>");
+        JLabel alertTextLabel = new JLabel("<html><b>Varsel tekst (maks 45 tegn).</b></html>");
         createNotificationButton = new JButton("Opprett varsel");
 
         panel.add(seeNotificationButton);
@@ -93,13 +94,13 @@ public class NotificationGUI {
 	panel.add(alertTextLabel);
         panel.add(notificationText);
 	panel.add(createNotificationButton);
-        //panel.add(new JLabel("                                                                                                                        "));
+        panel.add(new JLabel(" "));
         dialog.add(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));  
         
         // The setSize doesnt seem to do anything
-        //panel.setSize(650, 650);
-        //dialog.setSize(650, 650);
+        panel.setSize(650, 650);
+        dialog.setSize(650, 650);
         panel.repaint();
         dialog.setVisible(true);
         dialog.pack();
@@ -208,17 +209,15 @@ public class NotificationGUI {
         p.put("text.month", "Month");
         p.put("text.year", "Year");
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-        datePanel.setName("test2");
         datePanel.setToolTipText("Trykk her");
         datePanel.repaint();
         
         DateLabelFormatter DLF = new DateLabelFormatter();
         JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, DLF);
-        datePicker.setName("Test");
         datePicker.setToolTipText("Trykk her for å åpne kalender");
         datePicker.repaint();
 
-        JDialog dateDialog = new JDialog();
+        JDialog dateDialog = new JDialog(dialog, "Varsel Tidspunkt", true);
         JPanel datePanel2 = new JPanel();
         
         JLabel timeLabel = new JLabel("<html><b>Sett varsel tid i format; \"tt:mm\"</b></html>");
@@ -247,6 +246,7 @@ public class NotificationGUI {
                                     dateMap.get("day") + "-" + dateMap.get("month") + 
                                     "-" + dateMap.get("year") + "  " + dateMap.get("timeDisplay") + "</html>");
                             panel.repaint();
+                            dialog.pack();
                             dateDialog.dispose();                      }
                         else {
                             JOptionPane.showMessageDialog(frame,

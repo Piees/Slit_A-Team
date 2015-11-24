@@ -107,7 +107,7 @@ public class Login {
             dbUtil.updateUsersHashMap();
             loginResult = dbQuerier.login(userName, pwd);
         } catch (Exception e) {
-            loginResult.put("error1", "Serveren er nede, vennligst prøv igjen seinere");
+            loginResult.put("error1", "Database serveren er nede, vennligst prøv igjen seinere");
         }
         if (loginResult.size() > 1) {
                 UserGUI userGUI = new UserGUI(loginResult);

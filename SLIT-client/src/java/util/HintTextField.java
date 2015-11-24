@@ -1,5 +1,5 @@
 
-package notification;
+package util;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -15,7 +15,8 @@ import javax.swing.JTextField;
  * 
  * This class is made by Adam Gawne-Cain: 
  * http://stackoverflow.com/questions/1738966/java-jtextfield-with-input-hint
- *
+ * 
+ * @author Viktor Setervang
  */
 
 public class HintTextField extends JTextField {
