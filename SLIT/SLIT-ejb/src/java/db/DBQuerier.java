@@ -203,13 +203,13 @@ public class DBQuerier implements DBQuerierRemote {
             //as long as there are more rows in the ResultSet, go to the next one
             while (rs.next()) {
                 //create HashMap storing results for this row in the ResultSet
-                LinkedHashMap<String, String> resultMap = new LinkedHashMap<>();
+                LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
                 //counter for which column we wish to get value from
                 int resultSetIndex = 1;
                 while (columnCount >= resultSetIndex) {
                     //add to HashMap, getting the name of current column from rsmd 
                     //and the value of current column from ResultSet(rs)
-                    resultMap.put(rsmd.getColumnName(resultSetIndex), rs.getString(resultSetIndex));
+                    resultMap.put(rsmd.getColumnName(resultSetIndex), rs.getObject(resultSetIndex));
                     resultSetIndex++;
                 }
                 //add this map to the return-list containing list of all maps
