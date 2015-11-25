@@ -99,7 +99,7 @@ public class DBDeleter implements DBDeleterRemote {
     @Override
         public String deleteUser(String userName) {
         Connection dbConnection = dbConnection();
-        String delete = "DELETE FROM User WHERE userName = " + userName + ";";
+        String delete = "DELETE FROM User WHERE userName = '" + userName + "';";
         try{
             PreparedStatement us = dbConnection.prepareStatement(delete);
             us.executeUpdate(delete);

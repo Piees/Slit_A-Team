@@ -19,6 +19,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -241,9 +242,13 @@ public class EditUser {
                     model.setValueAt(roleCombo.getSelectedItem(), i, 3);
                     model.setValueAt(textMail.getText(), i, 4);
                     
+                    ArrayList<String> listOfEdits = new ArrayList(Arrays.asList(
+                    textFname.getText(), textLname.getText(), textMail.getText(),
+                            roleCombo.getSelectedItem()));
+                    
                     EJBConnector ejbConnector = EJBConnector.getInstance();
                     DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
-                    dbUpdater.updateUser(Integer.toString(i));
+                    JOptionPane.showMessageDialog(null, dbUpdater.updateUser(textId.getText(), listOfEdits));
                     
                 } else {
                     System.out.println("Update Error");
@@ -260,7 +265,9 @@ public class EditUser {
                 if (i >= 0) {
 
                     model.removeRow(i);
-                    deleteUserDB(Integer.toString(i));
+                    JOptionPane.showMessageDialog(null, deleteUserDB(textId.getText()));
+                    
+                    
                 } else {
                     System.out.println("Delete Error");
                 }
@@ -306,10 +313,10 @@ public class EditUser {
         return salt.toString();
     }
         
-    private void deleteUserDB(String userName) {
+    private String deleteUserDB(String userName) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBDeleterRemote dbDeleter = ejbConnector.getDBDeleter();
-        dbDeleter.deleteUser(userName);
+        return dbDeleter.deleteUser(userName);
     }
     
 }

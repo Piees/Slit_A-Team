@@ -135,13 +135,18 @@ public class DBUpdater implements DBUpdaterRemote {
     }
     
     @Override
-    public String updateUser(String userName) {
+    public String updateUser(String userName, ArrayList<String> listOfEdits) {
         Connection dbConnection = dbConnection();
-        String update = "UPDATE User SET fName =?, lName =?, mail =?, userType=?,"
-                + "WHERE userName = " + userName + ";";
+        String update = "UPDATE User SET fName =?, lName =?, mail =?, userType=? "
+                + "WHERE userName = '" + userName + "';";
         try {
             System.out.println("TRY HERE");
             PreparedStatement ps = dbConnection.prepareStatement(update);
+            int i = 1;
+            for (String string : listOfEdits) {
+                ps.setString(i, string);
+                i++;
+            }
             System.out.println(ps);
             ps.executeUpdate();
             return "Brukeren ble endret.";

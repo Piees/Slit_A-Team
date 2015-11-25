@@ -28,5 +28,5 @@ public interface DBUpdaterRemote {
 
     public String updateModul(ArrayList<String> listOfEdits, int idModul);
         
-    public String updateUser(String userName);
+    public String updateUser(String userName, ArrayList<String> listOfEdits);
 }
