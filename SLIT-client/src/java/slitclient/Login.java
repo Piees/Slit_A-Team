@@ -147,7 +147,7 @@ public class Login {
         frame.add(passwordText);
 
         JButton createButton = new JButton("create user");
-        createButton.setBounds(435, 210, 80, 25);
+        createButton.setBounds(435, 210, 120, 25);
         frame.add(createButton);
 
         JButton loginButton = new JButton("login");
