@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 import notification.NotificationGUI;
+import prototypes.EditUser;
 import tabmoduloversikt.ModuloversiktStudent;
 import tabmoduloversikt.ModuloversiktTeacher;
 
@@ -64,6 +65,11 @@ public class UserGUI {
 
             super(text);
             menu = new JPopupMenu();
+            JMenuItem editUserItem = null;
+            if (!userInfo.get("userType").equals("student")) {
+                editUserItem = new JMenuItem("Endre Bruker");
+                menu.add(editUserItem);
+            }
             JMenuItem logoutMenuItem = new JMenuItem("Logg ut");
             menu.add(logoutMenuItem);
 
@@ -75,6 +81,18 @@ public class UserGUI {
                     frame.dispose();
                 }
             });
+            
+            
+        
+        
+        if (!userInfo.get("userType").equals("student")) {
+            editUserItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new EditUser();       
+                }
+            });
+        }
 
             menu.addFocusListener(new FocusListener() {
 
