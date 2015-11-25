@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -219,24 +220,19 @@ public class UserGUI {
     public JPanel makeCommon() {
 
         JPanel content = new JPanel();
-        content.setLayout(new BorderLayout(330, 25));
+        content.setLayout(new BorderLayout(300, 25));
+        
+        String fName = getUserInfo("fName");
+        String lName = getUserInfo("lName");
 
-        JButton menuButton = new JButton("Meny") {
+        JButton menuButton = new logoutMenuButton("Meny") {
             @Override
             public int getHeight() {
                 return 25;
             }
         };
-        content.add(menuButton, BorderLayout.LINE_START);
 
-        JLabel logoLabel = new JLabel(loadLogo());
-        content.add(logoLabel, BorderLayout.CENTER);
-
-        String fName = getUserInfo("fName");
-        String lName = getUserInfo("lName");
-
-        JButton nameButton = new logoutMenuButton(fName + " " + lName) {
-//        JButton nameButton = new JButton(fName + " " + lName){
+        JLabel nameLabel = new JLabel(fName + " " + lName) {
             @Override
             public int getHeight() {
                 return 25;
@@ -255,12 +251,23 @@ public class UserGUI {
                 return 25;
             }
         };
+        
+        //west part of common content
+        JPanel contentWest = new JPanel();
+        contentWest.setLayout(new BoxLayout(contentWest, BoxLayout.X_AXIS));
+        contentWest.add(updateButton);
+        contentWest.add(notificationButton);
+        content.add(contentWest, BorderLayout.WEST);
 
-        JPanel eastContent = new JPanel();
-        eastContent.add(updateButton, BorderLayout.WEST);
-        eastContent.add(nameButton, BorderLayout.CENTER);
-        eastContent.add(notificationButton, BorderLayout.EAST);
-        content.add(eastContent, BorderLayout.EAST);
+        //center part of common content
+        JLabel logoLabel = new JLabel(loadLogo());
+        content.add(logoLabel, BorderLayout.CENTER);
+
+        //east part of common content
+        JPanel contentEast = new JPanel();
+        contentEast.add(nameLabel);
+        contentEast.add(menuButton);
+        content.add(contentEast, BorderLayout.EAST);
 
         updateButton.addActionListener(new ActionListener() {
             @Override
