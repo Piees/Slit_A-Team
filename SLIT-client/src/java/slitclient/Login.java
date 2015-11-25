@@ -154,23 +154,11 @@ public class Login {
         loginButton.setBounds(350, 210, 80, 25);
         frame.add(loginButton);
 
-        JButton forgotPwdButton = new JButton("forgot my password!");
-        forgotPwdButton.setBounds(520, 210, 80, 25);
-        frame.add(forgotPwdButton);
-
 //        loginButton.addActionListener(new LoginAction()); //listener her
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 login(userText.getText(), passwordText.getText());
-            }
-        });
-
-        forgotPwdButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new EditUser();
-                frame.dispose();               
             }
         });
 
