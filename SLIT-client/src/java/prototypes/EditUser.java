@@ -72,7 +72,7 @@ public class EditUser {
 
         table.setBackground(Color.LIGHT_GRAY);
         table.setForeground(Color.black);
-        Font font = new Font("", 1, 22);
+        Font font = new Font("Courier", Font.BOLD,12);
         table.setFont(font);
         table.setRowHeight(30);
         JScrollPane pane = new JScrollPane(table);
