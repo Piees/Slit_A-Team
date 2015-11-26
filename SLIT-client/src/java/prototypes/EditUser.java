@@ -53,7 +53,6 @@ public class EditUser {
 
         frame.setSize(900, 470);
         frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         setComponents(frame);
 
