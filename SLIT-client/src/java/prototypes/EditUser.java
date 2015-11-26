@@ -63,6 +63,7 @@ public class EditUser {
 
         String[] columns = {"User", "First Name", "Last Name", "Role", "Mail"};
         JTable table = new JTable();
+        table.setAutoCreateRowSorter(true); 
 
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
