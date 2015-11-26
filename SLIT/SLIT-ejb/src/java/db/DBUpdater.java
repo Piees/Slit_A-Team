@@ -21,6 +21,7 @@ import slitcommon.DeliveryStatus;
  * 
  * @author Viktor Setervang
  * @author Arild Høyland
+ * @author Steffen Sande
  */
 @Stateless
 public class DBUpdater implements DBUpdaterRemote {
@@ -134,6 +135,13 @@ public class DBUpdater implements DBUpdaterRemote {
         }
     }
     
+    /**
+     * Update user information in the DB
+     * 
+     * @param userName the user that will be updated
+     * @param listOfEdits make a list of new values that will be change
+     * @return confirmation string telling whether operation was successful
+     */
     @Override
     public String updateUser(String userName, ArrayList<String> listOfEdits) {
         Connection dbConnection = dbConnection();

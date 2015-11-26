@@ -18,6 +18,7 @@ import javax.ejb.Stateless;
  * 
  * @author Arild Høyland
  * @author Viktor Setervang
+ * @author Steffen Sande
  */
 @Stateless
 public class DBDeleter implements DBDeleterRemote {
@@ -96,6 +97,13 @@ public class DBDeleter implements DBDeleterRemote {
         }
     }
     
+    /**
+     * Method for deleting an user from the DB.
+     * with messageDialog to confirm procession
+     *
+     * @param userName the user that will be deleted
+     * @return confirmation string telling whether operation was successful
+     */
     @Override
         public String deleteUser(String userName) {
         Connection dbConnection = dbConnection();

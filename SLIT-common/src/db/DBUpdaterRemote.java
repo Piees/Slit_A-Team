@@ -15,6 +15,7 @@ import slitcommon.DeliveryStatus;
 /**
  * @author Viktor Setervang
  * @author Arild Høyland
+ * @author Steffen Sande
  */
 @Remote
 public interface DBUpdaterRemote {

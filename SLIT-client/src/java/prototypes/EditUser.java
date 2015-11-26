@@ -37,6 +37,16 @@ import javax.swing.table.DefaultTableModel;
 import slitclient.EJBConnector;
 import slitclient.Login;
 
+/**
+ * This is the core notification class.
+ * Its main purpose is to check for new notifications and register seen notifications
+ * It also handles the threads used to display new notifications, 
+ * 
+ * @author Steffen Sande
+ * @author Arild Høyland
+ * @author Yngve Ranestad
+ * @author Peter Hagane
+ */
 public class EditUser {
 
     DBUtilRemote dbUtil;
@@ -140,7 +150,11 @@ public class EditUser {
         FFrame.add(btnCancel);
 
         Object[] row = new Object[5];
-
+        
+        /**
+         * Retrieves all of user information in the database 
+         * and put them in to JTable.
+         */
         int index = 0;
         for (Map.Entry<String, Map> entry : dbUtil.getAllUsersHashMap().entrySet()) {
             row[0] = entry.getValue().get("userName");
@@ -155,6 +169,10 @@ public class EditUser {
         btnAdd.addActionListener(new ActionListener() {
 
             @Override
+            
+            /**
+            * Retrieves data from jtextFields and add it in to jTable.
+             */
             public void actionPerformed(ActionEvent e) {
 
                 row[0] = textId.getText();
@@ -164,7 +182,9 @@ public class EditUser {
                 row[4] = textMail.getText();
 //                row[5] = textPassword.getText();
 
-                
+                /**
+                * Retrieves data from jtextFields and add it in to database.
+                */
                 try {
                     //henter tilfeldig salt
                     String salt = getSalt();
@@ -209,6 +229,9 @@ public class EditUser {
         });
 
 
+        /**
+         * Bring all values from selected row to jtextField.
+         */
         table.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -228,13 +251,16 @@ public class EditUser {
         });
 
      
-
+        /**
+         * Update selected user information
+         */
         btnUpdate.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                // get selected row information
                 int i = table.getSelectedRow();
-
+                // replace the old information in jTable with the new one from jtextField.
                 if (i >= 0) {
                     model.setValueAt(textId.getText(), i, 0);
                     model.setValueAt(textFname.getText(), i, 1);
@@ -242,10 +268,11 @@ public class EditUser {
                     model.setValueAt(roleCombo.getSelectedItem(), i, 3);
                     model.setValueAt(textMail.getText(), i, 4);
                     
+                    //put values from jtextField in to Array.
                     ArrayList<String> listOfEdits = new ArrayList(Arrays.asList(
                     textFname.getText(), textLname.getText(), textMail.getText(),
                             roleCombo.getSelectedItem()));
-                    
+                    // get the method and make connection to DB
                     EJBConnector ejbConnector = EJBConnector.getInstance();
                     DBUpdaterRemote dbUpdater = ejbConnector.getDBUpdater();
                     JOptionPane.showMessageDialog(null, dbUpdater.updateUser(textId.getText(), listOfEdits));
@@ -256,6 +283,9 @@ public class EditUser {
             }
         });
         
+        /**
+         * Delete user and user information from DB.
+         */
         btnDelete.addActionListener(new ActionListener() {
 
             @Override
@@ -265,8 +295,8 @@ public class EditUser {
                 if (i >= 0) {
 
                     model.removeRow(i);
-                    JOptionPane.showMessageDialog(null, deleteUserDB(textId.getText()));
                     
+                    JOptionPane.showMessageDialog(null, deleteUserDB(textId.getText()));
                     
                 } else {
                     System.out.println("Delete Error");
@@ -274,11 +304,10 @@ public class EditUser {
             }
         });
         
-        
+        // close EditUser frame
         btnCancel.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent ev) {
-                new Login();
+            public void actionPerformed(ActionEvent ev) {                
                 FFrame.dispose();
             }
         });
@@ -306,6 +335,7 @@ public class EditUser {
     return generatedPassword;
 }
     
+    //genererer tilfeldig salt med RNG, returner som string
     private static String getSalt() throws NoSuchAlgorithmException{
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[8];

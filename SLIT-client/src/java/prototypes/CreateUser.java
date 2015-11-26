@@ -27,7 +27,8 @@ import slitclient.Login;
 
 /**
  *
- * @author zteff1
+ * @author Steffen Sande
+ * @author Peter Hagane
  */
 public class CreateUser {
     
