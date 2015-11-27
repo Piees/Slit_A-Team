@@ -46,12 +46,11 @@ public class ModuloversiktStudent extends TabModuloversikt {
      * and number of deliveries for this module divided with total number of
      * students
      *
-     * @param numberOfModuls the number of modules to be created
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
     @Override
-    protected JScrollPane makeModulList(int numberOfModuls) {
+    protected JScrollPane makeModulList() {
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         JXTaskPaneContainer modulListContainer = new JXTaskPaneContainer();
         //we add the container to a scrollPane, so we can scroll in it if necessary

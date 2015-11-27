@@ -118,18 +118,16 @@ public class DBUpdater implements DBUpdaterRemote {
         String update = "UPDATE Modul SET title =?, description=?, learningObj=?,"
                 + "resources=?, excercise=?, evalForm=? WHERE idModul = " + idModul + ";";
         try {
-            System.out.println("TRYYYYYYYYYYYYY HER");
             PreparedStatement ps = dbConnection.prepareStatement(update);
             int i = 1;
             for (String string : listOfEdits) {
                 ps.setString(i, string);
                 i++;
             }
-            System.out.println(ps);
+            
             ps.executeUpdate();
             return "Modul ble endret.";
         } catch (SQLException e) {
-            System.out.println("CAATCHED");
             System.out.println(e);
             return "Feil! Modul ble ikke endret.";
         }

@@ -75,10 +75,8 @@ public abstract class TabModuloversikt {
         JXPanel panel = new JXPanel();
         panel.setLayout(new BorderLayout());
         //check number of modules in the DB
-        DBUtilRemote dbUtil = ejbConnector.getDBUtil();
-        int numberOfModuls = dbUtil.countRows("*", "Modul");
         //creates a list witht the given number of modules
-        panel.add(makeModulList(numberOfModuls));
+        panel.add(makeModulList());
         panel.setPreferredSize(new Dimension(700, 900));
         panel.setMaximumSize(new Dimension(700, 900));
         return panel;
@@ -95,7 +93,7 @@ public abstract class TabModuloversikt {
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
-    protected abstract JScrollPane makeModulList(int numberOfModuls);
+    protected abstract JScrollPane makeModulList();
 
     protected void displayModulText(LinkedHashMap map, JXTaskPane modulPane) {
         //for each value in the current HashMap, display values
@@ -118,7 +116,7 @@ public abstract class TabModuloversikt {
      * and number of deliveries for this module divided with total number of
      * students
      *
-     * @param numberOfModuls the number of modules to be created
+     * 
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
