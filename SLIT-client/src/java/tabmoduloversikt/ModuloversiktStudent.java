@@ -218,16 +218,16 @@ public class ModuloversiktStudent extends TabModuloversikt {
         //execute the query, get the results in a list of hashmaps
         ArrayList<LinkedHashMap> deliveryList = dbQuerier.multiQueryHash(columns, table, where);
         //this list will only have one entry, so we can safely get the first one
-        LinkedHashMap<String, String> deliveryMap = deliveryList.get(0);
+        LinkedHashMap<String, Object> deliveryMap = deliveryList.get(0);
 
         //set all the empty labels to the corresponding value from the hashmap
         //with the values gotten from the DB. If an evaluation is not made, the 
         //values from the DB will be null, and the labels in the GUI will not be shown
-        deliveryDateLabel.setText(deliveryMap.get("deliveryDate"));
-        evaluatedByLabel.setText(deliveryMap.get("evaluatedBy"));
-        evaluatedDateLabel.setText(deliveryMap.get("evaluationDate"));
-        deliveryStatusLabel.setText(deliveryMap.get("deliveryStatus"));
-        evaluationCommentLabel.setText(deliveryMap.get("evaluation"));
+        deliveryDateLabel.setText(deliveryMap.get("deliveryDate").toString());
+        evaluatedByLabel.setText(deliveryMap.get("evaluatedBy").toString());
+        evaluatedDateLabel.setText(deliveryMap.get("evaluationDate").toString());
+        deliveryStatusLabel.setText(deliveryMap.get("deliveryStatus").toString());
+        evaluationCommentLabel.setText(deliveryMap.get("evaluation").toString());
 
         readEvaluationDialog.pack();
         readEvaluationDialog.setVisible(true);

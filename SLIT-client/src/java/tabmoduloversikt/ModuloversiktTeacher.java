@@ -261,7 +261,9 @@ public class ModuloversiktTeacher extends TabModuloversikt {
                     String userName = map.get("deliveredBy").toString();
 
                     FileDownloader downloader = new FileDownloader();
-                    downloader.downloadDeliveryFile(userName, idModul);
+                    JOptionPane.showMessageDialog(deliveryListDialog, 
+                            "Besvarelsen ble lagret på skrivebordet",
+                            downloader.downloadDeliveryFile(userName, idModul), 1);
                     openEvaluationDialog(deliveryListDialog, idModul, userName);
                 }
             });
