@@ -15,12 +15,13 @@ import javax.ejb.Remote;
  * @author Håkon Gilje
  * @author Arild Høyland
  * @author Viktor Setervang
+ * @author Peter Hagane
  */
 @Remote
 public interface DBQuerierRemote {
     public Connection dbConnection();
     
-    public HashMap<String, String> login(String userName, String pwd);
+    public HashMap<String, String> login(String userName, String securePassword);
     
     public ArrayList<String> multiQuery(ArrayList<String> columns, ArrayList<String> 
             tables, ArrayList<String> where);
@@ -37,4 +38,6 @@ public interface DBQuerierRemote {
     public ArrayList<HashMap> getResources();
     
     public byte[] getResourceFile(int idResources);
+
+    public String getStoredSalt(String userName);
 }

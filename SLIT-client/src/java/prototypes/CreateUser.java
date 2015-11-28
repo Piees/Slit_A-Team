@@ -165,13 +165,13 @@ public class CreateUser {
             
             MessageDigest hashValue = MessageDigest.getInstance("SHA-512");
             hashValue.update(salt.getBytes()); //legger salt til message digest (verdien som brukes til å hashe)
-            byte[] bytes = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bytes"
+            byte[] bits = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bits"
             StringBuilder sb = new StringBuilder();
-            for(int i=0; i< bytes.length ;i++)//konverterer hvert tall i "bytes" fra desimal til hex
+            for(int i=0; i< bits.length ;i++)//konverterer hvert tall i "bits" fra desimal til hex
             {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                sb.append(Integer.toString((bits[i] & 0xff) + 0x100, 16).substring(1));
             }
-            generatedPassword = sb.toString(); //hele "bytes" er nå konvertert til hex, i stringformat
+            generatedPassword = sb.toString(); //hele "bits" er nå konvertert til hex, i stringformat
         }
         catch (NoSuchAlgorithmException e)
         {

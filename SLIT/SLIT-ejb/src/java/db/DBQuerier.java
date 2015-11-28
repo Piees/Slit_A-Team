@@ -24,15 +24,18 @@ import javax.ejb.Stateless;
 
 /**
  * This EJB handles database queries.
- * 
+ *
  * @author Håkon Gilje
  * @author Arild Høyland
  * @author Viktor Setervang
+ * @author Peter Hagane
  */
 @Stateless
 public class DBQuerier implements DBQuerierRemote {
+
     // JDBC driver name and database URL
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+
     private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
     private static final String USERNAME = "yngve";
     private static final String PASSWORD = "a_team";
@@ -57,7 +60,7 @@ public class DBQuerier implements DBQuerierRemote {
             return DBConnection;
         }
     }
-    
+
     /**
      * This method is used by the Login class to check if the user has supplied
      * a correct userName and password combination.
@@ -70,7 +73,8 @@ public class DBQuerier implements DBQuerierRemote {
      * login was unsuccessful
      */
     @Override
-    public HashMap<String, String> login(String userName, String pwd) {
+    public HashMap<String, String> login(String userName, String securePassword) {
+
         String loginQuery = "SELECT * FROM User WHERE userName=? and pwd=?";
         Connection dbConnection = dbConnection();
         HashMap<String, String> userHashMap = new HashMap<>();
@@ -78,7 +82,7 @@ public class DBQuerier implements DBQuerierRemote {
             // PreparedStatement prevents SQL Injections by users.
             PreparedStatement ps = dbConnection.prepareStatement(loginQuery);
             ps.setString(1, userName);
-            ps.setString(2, pwd);
+            ps.setString(2, securePassword);
             ResultSet rs = ps.executeQuery();
             // If true then the username + password was a match
             if (rs.next()) {
@@ -95,7 +99,34 @@ public class DBQuerier implements DBQuerierRemote {
         }
         return userHashMap;
     }
-    
+
+    public String getStoredSalt(String userName) {
+        System.out.println("Putting together query to retrieve salt from defined user");
+        String fetchSaltQuery = "SELECT salt FROM User WHERE userName=?";
+        Connection dbConnection = dbConnection();
+        String fetchedSalt = null;
+        try {
+            PreparedStatement statement = dbConnection.prepareStatement(fetchSaltQuery);
+            statement.setString(1, userName);
+            System.out.println("Executing query");
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                System.out.println("Extracting salt from fetched row");
+                //følgende linje sjekker om brukeren har en salt-verdi lagret
+                if(rs.getString("salt") != null){
+                //hvis løkken finner en verdi 'salt' i raden, så setter 
+                fetchedSalt = rs.getString("salt");
+                }else{
+                fetchedSalt = "";}
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("The salt for the user " + userName + " is " + fetchedSalt);
+        return fetchedSalt;
+    }
+
     @Deprecated
     @Override
     public ArrayList multiQuery(ArrayList<String> columns, ArrayList<String> tables, ArrayList<String> where) {
@@ -226,9 +257,9 @@ public class DBQuerier implements DBQuerierRemote {
 
     /**
      * Gets the unseen notifications of user specified by parameter userName.
-     * 
-     * @param queryPart2 extra query logic, 
-     * typically regarding before or after current_timestamp()
+     *
+     * @param queryPart2 extra query logic, typically regarding before or after
+     * current_timestamp()
      * @param userName the username used by the query.
      * @return list containing all the queried notifications.
      */
@@ -269,12 +300,11 @@ public class DBQuerier implements DBQuerierRemote {
         return notifications;
     }
 
-    
     /**
      * Gets a delivered "module assignment" file.
-     * 
+     *
      * @param userName the username of the user that delivered the assignment
-     * @param idModul the id (PK) of the module that the assignment was for. 
+     * @param idModul the id (PK) of the module that the assignment was for.
      * @return the assignment file
      */
     @Override
@@ -313,7 +343,7 @@ public class DBQuerier implements DBQuerierRemote {
     /**
      * Gets the filename of a delivered assignment
      * @param userName the username of the user that delivered the assignment
-     * @param idModul the id (PK) of the module that the assignment was for. 
+     * @param idModul the id (PK) of the module that the assignment was for.
      * @return the assignment's filename
      */
     @Override
@@ -342,7 +372,7 @@ public class DBQuerier implements DBQuerierRemote {
     }
 
     /**
-     * @return all resources from the Resource table. 
+     * @return all resources from the Resource table.
      */
     @Override
     public ArrayList<HashMap> getResources() {
@@ -375,8 +405,8 @@ public class DBQuerier implements DBQuerierRemote {
 
     /**
      * Gets the specified resource file
-     * 
-     * @param idResources the id (PK) of the resource that will be returned. 
+     *
+     * @param idResources the id (PK) of the resource that will be returned.
      * @return the resource file
      */
     @Override
