@@ -141,7 +141,8 @@ public class TabFagstoff {
             for (int i = resources.size() - 1; i >= 0; i--) {
                 if (!Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
                     ArrayList<String> checkStrings = new ArrayList<>();
-                    String title = resources.get(i).get("title").toString();
+                    String title = "<b>" + 
+                            resources.get(i).get("title").toString() + "</b>";
                     checkStrings.add(title);
                   
                     // Title resourceFile, fileName, resourceText and url can be null
@@ -195,7 +196,8 @@ public class TabFagstoff {
                         });
                         tab3Panel.add(downloadFileButton);
                     }   catch (NullPointerException e){}
-                    JLabel resourceSignatureLabel = new JLabel(userName + " " + timestamp);
+                    JLabel resourceSignatureLabel = new JLabel("<html><i>" + 
+                            userName + " " + timestamp + "</i></html>");
                     tab3Panel.add(resourceSignatureLabel);
                 }
             }
