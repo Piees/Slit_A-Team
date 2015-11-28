@@ -60,12 +60,13 @@ public class FileUploader {
      * @param title the title of the resource
      * @param resourceText the text content of the resource
      * @param url to a beneficial web page.
+     * @param isMessage to set whether it is a message
      * @return a string regarding the upload success, 
      * if successful: "Opplastning vellykket!",  
      * if not successful: "Opplastning feilet!"
      */
     public String uploadResource(String userName, String title, 
-            String resourceText, String url) {
+            String resourceText, String url, boolean isMessage) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         //InserterRemote uploader = ejbConnector.getInserter();
         DBInserterRemote uploader = ejbConnector.getDBInserter();
@@ -75,7 +76,7 @@ public class FileUploader {
         columns.add("userName");
         values.add(userName);
         columns.add("isMessage");
-        values.add(false);
+        values.add(isMessage);
         if (file != null) {
             columns.add("resourceFile");
             values.add(file);
