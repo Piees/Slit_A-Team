@@ -163,7 +163,7 @@ public class UserGUI {
     public UserGUI(HashMap<String, String> userInfo) {
 
         this.userInfo = userInfo;
-        tabForside = new TabForside();
+        tabForside = new TabForside(userInfo, frame);
 //        makeLogoutMenu();
         //create the moduloversikt-tab for the given userType
         if (userInfo.get("userType").equals("student")) {
