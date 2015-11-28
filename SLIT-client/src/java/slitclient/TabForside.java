@@ -13,6 +13,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -32,6 +33,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -56,8 +59,12 @@ public class TabForside {
     private JScrollPane scrollContactPanel;
     private boolean initialRun = true;
     private EJBConnector ejbConnector;
+    private HashMap<String, String> userInfo;
+    private JFrame frame;
     
-    public TabForside() {
+    public TabForside(HashMap<String, String> userInfo, JFrame frame) {
+        this.userInfo = userInfo;
+        this.frame = frame;
         ejbConnector = EJBConnector.getInstance();
         
         this.dbUtil = ejbConnector.getDBUtil();
@@ -99,6 +106,16 @@ public class TabForside {
         
         //west panel
         JPanel tab1PanelWest = new JPanel();
+        if (userInfo.get("userType").equals("teacher")) {
+            JButton addResourceButton = new JButton("Skriv ny melding");
+            tab1PanelWest.add(addResourceButton);
+            addResourceButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    addResourceDialog();
+                }
+            });
+        }
         tab1PanelWest = makeContent(tab1PanelWest);
         tab1PanelWest.add(Box.createRigidArea(new Dimension(0, 5)));
         tab1PanelWest.setLayout(new BoxLayout(tab1PanelWest, BoxLayout.Y_AXIS));
@@ -361,6 +378,72 @@ public class TabForside {
 
         }
         return tab3Panel;
+    }
+    
+    /**
+     * Opens a dialog window where the teacher can add a new resource that will
+     * be displayed in TabFagstoff
+     */
+    private void addResourceDialog() {
+        FileUploader fileUploader = new FileUploader();
+
+        JDialog addResourceDialog = new JDialog(frame, "Last opp melding");//, true);
+        addResourceDialog.setLayout(new GridLayout(0, 1));
+        JPanel contentPane = (JPanel) addResourceDialog.getContentPane();
+
+        JLabel titleLabel = new JLabel("Gi meldinga en tittel");
+        JTextField title = new JTextField();
+        JLabel resourceTextLabel = new JLabel("Din melding her:");
+        JTextField resourceText = new JTextField();
+        JLabel urlLabel = new JLabel("URL her:");
+        JTextField url = new JTextField();
+        JLabel resourceFileLabel = new JLabel("Fil som skal lastes opp:");
+        JLabel resourceFile = new JLabel("Ingen fil valgt");
+
+        JButton chooseFileButton = new JButton("Velg fil");
+        JButton uploadResourceButton = new JButton("Skriv meldinga");
+
+        contentPane.add(titleLabel);
+        contentPane.add(title);
+        contentPane.add(resourceTextLabel);
+        contentPane.add(resourceText);
+        contentPane.add(urlLabel);
+        contentPane.add(url);
+        contentPane.add(resourceFileLabel);
+        contentPane.add(resourceFile);
+        contentPane.add(chooseFileButton);
+        contentPane.add(uploadResourceButton);
+
+        addResourceDialog.pack();
+        addResourceDialog.setVisible(true);
+
+        chooseFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Før start fileexplorer");
+                resourceFile.setText(fileUploader.startFileExplorer(frame));
+            }
+        });
+
+        uploadResourceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (title.getText().length() > 0) {
+                    if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
+                        JOptionPane.showMessageDialog(addResourceDialog, "Et av meldingsfeltene må fylles ut", "Et av meldingsfeltene må fylles ut", 1);
+                    } else {
+                        String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText(), true);
+                        JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
+                        if (confirmationString.equals("Opplastning vellykket!")) {
+                            addResourceDialog.dispose();
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(addResourceDialog, "Sett meldingstittel!", "Sett meldingsstittel!", 1);
+                }
+
+            }
+        });
     }
 }
 
