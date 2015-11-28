@@ -148,12 +148,16 @@ public class TabFagstoff {
                     try {
                         String resourceText = resources.get(i).get("resourceText").toString();
                         checkStrings.add(resourceText);
-                    } catch (NullPointerException e){}
+                    } catch (NullPointerException e){
+                        System.err.println(e);
+                    }
                     
                     try {
                         String url = resources.get(i).get("url").toString();
                         checkStrings.add(url);
-                    } catch (NullPointerException e){}
+                    } catch (NullPointerException e){
+                        System.err.println(e);
+                    }
                     
                     String userName = resources.get(i).get("userName").toString();
                     String timestamp = resources.get(i).get("resourceDate").toString();
