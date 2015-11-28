@@ -5,6 +5,7 @@
  */
 package slitclient;
 
+import db.DBQuerierRemote;
 import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Component;
@@ -23,6 +24,7 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -31,12 +33,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import notification.DateHandler;
 
 /**
  *
@@ -51,9 +55,10 @@ public class TabForside {
     private JPanel tab1Panel;
     private JScrollPane scrollContactPanel;
     private boolean initialRun = true;
+    private EJBConnector ejbConnector;
     
     public TabForside() {
-        EJBConnector ejbConnector = EJBConnector.getInstance();
+        ejbConnector = EJBConnector.getInstance();
         
         this.dbUtil = ejbConnector.getDBUtil();
         dbUtil.updateUsersHashMap();
@@ -94,9 +99,9 @@ public class TabForside {
         
         //west panel
         JPanel tab1PanelWest = new JPanel();
+        tab1PanelWest = makeContent(tab1PanelWest);
         tab1PanelWest.add(Box.createRigidArea(new Dimension(0, 5)));
         tab1PanelWest.setLayout(new BoxLayout(tab1PanelWest, BoxLayout.Y_AXIS));
-        tab1PanelWest.add(makeMessagesPanel());
         tab1PanelWest.add(Box.createVerticalGlue());
         
         
@@ -284,6 +289,78 @@ public class TabForside {
             Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
             clpbrd.setContents(new StringSelection(mail), null);
         }
+    }
+    
+    private JPanel makeContent(JPanel tab3Panel) {
+        DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
+        ArrayList<HashMap> resources = dbQuerier.getResources();
+        if (!resources.isEmpty()) {
+            for (int i = resources.size() - 1; i >= 0; i--) {
+                if (Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
+                    ArrayList<String> checkStrings = new ArrayList<>();
+                    String title = "<b>" + 
+                            resources.get(i).get("title").toString() + "</b>";
+                    checkStrings.add(title);
+                  
+                    // Title resourceFile, fileName, resourceText and url can be null
+                    try {
+                        String resourceText = resources.get(i).get("resourceText").toString();
+                        checkStrings.add(resourceText);
+                    } catch (NullPointerException e){
+                        System.err.println(e);
+                    }
+                    
+                    try {
+                        String url = resources.get(i).get("url").toString();
+                        checkStrings.add(url);
+                    } catch (NullPointerException e){
+                        System.err.println(e);
+                    }
+                    
+                    String userName = resources.get(i).get("userName").toString();
+                    String timestamp = resources.get(i).get("resourceDate").toString();
+                    DateHandler dh = new DateHandler();
+                    timestamp = dh.removeFractionalSeconds(timestamp);
+                    
+                    String resourcePresentation = "<html>";
+                    for (int index = 0; index < checkStrings.size(); index++) {
+                        if (!checkStrings.get(index).equals("")) {
+                            if (index + 1 != checkStrings.size()) {
+                                resourcePresentation += checkStrings.get(index) + "<br>";
+                            } else {
+                                resourcePresentation += checkStrings.get(index) + "</html>";
+                            }
+                        }
+                    }
+                    
+                    JLabel resourceContentLabel = new JLabel(resourcePresentation);
+                    tab3Panel.add(new JLabel(" "));
+                    tab3Panel.add(resourceContentLabel);
+
+                    try {
+                        String filename = resources.get(i).get("fileName").toString();
+                        int idResources = (Integer) resources.get(i).get("idResource");
+                        byte[] fileData = dbQuerier.getResourceFile(idResources);
+                        JButton downloadFileButton = new JButton(filename);
+                        downloadFileButton.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                FileDownloader downloader = new FileDownloader();
+                                //downloader.downloadResourceFile(fileData, filename);
+                                JOptionPane.showMessageDialog(tab3Panel,
+                                        downloader.downloadResourceFile(fileData, filename));
+                            }
+                        });
+                        tab3Panel.add(downloadFileButton);
+                    }   catch (NullPointerException e){}
+                    JLabel resourceSignatureLabel = new JLabel("<html><i>" + 
+                            userName + " " + timestamp + "</i></html>");
+                    tab3Panel.add(resourceSignatureLabel);
+                }
+            }
+
+        }
+        return tab3Panel;
     }
 }
 
