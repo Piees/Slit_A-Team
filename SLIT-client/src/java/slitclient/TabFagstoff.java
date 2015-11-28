@@ -112,7 +112,7 @@ public class TabFagstoff {
                     if (resourceText.getText().length() == 0 && url.getText().length() == 0 && resourceFile.getText().equals("Ingen fil valgt")) {
                         JOptionPane.showMessageDialog(addResourceDialog, "Et av ressursfeltene må fylles ut", "Et av ressursfeltene må fylles ut", 1);
                     } else {
-                        String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText());
+                        String confirmationString = fileUploader.uploadResource(userInfo.get("userName"), title.getText(), resourceText.getText(), url.getText(), false);
                         JOptionPane.showMessageDialog(frame, confirmationString, confirmationString, 1);
                         if (confirmationString.equals("Opplastning vellykket!")) {
                             addResourceDialog.dispose();
