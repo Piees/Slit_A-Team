@@ -51,65 +51,62 @@ import prototypes.MailFrame;
  * @author Arild
  */
 public class TabForside {
-    
+    //util modul for updateUsersHashMap() and dbUtil.getAllUsersHashMap()
     private DBUtilRemote dbUtil;
+    // searchfield in contacts
     private JTextField searchField;
     private JPanel contactPanel;
-    private GridBagLayout tab1Layout;
-    private JPanel tab1Panel;
-    private JScrollPane scrollContactPanel;
+    //used in makeContactPanel to not rewrite searchfield
     private boolean initialRun = true;
     private EJBConnector ejbConnector;
+    // userName, userType, fName, lName, mail
     private HashMap<String, String> userInfo;
+    //master  frame
     private JFrame frame;
     
     public TabForside(HashMap<String, String> userInfo, JFrame frame) {
         this.userInfo = userInfo;
         this.frame = frame;
+        //updates field with ejb connection object
         ejbConnector = EJBConnector.getInstance();
-        
+        //different way to store connection object
         this.dbUtil = ejbConnector.getDBUtil();
         dbUtil.updateUsersHashMap();
     }
     
     /**
      * Lager forside-taben. Returnerer den til MakeGUI.makeTabs()
-     * @return JPanel tab1Panel panel med innholdet i tab 1
+     * @return JPanel tabForsidePanel panel med innholdet i tab 1
      */
     public JPanel makeForsideTab()    {
-        tab1Panel = new JPanel();
-        tab1Layout = new GridBagLayout();
-        tab1Panel.setLayout(tab1Layout);
+        //main panel, boxlayout x_axis
+        JPanel tabForsidePanel = new JPanel();
+        GridBagLayout tabForsideLayout = new GridBagLayout();
+        tabForsidePanel.setLayout(tabForsideLayout);
         
         contactPanel = makeContactPanel();
-        scrollContactPanel = new JScrollPane(contactPanel){
+        JScrollPane scrollContactPanel = new JScrollPane(contactPanel){
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(410,200);
             }
         };
-//        GridBagConstraints gbcCP = new GridBagConstraints();
         scrollContactPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollContactPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//        gbcCP.gridx = 2;
-//        gbcCP.gridy = 1;
-//        gbcCP.gridheight = 2;
-//        gbcCP.anchor = GridBagConstraints.EAST;
-//        gbcCP.insets = new Insets(-350, 0, 10, -200);
-//        tab1Layout.setConstraints(scrollContactPanel, gbcCP);
-//        tab1Panel.add(scrollContactPanel);
         
-        //east panel
-        JPanel tab1PanelEast = new JPanel();
-        tab1PanelEast.setLayout(new BoxLayout(tab1PanelEast, BoxLayout.Y_AXIS));
-        tab1PanelEast.add(scrollContactPanel);
-        tab1PanelEast.add(Box.createRigidArea(new Dimension(0,500)));
+        //east panel, boxlayout y_axis
+        JPanel tabForsidePanelEast = new JPanel();
+        tabForsidePanelEast.setLayout(new BoxLayout(tabForsidePanelEast, BoxLayout.Y_AXIS));
+        tabForsidePanelEast.add(scrollContactPanel);
+        tabForsidePanelEast.add(Box.createRigidArea(new Dimension(0,500)));
         
-        //west panel
-        JPanel tab1PanelWest = new JPanel();
+        //west panel, boxlayout y_axis
+        JPanel tabForsidePanelWest = new JPanel();
+        tabForsidePanelWest.add(Box.createRigidArea(new Dimension(0, 5)));
+        //add button for teacher users to add messages
         if (userInfo.get("userType").equals("teacher")) {
             JButton addResourceButton = new JButton("Skriv ny melding");
-            tab1PanelWest.add(addResourceButton);
+            tabForsidePanelWest.add(addResourceButton);
             addResourceButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -117,59 +114,23 @@ public class TabForside {
                 }
             });
         }
-        tab1PanelWest = makeContent(tab1PanelWest);
-        tab1PanelWest.add(Box.createRigidArea(new Dimension(0, 5)));
-        tab1PanelWest.setLayout(new BoxLayout(tab1PanelWest, BoxLayout.Y_AXIS));
-        tab1PanelWest.add(Box.createVerticalGlue());
+        tabForsidePanelWest = makeMessageContent(tabForsidePanelWest);
+        tabForsidePanelWest.setLayout(new BoxLayout(tabForsidePanelWest, BoxLayout.Y_AXIS));
+        tabForsidePanelWest.add(Box.createVerticalGlue());
         
+        tabForsidePanel.setLayout(new BoxLayout(tabForsidePanel, BoxLayout.X_AXIS));
+        tabForsidePanelWest.add(Box.createRigidArea(new Dimension(5, 0)));
+        tabForsidePanel.add(tabForsidePanelWest);
+        tabForsidePanel.add(tabForsidePanelEast);
         
-        tab1Panel.setLayout(new BoxLayout(tab1Panel, BoxLayout.X_AXIS));
-        tab1PanelWest.add(Box.createRigidArea(new Dimension(5, 0)));
-        tab1Panel.add(tab1PanelWest);
-        tab1Panel.add(tab1PanelEast);
-        
-    return tab1Panel;
-    }    
-    
-    
-    public class ForsideTab extends JPanel {
-        
-        @Override
-        public Dimension getMinimumSize() {
-            return new Dimension(720, 450);
-        }
-        
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension(720, 450);
-        }
-        
-        public ForsideTab() {
-        
-        }
+        return tabForsidePanel;
     }
-       
+    
+    
     /**
-     * Lager messagesPanel som er inni forside-taben. Returnerer til makeForsideTab()
-     * @return JPanel messagesPanel panelet med meldinger
+     * contactPanel setBorder class
+     * Set TitledBorder with title "Kontakter"
      */
-    private JPanel makeMessagesPanel()   {
-        JPanel messagesPanel = new JPanel();
-        messagesPanel.setLayout(new BoxLayout(messagesPanel, BoxLayout.Y_AXIS));
-    
-        JLabel messagesHeader = new JLabel("Meldinger:");
-        messagesPanel.add(messagesHeader);
-
-        JLabel demoMessage1 = new JLabel("<html><u>Husk å installere BlueJ</u><br>"
-                + "Når du installerer er det viktig at...</html>");
-        messagesPanel.add(demoMessage1);
-
-        JLabel demoMessage2 = new JLabel("<html><u>Nyttige tips i Java</u><br>"
-                + "Det kan være praktisk å...</html>");
-        messagesPanel.add(demoMessage2);
-    return messagesPanel;
-    }
-    
     public class borderPanel extends JPanel {
         
         public borderPanel() {
@@ -183,18 +144,26 @@ public class TabForside {
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
      */
     private JPanel makeContactPanel()    {
+
         String userSender = (String) userInfo.get("fname") + " " + userInfo.get("lname");
         String userSenderAddress = userInfo.get("mail");
-        
+
+        //dont reset contactPanel if already set
         if(contactPanel == null) {
             contactPanel = new borderPanel();
         }
+        
         GridBagLayout contactLayout = new GridBagLayout();
         contactPanel.setLayout(contactLayout);
+        //set first contact at gridy = 1
         int contactHelpery = 1;
+        //alternates x value to create a 2 wide array
         boolean contactHelperToRight = false;
+        //uses limited userhashmap for if user is searching
         HashMap<String, Map> allUsersLimitedHashMap = new HashMap<>();
         
+        //only creates searchfield once to avoid it being removed while
+        //user types in it
         if(initialRun) {
             GridBagConstraints gbcSearchField = new GridBagConstraints();
             searchField = new JTextField(20);
@@ -202,9 +171,14 @@ public class TabForside {
             gbcSearchField.gridx = 0;
             gbcSearchField.gridy = 0;
             gbcSearchField.gridwidth = 2;
+            gbcSearchField.anchor = GridBagConstraints.WEST;
             contactLayout.setConstraints(searchField, gbcSearchField);
             contactPanel.add(searchField); 
         }
+        
+        //use full userhashmap if searchfield is empty
+        //if searchfield is not empty use its contents in a regex to 
+        //populate the limitedhashmap
         try {
             if(searchField.getText().length() <= 0) {
             allUsersLimitedHashMap = dbUtil.getAllUsersHashMap();
@@ -220,8 +194,12 @@ public class TabForside {
             } 
         }
         catch(Exception e) {
-            System.out.println(e);
+            System.err.println("searchfield length check error: " + e);
         }
+        
+        //for each entry in allUsersLimitedHashMap create a jbutton
+        //styled like a label with the entrys info and add actionlistener
+        //to contact the user
         for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
             String recipient = (String) entry.getValue().get("mail");
             String name = (String) entry.getValue().get("fname") + " " +
@@ -231,10 +209,15 @@ public class TabForside {
             JButton contactLabel = new JButton(String.format("<html>%s<br>", name)
                             + String.format("<a href=''>%s</a></html>", recipient)
             );
+            //fasle opaque lets some pixels shine through
             contactLabel.setOpaque(false);
             contactLabel.setBackground(new Color(0, 0, 0, 0));
+
             contactLabel.setToolTipText("Mailto: " + recipient);
             contactLabel.addActionListener(new sendMailActionListener(recipient, userSender, userSenderAddress));
+
+            //creates a black line to split the 2 wide array of contacts
+
             if(contactHelperToRight) {
                 contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
             } else {
@@ -256,6 +239,13 @@ public class TabForside {
     return contactPanel;
     }
     
+    
+    /**
+     * searchfield keylistener
+     * administers keyreleases
+     * each keyrelease removes all instances of JButton
+     * in contactPanel and adds new JButtons
+     */
     class ContactSearchKeyListener implements KeyListener {
 
         @Override
@@ -317,7 +307,7 @@ public class TabForside {
         }
     }
     
-    private JPanel makeContent(JPanel tab3Panel) {
+    private JPanel makeMessageContent(JPanel tabPanel) {
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<HashMap> resources = dbQuerier.getResources();
         if (!resources.isEmpty()) {
@@ -360,8 +350,8 @@ public class TabForside {
                     }
                     
                     JLabel resourceContentLabel = new JLabel(resourcePresentation);
-                    tab3Panel.add(new JLabel(" "));
-                    tab3Panel.add(resourceContentLabel);
+                    tabPanel.add(new JLabel(" "));
+                    tabPanel.add(resourceContentLabel);
 
                     try {
                         String filename = resources.get(i).get("fileName").toString();
@@ -373,20 +363,20 @@ public class TabForside {
                             public void actionPerformed(ActionEvent e) {
                                 FileDownloader downloader = new FileDownloader();
                                 //downloader.downloadResourceFile(fileData, filename);
-                                JOptionPane.showMessageDialog(tab3Panel,
+                                JOptionPane.showMessageDialog(tabPanel,
                                         downloader.downloadResourceFile(fileData, filename));
                             }
                         });
-                        tab3Panel.add(downloadFileButton);
+                        tabPanel.add(downloadFileButton);
                     }   catch (NullPointerException e){}
                     JLabel resourceSignatureLabel = new JLabel("<html><i>" + 
                             userName + " " + timestamp + "</i></html>");
-                    tab3Panel.add(resourceSignatureLabel);
+                    tabPanel.add(resourceSignatureLabel);
                 }
             }
 
         }
-        return tab3Panel;
+        return tabPanel;
     }
     
     /**

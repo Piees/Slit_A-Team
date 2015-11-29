@@ -123,7 +123,6 @@ public class DBQuerier implements DBQuerierRemote {
 
         } catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
-
         }
         System.out.println("The salt for the user " + userName + " is " + fetchedSalt);
         return fetchedSalt;
