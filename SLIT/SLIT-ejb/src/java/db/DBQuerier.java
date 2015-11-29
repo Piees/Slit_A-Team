@@ -114,14 +114,16 @@ public class DBQuerier implements DBQuerierRemote {
                 System.out.println("Extracting salt from fetched row");
                 //følgende linje sjekker om brukeren har en salt-verdi lagret
                 if(rs.getString("salt") != null){
-                //hvis løkken finner en verdi 'salt' i raden, så setter 
+                //hvis løkken finner en verdi 'salt' i raden, så knyttes denne verdien til variablen
                 fetchedSalt = rs.getString("salt");
                 }else{
+                //hvis ikke, så settes variabelen til å være en tom string(som sjekkes i login.)
                 fetchedSalt = "";}
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
+
         }
         System.out.println("The salt for the user " + userName + " is " + fetchedSalt);
         return fetchedSalt;

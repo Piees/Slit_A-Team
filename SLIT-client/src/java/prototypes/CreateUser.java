@@ -34,7 +34,7 @@ public class CreateUser {
     
     public CreateUser() {        
        	JFrame cframe = new JFrame("CreateUser");
-	cframe.setSize(300, 270);
+	cframe.setSize(500, 400);
 	cframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	placeComponents(cframe);
 	cframe.setVisible(true); 

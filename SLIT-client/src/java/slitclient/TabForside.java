@@ -44,6 +44,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import notification.DateHandler;
+import prototypes.MailFrame;
 
 /**
  *
@@ -182,6 +183,9 @@ public class TabForside {
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
      */
     private JPanel makeContactPanel()    {
+        String userSender = (String) userInfo.get("fname") + " " + userInfo.get("lname");
+        String userSenderAddress = userInfo.get("mail");
+        
         if(contactPanel == null) {
             contactPanel = new borderPanel();
         }
@@ -219,18 +223,18 @@ public class TabForside {
             System.out.println(e);
         }
         for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
-            String mail = (String) entry.getValue().get("mail");
+            String recipient = (String) entry.getValue().get("mail");
             String name = (String) entry.getValue().get("fname") + " " +
                     entry.getValue().get("lname");
             int contactHelperx = (contactHelperToRight) ? 1 : 0;
             GridBagConstraints gbcContact = new GridBagConstraints();
             JButton contactLabel = new JButton(String.format("<html>%s<br>", name)
-                            + String.format("<a href=''>%s</a></html>", mail)
+                            + String.format("<a href=''>%s</a></html>", recipient)
             );
             contactLabel.setOpaque(false);
             contactLabel.setBackground(new Color(0, 0, 0, 0));
-            contactLabel.setToolTipText("Mailto: " + mail);
-            contactLabel.addActionListener(new sendMailActionListener(mail));
+            contactLabel.setToolTipText("Mailto: " + recipient);
+            contactLabel.addActionListener(new sendMailActionListener(recipient, userSender, userSenderAddress));
             if(contactHelperToRight) {
                 contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
             } else {
@@ -279,15 +283,16 @@ public class TabForside {
      * Sender mail til en av kontaktene
      * @param mail e-post adressen til kontakten
      */
-    private void sendMail(String mail) {
-        Desktop desktop = Desktop.getDesktop();
-        try {
-            String message = "mailto:" + mail;
-            URI uri = URI.create(message);
-            desktop.mail(uri);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void sendMail(String recipient, String userSender, String userSenderAddress) {
+        //Desktop desktop = Desktop.getDesktop();
+        //try {
+            MailFrame sendmail = new MailFrame(recipient, userSender, userSenderAddress);
+        //    String message = "mailto:" + mail;
+        //    URI uri = URI.create(message);
+        //    desktop.mail(uri);
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
     }
     
     /**
@@ -295,16 +300,20 @@ public class TabForside {
      */
     class sendMailActionListener implements ActionListener {
 
-        String mail;
+        String recipient;
+        String userSender;
+        String userSenderAddress;
 
-        public sendMailActionListener(String mail) {
-            this.mail = mail;
+        public sendMailActionListener(String recipient, String userSender, String userSenderAddress) {
+            this.recipient = recipient;
+            this.userSender = userSender;
+            this.userSenderAddress = userSenderAddress;
         }
 
         public void actionPerformed(ActionEvent e) {
-            sendMail(mail);
+            sendMail(recipient, userSender, userSenderAddress);
             Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clpbrd.setContents(new StringSelection(mail), null);
+            clpbrd.setContents(new StringSelection(recipient), null);
         }
     }
     

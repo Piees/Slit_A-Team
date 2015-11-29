@@ -114,9 +114,6 @@ public class Login {
         //henter lagret salt
         System.out.println("Fetching salt from database...");
         fetchedSalt = dbQuerier.getStoredSalt(userName);
-        //krypterer passordet med hentet salt
-        System.out.println("Encrypting entered password with fetched salt...");
-        securePassword = getEncryptedPassword(preHashPass, fetchedSalt);
 
         HashMap<String, String> loginResult = new HashMap<>();
         try {
@@ -129,6 +126,9 @@ public class Login {
             
             //Sjekker om stringen fetchedSalt har en verdi hentet fra databasen; hvis den har det...
             if (fetchedSalt != "") {
+            //krypterer passordet med hentet salt
+            System.out.println("Encrypting entered password with fetched salt...");
+            securePassword = getEncryptedPassword(preHashPass, fetchedSalt);
             //logg inn med sikkert passord.
             loginResult = dbQuerier.login(userName, securePassword);
             //hvis stringen er tom...
@@ -137,7 +137,7 @@ public class Login {
             loginResult = dbQuerier.login(userName, preHashPass);
             }
         } catch (Exception e) {
-            loginResult.put("error1", "Database serveren er nede, vennligst prøv igjen seinere");
+            loginResult.put("error1", "Finner ikke brukernavn.");
         }
         if (loginResult.size() > 1) {
             UserGUI userGUI = new UserGUI(loginResult);
@@ -151,7 +151,7 @@ public class Login {
     private static String getEncryptedPassword(String preHashPass, String salt) {
         String generatedPassword = null;
         try {
-
+            
             MessageDigest hashValue = MessageDigest.getInstance("SHA-512");
             hashValue.update(salt.getBytes()); //legger salt til message digest (verdien som brukes til å hashe)
             byte[] bits = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bits"
@@ -161,7 +161,7 @@ public class Login {
                 sb.append(Integer.toString((bits[i] & 0xff) + 0x100, 16).substring(1));
             }
             generatedPassword = sb.toString(); //hele "bits" er nå konvertert til hex, i stringformat
-        } catch (NoSuchAlgorithmException e) {
+            } catch (NoSuchAlgorithmException e) {
             System.out.println(e);
         }
         return generatedPassword;
