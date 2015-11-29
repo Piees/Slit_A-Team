@@ -14,7 +14,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -27,6 +26,8 @@ import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
@@ -62,6 +63,7 @@ public class TabForside {
     private HashMap<String, String> userInfo;
     //master  frame
     private JFrame frame;
+    HashMap<String, Map> allUsersLimitedHashMap;
     
     public TabForside(HashMap<String, String> userInfo, JFrame frame) {
         this.userInfo = userInfo;
@@ -138,6 +140,19 @@ public class TabForside {
         }
     }
     
+    private boolean doesAllUsersLimitedHashMapContainTeacher() {
+        for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
+            System.out.println("Gah-check");
+            System.out.println(entry.getValue());
+            System.out.println(entry.getValue().get("userType"));
+                if("teacher".equals(entry.getValue().get("userType").toString())) {
+                    System.out.println("Gah-check true");
+                    return true;
+                }
+                }
+                return false;
+    }
+    
     /**
      * Lager contactPanel som er inni forside-taben. Returnerer til makeForsideTab()
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
@@ -156,7 +171,8 @@ public class TabForside {
         //alternates x value to create a 2 wide array
         boolean contactHelperToRight = false;
         //uses limited userhashmap for if user is searching
-        HashMap<String, Map> allUsersLimitedHashMap = new HashMap<>();
+        allUsersLimitedHashMap = new HashMap<>();
+        LinkedHashMap<String, Map> fishMap = new LinkedHashMap<>();
         
         //only creates searchfield once to avoid it being removed while
         //user types in it
@@ -180,6 +196,8 @@ public class TabForside {
             allUsersLimitedHashMap = dbUtil.getAllUsersHashMap();
             } 
             else {
+                fishMap.clear();
+                HashMap<String, Map> smap = new HashMap<>();
                 for(Map.Entry<String, Map> entry : dbUtil.getAllUsersHashMap().entrySet()) {
                     if(Pattern.matches(".*" + searchField.getText().toUpperCase() + ".*", 
                             entry.getValue().get("fname").toString().toUpperCase() + " " 
@@ -196,10 +214,21 @@ public class TabForside {
         //for each entry in allUsersLimitedHashMap create a jbutton
         //styled like a label with the entrys info and add actionlistener
         //to contact the user
+        while(!allUsersLimitedHashMap.isEmpty()) {
+            ArrayList<String> allUsersLimitedHashMapUsedKeys = new ArrayList<>();
         for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
+            
+//        System.out.println("pre-fish");
+//        System.out.println(entry);
+//        System.out.println(allUsersLimitedHashMap);
+//        for(Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
+//        if(doesAllUsersLimitedHashMapContainTeacher()) {
+        if(doesAllUsersLimitedHashMapContainTeacher() && entry.getValue().containsValue("teacher")) {
+            System.out.println("begge har teacher!!!!!<<");
             String mail = (String) entry.getValue().get("mail");
             String name = (String) entry.getValue().get("fname") + " " +
                     entry.getValue().get("lname");
+            String type = (String) entry.getValue().get("userType");
             int contactHelperx = (contactHelperToRight) ? 1 : 0;
             GridBagConstraints gbcContact = new GridBagConstraints();
             JButton contactLabel = new JButton(String.format("<html>%s<br>", name)
@@ -208,7 +237,7 @@ public class TabForside {
             //fasle opaque lets some pixels shine through
             contactLabel.setOpaque(false);
             contactLabel.setBackground(new Color(0, 0, 0, 0));
-            contactLabel.setToolTipText("Mailto: " + mail);
+            contactLabel.setToolTipText(type);
             contactLabel.addActionListener(new sendMailActionListener(mail));
             //creates a black line to split the 2 wide array of contacts
             if(contactHelperToRight) {
@@ -227,6 +256,51 @@ public class TabForside {
                 contactHelpery +=1;
             }
             contactHelperToRight = !contactHelperToRight;
+        allUsersLimitedHashMapUsedKeys.add(entry.getKey());
+        }
+        else if(!doesAllUsersLimitedHashMapContainTeacher()) {
+            System.out.println("No more teachers");
+            String mail = (String) entry.getValue().get("mail");
+            String name = (String) entry.getValue().get("fname") + " " +
+                    entry.getValue().get("lname");
+            String type = (String) entry.getValue().get("userType");
+            int contactHelperx = (contactHelperToRight) ? 1 : 0;
+            GridBagConstraints gbcContact = new GridBagConstraints();
+            JButton contactLabel = new JButton(String.format("<html>%s<br>", name)
+                            + String.format("<a href=''>%s</a></html>", mail)
+            );
+            //fasle opaque lets some pixels shine through
+            contactLabel.setOpaque(false);
+            contactLabel.setBackground(new Color(0, 0, 0, 0));
+            contactLabel.setToolTipText(type);
+            contactLabel.addActionListener(new sendMailActionListener(mail));
+            //creates a black line to split the 2 wide array of contacts
+            if(contactHelperToRight) {
+                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
+            } else {
+                contactLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
+            }
+            gbcContact.gridx = contactHelperx;
+            gbcContact.gridy = contactHelpery;
+            gbcContact.ipady = 5;
+            gbcContact.ipadx = 15;
+            gbcContact.anchor = GridBagConstraints.WEST; 
+            contactLayout.setConstraints(contactLabel, gbcContact);
+            contactPanel.add(contactLabel);
+            if(contactHelperToRight == true) {
+                contactHelpery +=1;
+            }
+            contactHelperToRight = !contactHelperToRight;
+        allUsersLimitedHashMapUsedKeys.add(entry.getKey());
+//        allUsersLimitedHashMap.remove(entry.getKey());
+//        System.out.println("Post-fish");
+//        System.out.println(entry);
+//        System.out.println(allUsersLimitedHashMapUsedKeys);
+        }
+        }
+        for(String e : allUsersLimitedHashMapUsedKeys) {
+            allUsersLimitedHashMap.remove(e);
+        }
         }
         initialRun = false;
     return contactPanel;
