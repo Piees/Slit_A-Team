@@ -12,6 +12,7 @@ import db.DBUpdaterRemote;
 import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -111,7 +113,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
      * and number of deliveries for this module divided with total number of
      * students
      *
-     * 
+     *
      * @return JXTaskPaneContainer the container containing all the collapsible
      * panes with module content
      */
@@ -241,7 +243,10 @@ public class ModuloversiktTeacher extends TabModuloversikt {
                 }
                 //create a panel, with BG color so we can see its borders clearly
                 JPanel panel = new JPanel();
-                panel.setBackground(Color.WHITE);
+                panel.setPreferredSize(new Dimension(130, 20));
+                panel.setMinimumSize(new Dimension(130, 20));
+                panel.setMaximumSize(new Dimension(130, 20));
+                panel.setBorder(BorderFactory.createLineBorder(Color.black));
                 panel.add(label);
                 //add the label to the panel
                 gbc.fill = GridBagConstraints.VERTICAL;
@@ -261,7 +266,7 @@ public class ModuloversiktTeacher extends TabModuloversikt {
                     String userName = map.get("deliveredBy").toString();
 
                     FileDownloader downloader = new FileDownloader();
-                    JOptionPane.showMessageDialog(deliveryListDialog, 
+                    JOptionPane.showMessageDialog(deliveryListDialog,
                             "Besvarelsen ble lagret på skrivebordet",
                             downloader.downloadDeliveryFile(userName, idModul), 1);
                     openEvaluationDialog(deliveryListDialog, idModul, userName);
