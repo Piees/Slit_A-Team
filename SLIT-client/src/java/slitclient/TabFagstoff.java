@@ -144,20 +144,15 @@ public class TabFagstoff {
                     String title = "<b>" + 
                             resources.get(i).get("title").toString() + "</b>";
                     checkStrings.add(title);
-                  
-                    // Title resourceFile, fileName, resourceText and url can be null
-                    try {
+                                     
+                    if (resources.get(i).get("resourceText") != null) {
                         String resourceText = resources.get(i).get("resourceText").toString();
                         checkStrings.add(resourceText);
-                    } catch (NullPointerException e){
-                        System.err.println(e);
                     }
-                    
-                    try {
+ 
+                    if (resources.get(i).get("url") != null) {
                         String url = resources.get(i).get("url").toString();
                         checkStrings.add(url);
-                    } catch (NullPointerException e){
-                        System.err.println(e);
                     }
                     
                     String userName = resources.get(i).get("userName").toString();
@@ -180,7 +175,7 @@ public class TabFagstoff {
                     tab3Panel.add(new JLabel(" "));
                     tab3Panel.add(resourceContentLabel);
 
-                    try {
+                    if (resources.get(i).get("fileName") != null) {
                         String filename = resources.get(i).get("fileName").toString();
                         int idResources = (Integer) resources.get(i).get("idResource");
                         byte[] fileData = dbQuerier.getResourceFile(idResources);
@@ -195,7 +190,7 @@ public class TabFagstoff {
                             }
                         });
                         tab3Panel.add(downloadFileButton);
-                    }   catch (NullPointerException e){}
+                    }
                     JLabel resourceSignatureLabel = new JLabel("<html><i>" + 
                             userName + " " + timestamp + "</i></html>");
                     tab3Panel.add(resourceSignatureLabel);
