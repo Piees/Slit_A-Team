@@ -116,8 +116,8 @@ public class DateHandler {
      * "year" and "dow" (day of week).
      */
     private HashMap<String, String> parseToDateFormat(Date date) {
+        //Date.toString() = "dow mon dd hh:mm:ss zzz yyyy" dow is day of week, zzz is timezone
         String datePreparsed = date.toString();
-        // day of week
         String dow = datePreparsed.substring(0, 3);
         String removedDow = datePreparsed.substring(4);
         String month = removedDow.split(" ")[0];

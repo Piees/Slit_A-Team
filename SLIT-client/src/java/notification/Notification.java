@@ -37,14 +37,15 @@ import slitclient.EJBConnector;
 public class Notification {
     // This is a button from the UserGUI class
     private JButton userGUINotificationButton;
+    private JFrame frame;
+    private JButton notificationGUIButton;   
     
-    private String userName;
+    
     private final EJBConnector ejbConnector = EJBConnector.getInstance();
     private final dbConnectorRemote connector = ejbConnector.getEjbRemote();    
     private final DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
    
-    private JFrame frame;
-    private JButton notificationGUIButton;   
+    private String userName;
     private HashMap<String, String> userInfo;    
     
     private ArrayList<HashMap> unseenNotifications;
@@ -225,7 +226,7 @@ public class Notification {
     }
     
     /**
-     * Cancels all notification timer threads, only use this if you are 100% sure its a 
+     * Cancels all notification timer threads, only call this if you are 100% sure its a 
      * good idea.
      */
     public void removeNotificationThreads() {

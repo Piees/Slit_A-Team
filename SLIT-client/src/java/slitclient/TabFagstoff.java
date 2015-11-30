@@ -131,7 +131,7 @@ public class TabFagstoff {
      * ready for display to the user.
      * 
      * @param tab3Panel the panel that the content gets added to.
-     * @return panel with all the resource elements
+     * @return panel containing all the resource elements
      */
     private JPanel makeContent(JPanel tab3Panel) {
         EJBConnector ejbConnector = EJBConnector.getInstance();

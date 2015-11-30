@@ -105,8 +105,8 @@ public class NotificationGUI {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));  
         
         // The setSize doesnt seem to do anything
-        panel.setSize(650, 650);
-        dialog.setSize(650, 650);
+        //panel.setSize(650, 650);
+        //dialog.setSize(650, 650);
         panel.repaint();
         dialog.setVisible(true);
         dialog.pack();

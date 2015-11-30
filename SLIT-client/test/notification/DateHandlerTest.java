@@ -47,7 +47,7 @@ public class DateHandlerTest {
     }
 
     /**
-     * Boundary Test of checkTimeFormat method, of class DateHandler.
+     * Positive Boundary Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatLowerBoundary() {
@@ -60,7 +60,7 @@ public class DateHandlerTest {
     }
     
     /**
-     * Boundary Test of checkTimeFormat method, of class DateHandler.
+     * Positive Boundary Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatUpperBoundary() {
@@ -73,7 +73,7 @@ public class DateHandlerTest {
     }
     
     /**
-     * Negative Test of checkTimeFormat method, of class DateHandler.
+     * Negative Boundary Test of checkTimeFormat method, of class DateHandler.
      */
     @Test
     public void testCheckTimeFormatNegativeOver() {
