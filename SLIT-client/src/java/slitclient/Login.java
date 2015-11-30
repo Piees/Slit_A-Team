@@ -35,8 +35,8 @@ import prototypes.EditUser;
 /**
  * This class handles the client-side login logic necessary for login into the
  * SLIT system.
- * 
- * @author Viktor Setervang 
+ *
+ * @author Viktor Setervang
  * @author Yngve Ranestad
  * @author Steffen Sande
  * @author Arild Høyland
@@ -52,15 +52,15 @@ public class Login {
 
     public ImageIcon loadLogo() {
         ImageIcon icon = null;
-      try {
-         BufferedImage img = ImageIO.read(new File(LOGO_PATH));
-         icon = new ImageIcon(img);
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-      return icon;
+        try {
+            BufferedImage img = ImageIO.read(new File(LOGO_PATH));
+            icon = new ImageIcon(img);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return icon;
     }
-    
+
     public Login() {
         frame = new JFrame("Login");
         frame.setSize(700, 400);
@@ -110,7 +110,7 @@ public class Login {
 
         DBUtilRemote dbUtil = ejbConnector.getDBUtil();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
-        
+
         //henter lagret salt
         System.out.println("Fetching salt from database...");
         fetchedSalt = dbQuerier.getStoredSalt(userName);
@@ -123,18 +123,18 @@ public class Login {
             //Demobrukerene er lagt inn direkte i db-scriptet, og har dermed ikke krypterte passord eller lagret salt.
             //Nye brukere blir alltid lagt inn med krypterte passord i CreateUser.java.
             //I en ferdigutviklet versjon av programmet vil man naturligvis ikke ha ukrypterte demobrukere.
-            
+
             //Sjekker om stringen fetchedSalt har en verdi hentet fra databasen; hvis den har det...
             if (fetchedSalt != "") {
-            //krypterer passordet med hentet salt
-            System.out.println("Encrypting entered password with fetched salt...");
-            securePassword = getEncryptedPassword(preHashPass, fetchedSalt);
-            //logg inn med sikkert passord.
-            loginResult = dbQuerier.login(userName, securePassword);
-            //hvis stringen er tom...
-            }else if(fetchedSalt == ""){
-            //logg inn uten sikret passord
-            loginResult = dbQuerier.login(userName, preHashPass);
+                //krypterer passordet med hentet salt
+                System.out.println("Encrypting entered password with fetched salt...");
+                securePassword = getEncryptedPassword(preHashPass, fetchedSalt);
+                //logg inn med sikkert passord.
+                loginResult = dbQuerier.login(userName, securePassword);
+                //hvis stringen er tom...
+            } else if (fetchedSalt == "") {
+                //logg inn uten sikret passord
+                loginResult = dbQuerier.login(userName, preHashPass);
             }
         } catch (Exception e) {
             loginResult.put("error1", "Finner ikke brukernavn.");
@@ -151,7 +151,7 @@ public class Login {
     private static String getEncryptedPassword(String preHashPass, String salt) {
         String generatedPassword = null;
         try {
-            
+
             MessageDigest hashValue = MessageDigest.getInstance("SHA-512");
             hashValue.update(salt.getBytes()); //legger salt til message digest (verdien som brukes til å hashe)
             byte[] bits = hashValue.digest(preHashPass.getBytes()); //hent innholdet i "bits"
@@ -161,7 +161,7 @@ public class Login {
                 sb.append(Integer.toString((bits[i] & 0xff) + 0x100, 16).substring(1));
             }
             generatedPassword = sb.toString(); //hele "bits" er nå konvertert til hex, i stringformat
-            } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             System.out.println(e);
         }
         return generatedPassword;
@@ -169,16 +169,17 @@ public class Login {
 
     /**
      * Places the component of the Login GUI
+     *
      * @param frame were the components are held.
      */
     private void placeComponents(JFrame frame) {
         frame.setLayout(null);
         frame.getContentPane().setBackground(Color.WHITE);
-        
+
         JLabel logoLabel = new JLabel(loadLogo());
         logoLabel.setBounds(20, 40, 300, 300);
         frame.add(logoLabel);
-        
+
         JLabel userLabel = new JLabel("Username");
         userLabel.setBounds(350, 150, 80, 25);
         frame.add(userLabel);

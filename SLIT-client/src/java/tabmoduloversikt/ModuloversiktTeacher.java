@@ -243,9 +243,9 @@ public class ModuloversiktTeacher extends TabModuloversikt {
                 }
                 //create a panel, with BG color so we can see its borders clearly
                 JPanel panel = new JPanel();
-                panel.setPreferredSize(new Dimension(130, 20));
-                panel.setMinimumSize(new Dimension(130, 20));
-                panel.setMaximumSize(new Dimension(130, 20));
+                panel.setPreferredSize(new Dimension(140, 20));
+                panel.setMinimumSize(new Dimension(140, 20));
+                panel.setMaximumSize(new Dimension(140, 20));
                 panel.setBorder(BorderFactory.createLineBorder(Color.black));
                 panel.add(label);
                 //add the label to the panel

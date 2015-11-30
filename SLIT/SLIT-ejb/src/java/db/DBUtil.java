@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,19 +21,23 @@ import javax.ejb.Stateful;
 
 /**
  * This EJB handles database utility methods.
- * 
+ *
  * @author Yngve Ranestad
  * @author Arild Høyland
  * @author Viktor Setervang
  */
 @Stateful
 public class DBUtil implements DBUtilRemote {
-
     // JDBC driver name and database URL
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
-    private static final String USERNAME = "yngve";
-    private static final String PASSWORD = "a_team";
+//    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
+//    private static final String USERNAME = "yngve";
+//    private static final String PASSWORD = "a_team";
+    
+    
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/a_team";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "root";
     //private String queryResult;
     private static Connection DBConnection;
     private ArrayList<String> updateUsersArrayList;
@@ -59,6 +62,7 @@ public class DBUtil implements DBUtilRemote {
             return DBConnection;
         }
     }
+
     /**
      * Counts the number of rows in a given table
      *
@@ -67,6 +71,7 @@ public class DBUtil implements DBUtilRemote {
      * @param tableName the name of the DB-table to count rows in
      * @return the number of rows found in the given table
      */
+    @Deprecated
     @Override
     public int countRows(String column, String tableName) {
         String count = "SELECT COUNT(" + column + ") FROM " + tableName + ";";
@@ -98,7 +103,7 @@ public class DBUtil implements DBUtilRemote {
                     updateUserHashMapHelper);
         }
     }
-    
+
     @Override
     public Map<String, String> eachUserMap(int fromIndex) {
         userMap = ImmutableMap.of(
@@ -114,5 +119,5 @@ public class DBUtil implements DBUtilRemote {
     @Override
     public HashMap<String, Map> getAllUsersHashMap() {
         return allUsersHashMap;
-    }    
+    }
 }

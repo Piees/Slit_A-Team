@@ -109,16 +109,16 @@ public class NotificationCreater {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<LinkedHashMap> allUsersOfUserType = dbQuerier.multiQueryHash(columns, tables, where);
-        System.out.println("allUsersOfUserType.size() " + allUsersOfUserType.size());
+//        System.out.println("allUsersOfUserType.size() " + allUsersOfUserType.size());
         String notifySuccess = "Alle brukere av typen " + userType + " ble varslet";
         for (LinkedHashMap user: allUsersOfUserType) {
-            System.out.println(user.get("userName").toString() + " " + time + " " + text);
+//            System.out.println(user.get("userName").toString() + " " + time + " " + text);
             String status = createNewNotification(user.get("userName").toString(), time, text);
             if (!status.equals("Opplastning vellykket!")) {
                 notifySuccess = "Ikke alle " + userType + " ble varselet";
             }
         }
-        System.out.println(notifySuccess);
+//        System.out.println(notifySuccess);
         return notifySuccess;
     }
 }

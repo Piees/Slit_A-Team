@@ -26,6 +26,7 @@ public class FileUploader {
      * 
      * @return the name of the file selected by the user
      */
+    @Deprecated
     public String startFileExplorer() {
         JFrame frame = new JFrame("File Explorer");
         frame.setVisible(true);  
@@ -105,7 +106,7 @@ public class FileUploader {
     }
     
     /**
-     * Uploads a module assignment.
+     * Uploads a module delivery.
      * 
      * @param userName of the student delivering the assignment
      * @param idModul the id (PK) of the module whose the assignment belongs  

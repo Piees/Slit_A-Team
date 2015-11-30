@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import notification.NotificationGUI;
 import prototypes.EditUser;
@@ -189,7 +190,7 @@ public class UserGUI {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(1024, 670);
+            return new Dimension(1024, 620);
         }
     }
 
@@ -200,7 +201,7 @@ public class UserGUI {
     public void makeFrame() {
         String fName = getUserInfo("fName");
         String lName = getUserInfo("lName");
-        frame = new JFrame("SLIT - " + fName + " " + lName);
+        frame = new JFrame("SLIT (v0.8) - " + fName + " " + lName);
         // Its very important that line under does not get uncommented or implemented anew.
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel contentPane = (JPanel) frame.getContentPane();
@@ -319,7 +320,7 @@ public class UserGUI {
         JComponent tab2 = tabModuloversikt.makeModuloversiktTab();
         tabbedPane.addTab("Moduloversikt", null, tab2, null);
 
-        JComponent tab3 = tabFagstoff.makeFagstoff();
+        JScrollPane tab3 = tabFagstoff.makeFagstoff();
         tabbedPane.addTab("Fagstoff", null, tab3, null);
         return tabbedPane;
     }

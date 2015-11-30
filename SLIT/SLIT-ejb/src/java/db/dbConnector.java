@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
  * @author Håkon Gilje
  * @author Arild Høyland
  */
+@Deprecated
 @Stateless
 public class dbConnector implements dbConnectorRemote {
 

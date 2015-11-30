@@ -143,9 +143,9 @@ public class CreateUser {
                     DBInserterRemote dbInserter = ejbConnector.getDBInserter();
                     dbInserter.insertIntoDB(newUser, columns, values);
                     
-                    System.out.println("Ny bruker lagret i databasen.");
+//                    System.out.println("Ny bruker lagret i databasen.");
                     
-                    System.out.println(roleCombo.getSelectedItem()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ securePassword + mailText.getText());
+//                    System.out.println(roleCombo.getSelectedItem()+ unameText.getText()+ snameText.getText()+ nameText.getText()+ securePassword + mailText.getText());
                     
                     new Login();
                     cframe.dispose();
@@ -175,7 +175,7 @@ public class CreateUser {
         }
         catch (NoSuchAlgorithmException e)
         {
-            System.out.println(e);
+            System.err.println("Error in CreateUser.getEncryptedPassword: " + e);
         }
     return generatedPassword;
 }

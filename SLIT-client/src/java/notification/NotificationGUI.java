@@ -41,14 +41,12 @@ public class NotificationGUI {
     private JFrame frame;
     private JPanel panel;
     private JDialog dialog;   
-    private JButton seeNotificationButton;
+    private JButton seeNotificationButton, createNotificationButton;
     private JLabel displayedTimestamp;
     private JTextFieldLimit notificationText;
-    private JButton createNotificationButton;
     
     private String userName;
-    private HashMap<String, String> userInfo;
-    private HashMap<String, String> dateMap;
+    private HashMap<String, String> userInfo, dateMap;
 
     private Notification notification;
     
@@ -111,6 +109,21 @@ public class NotificationGUI {
         dialog.setVisible(true);
         dialog.pack();
         dialog.repaint();
+
+        seeNotificationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                seeNotifications();
+            }
+        });   
+        
+        setNotificationTimeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                datepicker();
+            }
+        });     
+        
         createNotificationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,20 +141,6 @@ public class NotificationGUI {
                 dialog.dispose();
             }
         });
-
-        seeNotificationButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seeNotifications();
-            }
-        });   
-        
-        setNotificationTimeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                datepicker();
-            }
-        });     
     }
       
     /**

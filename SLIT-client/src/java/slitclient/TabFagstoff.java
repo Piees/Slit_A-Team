@@ -18,8 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.util.Arrays;
 import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
 import notification.DateHandler;
 
 /**
@@ -40,13 +40,13 @@ public class TabFagstoff {
     /**
      * Dette er taben for fagstoff. Foreløpig er den helt tom.
      *
-     * @return JPanel tab3Panel returnerer panel med innholdet i tab 3
+     * @return JPanel tabFagstoffPanel returnerer panel med innholdet i tab 3
      */
-    public JPanel makeFagstoff() {
-        JPanel tab3Panel = new JPanel();
+    public JScrollPane makeFagstoff() {
+        JPanel tabFagstoffPanel = new JPanel();
         if (userInfo.get("userType").equals("teacher")) {
             JButton addResourceButton = new JButton("Last opp ressurs");
-            tab3Panel.add(addResourceButton);
+            tabFagstoffPanel.add(addResourceButton);
             addResourceButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -54,10 +54,11 @@ public class TabFagstoff {
                 }
             });
         }
-        tab3Panel = makeContent(tab3Panel);
-        tab3Panel.setLayout(new BoxLayout(tab3Panel, BoxLayout.PAGE_AXIS));
-        tab3Panel.repaint();
-        return tab3Panel;
+        tabFagstoffPanel = makeContent(tabFagstoffPanel);
+        JScrollPane tabFagstoffScrollPanel = new JScrollPane(tabFagstoffPanel);
+        tabFagstoffPanel.setLayout(new BoxLayout(tabFagstoffPanel, BoxLayout.PAGE_AXIS));
+        tabFagstoffPanel.repaint();
+        return tabFagstoffScrollPanel;
     }
 
     /**
@@ -130,29 +131,29 @@ public class TabFagstoff {
      * Gets the resource content from the database and puts it into a panel 
      * ready for display to the user.
      * 
-     * @param tab3Panel the panel that the content gets added to.
+     * @param tabPanel the panel that the content gets added to.
      * @return panel containing all the resource elements
      */
-    private JPanel makeContent(JPanel tab3Panel) {
+    private JPanel makeContent(JPanel tabPanel) {
         EJBConnector ejbConnector = EJBConnector.getInstance();
         DBQuerierRemote dbQuerier = ejbConnector.getDBQuerier();
         ArrayList<HashMap> resources = dbQuerier.getResources();
         if (!resources.isEmpty()) {
             for (int i = resources.size() - 1; i >= 0; i--) {
                 if (!Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
-                    ArrayList<String> checkStrings = new ArrayList<>();
+                    ArrayList<String> resourceContent = new ArrayList<>();
                     String title = "<b>" + 
                             resources.get(i).get("title").toString() + "</b>";
-                    checkStrings.add(title);
+                    resourceContent.add(title);
                                      
                     if (resources.get(i).get("resourceText") != null) {
                         String resourceText = resources.get(i).get("resourceText").toString();
-                        checkStrings.add(resourceText);
+                        resourceContent.add(resourceText);
                     }
  
                     if (resources.get(i).get("url") != null) {
                         String url = resources.get(i).get("url").toString();
-                        checkStrings.add(url);
+                        resourceContent.add(url);
                     }
                     
                     String userName = resources.get(i).get("userName").toString();
@@ -161,19 +162,19 @@ public class TabFagstoff {
                     timestamp = dh.removeFractionalSeconds(timestamp);
                     
                     String resourcePresentation = "<html>";
-                    for (int index = 0; index < checkStrings.size(); index++) {
-                        if (!checkStrings.get(index).equals("")) {
-                            if (index + 1 != checkStrings.size()) {
-                                resourcePresentation += checkStrings.get(index) + "<br>";
+                    for (int index = 0; index < resourceContent.size(); index++) {
+                        if (!resourceContent.get(index).equals("")) {
+                            if (index + 1 != resourceContent.size()) {
+                                resourcePresentation += resourceContent.get(index) + "<br>";
                             } else {
-                                resourcePresentation += checkStrings.get(index) + "</html>";
+                                resourcePresentation += resourceContent.get(index) + "</html>";
                             }
                         }
                     }
                     
                     JLabel resourceContentLabel = new JLabel(resourcePresentation);
-                    tab3Panel.add(new JLabel(" "));
-                    tab3Panel.add(resourceContentLabel);
+                    tabPanel.add(new JLabel(" "));
+                    tabPanel.add(resourceContentLabel);
 
                     if (resources.get(i).get("fileName") != null) {
                         String filename = resources.get(i).get("fileName").toString();
@@ -184,20 +185,19 @@ public class TabFagstoff {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 FileDownloader downloader = new FileDownloader();
-                                //downloader.downloadResourceFile(fileData, filename);
-                                JOptionPane.showMessageDialog(tab3Panel,
+                                JOptionPane.showMessageDialog(tabPanel,
                                         downloader.downloadResourceFile(fileData, filename));
                             }
                         });
-                        tab3Panel.add(downloadFileButton);
+                        tabPanel.add(downloadFileButton);
                     }
                     JLabel resourceSignatureLabel = new JLabel("<html><i>" + 
                             userName + " " + timestamp + "</i></html>");
-                    tab3Panel.add(resourceSignatureLabel);
+                    tabPanel.add(resourceSignatureLabel);
                 }
             }
 
         }
-        return tab3Panel;
+        return tabPanel;
     }
 }

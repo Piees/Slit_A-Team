@@ -9,7 +9,6 @@ import db.DBQuerierRemote;
 import db.DBUtilRemote;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,13 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.lang.reflect.Array;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
@@ -48,13 +43,12 @@ import notification.DateHandler;
 import prototypes.MailFrame;
 
 /**
- *
- * @author Arild
+ * @author Yngve Ranestad
+ * @author Arild Høyland
  */
 public class TabForside {
 
     //util modul for updateUsersHashMap() and dbUtil.getAllUsersHashMap()
-
     private DBUtilRemote dbUtil;
     // searchfield in contacts
     private JTextField searchField;
@@ -66,6 +60,7 @@ public class TabForside {
     private HashMap<String, String> userInfo;
     //master  frame
     private JFrame frame;
+    // for search
     HashMap<String, Map> allUsersLimitedHashMap;
 
     public TabForside(HashMap<String, String> userInfo, JFrame frame) {
@@ -103,7 +98,7 @@ public class TabForside {
         JPanel tabForsidePanelEast = new JPanel();
         tabForsidePanelEast.setLayout(new BoxLayout(tabForsidePanelEast, BoxLayout.Y_AXIS));
         tabForsidePanelEast.add(scrollContactPanel);
-        tabForsidePanelEast.add(Box.createRigidArea(new Dimension(0, 500)));
+        tabForsidePanelEast.add(Box.createRigidArea(new Dimension(0, 400)));
 
         //west panel, boxlayout y_axis
         JPanel tabForsidePanelWest = new JPanel();
@@ -115,7 +110,7 @@ public class TabForside {
             addResourceButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    addResourceDialog();
+                    addMessageDialog();
                 }
             });
         }
@@ -125,6 +120,7 @@ public class TabForside {
 
         tabForsidePanel.setLayout(new BoxLayout(tabForsidePanel, BoxLayout.X_AXIS));
         tabForsidePanelWest.add(Box.createRigidArea(new Dimension(5, 0)));
+//        JScrollPane tabForsideScrollPanelWest = new JScrollPane(tabForsidePanelWest);
         tabForsidePanel.add(tabForsidePanelWest);
         tabForsidePanel.add(tabForsidePanelEast);
 
@@ -157,7 +153,7 @@ public class TabForside {
      *
      * @return JPanel contactPanel panelet som viser kontaktene (lærere)
      */
-    private JPanel makeContactPanel()    {
+    private JPanel makeContactPanel() {
 
         String userSender = (String) userInfo.get("fname") + " " + userInfo.get("lname");
         String userSenderAddress = userInfo.get("mail");
@@ -206,18 +202,16 @@ public class TabForside {
                 }
             }
         } catch (Exception e) {
-            System.err.println("searchfield length check error: " + e);
+            System.err.println("TabForside searchfield length check error: " + e);
         }
 
         //for each entry in allUsersLimitedHashMap create a jbutton
         //styled like a label with the entrys info and add actionlistener
         //to contact the user
-
         while (!allUsersLimitedHashMap.isEmpty()) {
             ArrayList<String> allUsersLimitedHashMapUsedKeys = new ArrayList<>();
             for (Map.Entry<String, Map> entry : allUsersLimitedHashMap.entrySet()) {
                 if (doesAllUsersLimitedHashMapContainTeacher() && entry.getValue().containsValue("teacher")) {
-                    System.out.println("begge har teacher!!!!!<<");
                     String mail = (String) entry.getValue().get("mail");
                     String name = (String) entry.getValue().get("fname") + " "
                             + entry.getValue().get("lname");
@@ -231,7 +225,7 @@ public class TabForside {
                     contactLabel.setOpaque(false);
                     contactLabel.setBackground(new Color(0, 0, 0, 0));
                     contactLabel.setToolTipText(type);
-                    contactLabel.addActionListener(new sendMailActionListener(mail,userSender,userSenderAddress));
+                    contactLabel.addActionListener(new sendMailActionListener(mail, userSender, userSenderAddress));
                     //creates a black line to split the 2 wide array of contacts
                     if (contactHelperToRight) {
                         contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
@@ -251,7 +245,6 @@ public class TabForside {
                     contactHelperToRight = !contactHelperToRight;
                     allUsersLimitedHashMapUsedKeys.add(entry.getKey());
                 } else if (!doesAllUsersLimitedHashMapContainTeacher()) {
-                    System.out.println("No more teachers");
                     String mail = (String) entry.getValue().get("mail");
                     String name = (String) entry.getValue().get("fname") + " "
                             + entry.getValue().get("lname");
@@ -265,7 +258,7 @@ public class TabForside {
                     contactLabel.setOpaque(false);
                     contactLabel.setBackground(new Color(0, 0, 0, 0));
                     contactLabel.setToolTipText(type);
-                    contactLabel.addActionListener(new sendMailActionListener(mail,userSender,userSenderAddress));
+                    contactLabel.addActionListener(new sendMailActionListener(mail, userSender, userSenderAddress));
                     //creates a black line to split the 2 wide array of contacts
                     if (contactHelperToRight) {
                         contactLabel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.BLACK));
@@ -330,7 +323,8 @@ public class TabForside {
     private void sendMail(String recipient, String userSender, String userSenderAddress) {
         //Desktop desktop = Desktop.getDesktop();
         //try {
-            MailFrame sendmail = new MailFrame(recipient, userSender, userSenderAddress);
+//        MailFrame sendmail = new MailFrame(recipient, userSender, userSenderAddress);
+        new MailFrame(recipient, userSender, userSenderAddress);
         //    String message = "mailto:" + mail;
         //    URI uri = URI.create(message);
         //    desktop.mail(uri);
@@ -367,24 +361,19 @@ public class TabForside {
         if (!resources.isEmpty()) {
             for (int i = resources.size() - 1; i >= 0; i--) {
                 if (Boolean.parseBoolean(resources.get(i).get("isMessage").toString())) {
-                    ArrayList<String> checkStrings = new ArrayList<>();
+                    ArrayList<String> messageContent = new ArrayList<>();
                     String title = "<b>"
                             + resources.get(i).get("title").toString() + "</b>";
-                    checkStrings.add(title);
+                    messageContent.add(title);
 
-                    // Title resourceFile, fileName, resourceText and url can be null
-                    try {
+                    if (resources.get(i).get("resourceText") != null) {
                         String resourceText = resources.get(i).get("resourceText").toString();
-                        checkStrings.add(resourceText);
-                    } catch (NullPointerException e) {
-                        System.err.println(e);
+                        messageContent.add(resourceText);
                     }
 
-                    try {
+                    if (resources.get(i).get("url") != null) {
                         String url = resources.get(i).get("url").toString();
-                        checkStrings.add(url);
-                    } catch (NullPointerException e) {
-                        System.err.println(e);
+                        messageContent.add(url);
                     }
 
                     String userName = resources.get(i).get("userName").toString();
@@ -393,12 +382,12 @@ public class TabForside {
                     timestamp = dh.removeFractionalSeconds(timestamp);
 
                     String resourcePresentation = "<html>";
-                    for (int index = 0; index < checkStrings.size(); index++) {
-                        if (!checkStrings.get(index).equals("")) {
-                            if (index + 1 != checkStrings.size()) {
-                                resourcePresentation += checkStrings.get(index) + "<br>";
+                    for (int index = 0; index < messageContent.size(); index++) {
+                        if (!messageContent.get(index).equals("")) {
+                            if (index + 1 != messageContent.size()) {
+                                resourcePresentation += messageContent.get(index) + "<br>";
                             } else {
-                                resourcePresentation += checkStrings.get(index) + "</html>";
+                                resourcePresentation += messageContent.get(index) + "</html>";
                             }
                         }
                     }
@@ -407,7 +396,7 @@ public class TabForside {
                     tabPanel.add(new JLabel(" "));
                     tabPanel.add(resourceContentLabel);
 
-                    try {
+                    if (resources.get(i).get("fileName") != null) {
                         String filename = resources.get(i).get("fileName").toString();
                         int idResources = (Integer) resources.get(i).get("idResource");
                         byte[] fileData = dbQuerier.getResourceFile(idResources);
@@ -416,13 +405,11 @@ public class TabForside {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 FileDownloader downloader = new FileDownloader();
-                                //downloader.downloadResourceFile(fileData, filename);
                                 JOptionPane.showMessageDialog(tabPanel,
                                         downloader.downloadResourceFile(fileData, filename));
                             }
                         });
                         tabPanel.add(downloadFileButton);
-                    } catch (NullPointerException e) {
                     }
                     JLabel resourceSignatureLabel = new JLabel("<html><i>"
                             + userName + " " + timestamp + "</i></html>");
@@ -438,7 +425,7 @@ public class TabForside {
      * Opens a dialog window where the teacher can add a new resource that will
      * be displayed in TabFagstoff
      */
-    private void addResourceDialog() {
+    private void addMessageDialog() {
         FileUploader fileUploader = new FileUploader();
 
         JDialog addResourceDialog = new JDialog(frame, "Last opp melding");//, true);
@@ -495,7 +482,6 @@ public class TabForside {
                 } else {
                     JOptionPane.showMessageDialog(addResourceDialog, "Sett meldingstittel!", "Sett meldingsstittel!", 1);
                 }
-
             }
         });
     }

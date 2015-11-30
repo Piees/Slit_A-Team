@@ -13,12 +13,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.swing.JTextArea;
 import slitcommon.DeliveryStatus;
 
 /**
  * This EJB handles database updating.
- * 
+ *
  * @author Viktor Setervang
  * @author Arild Høyland
  * @author Steffen Sande
@@ -27,9 +26,14 @@ import slitcommon.DeliveryStatus;
 public class DBUpdater implements DBUpdaterRemote {
     // JDBC driver name and database URL
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
-    private static final String USERNAME = "yngve";
-    private static final String PASSWORD = "a_team";
+//    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
+//    private static final String USERNAME = "yngve";
+//    private static final String PASSWORD = "a_team";
+    
+    
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/a_team";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "root";
     //private String queryResult;
     private static Connection DBConnection;
 
@@ -51,7 +55,7 @@ public class DBUpdater implements DBUpdaterRemote {
             return DBConnection;
         }
     }
-    
+
     /**
      * Add evaluation to the correct row in the Delivery table in the DB
      *
@@ -87,11 +91,12 @@ public class DBUpdater implements DBUpdaterRemote {
             return "Feil! Ble ikke lagret i database.";
         }
     }
-    
+
     /**
      * Marks notifications as seen.
-     * @param idNotification a list of all notifications that will be marked 
-     * as seen
+     *
+     * @param idNotification a list of all notifications that will be marked as
+     * seen
      */
     @Override
     public void markNotificationsAsSeen(ArrayList<Integer> idNotification) {
@@ -110,10 +115,10 @@ public class DBUpdater implements DBUpdaterRemote {
             Logger.getLogger(dbConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public String updateModul(ArrayList<String> listOfEdits, int idModul) {
-     
+
         Connection dbConnection = dbConnection();
         String update = "UPDATE Modul SET title =?, description=?, learningObj=?,"
                 + "resources=?, excercise=?, evalForm=? WHERE idModul = " + idModul + ";";
@@ -124,7 +129,7 @@ public class DBUpdater implements DBUpdaterRemote {
                 ps.setString(i, string);
                 i++;
             }
-            
+
             ps.executeUpdate();
             return "Modul ble endret.";
         } catch (SQLException e) {
@@ -132,10 +137,10 @@ public class DBUpdater implements DBUpdaterRemote {
             return "Feil! Modul ble ikke endret.";
         }
     }
-    
+
     /**
      * Update user information in the DB
-     * 
+     *
      * @param userName the user that will be updated
      * @param listOfEdits make a list of new values that will be change
      * @return confirmation string telling whether operation was successful

@@ -20,7 +20,7 @@ import util.MailSender;
 
 /**
  *
- * @author Peter
+ * @author Peter Hagane
  */
 public class MailFrame {
 

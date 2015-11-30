@@ -32,13 +32,16 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class DBQuerier implements DBQuerierRemote {
-
     // JDBC driver name and database URL
     //static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-
-    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
-    private static final String USERNAME = "yngve";
-    private static final String PASSWORD = "a_team";
+//    private static final String DB_URL = "jdbc:mysql://peterhagane.net:3306/a_team";
+//    private static final String USERNAME = "yngve";
+//    private static final String PASSWORD = "a_team";
+    
+    
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/a_team";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "root";
     //private String queryResult;
     private static Connection DBConnection;
 

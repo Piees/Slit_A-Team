@@ -33,7 +33,7 @@ public class FileDownloader {
         
     }
     /**
-     * Downloads a file from the DB and saves it to the user's desktop-directory.
+     * Downloads a module delivery file from the DB and saves it to the user's desktop-directory.
      * 
      * @param userName the user name of the user that has delivered this file.
      * @param idModul the id of the module that the file was assigned to.
